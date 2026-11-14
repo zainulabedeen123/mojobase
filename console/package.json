@@ -1,0 +1,18 @@
+{
+  "name": "mojobase-console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mojobase console: sign up, create projects, and get each project's API keys and Postgres connection string",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

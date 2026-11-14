@@ -290,6 +290,18 @@ export default defineConfig(
       'prettier/prettier': 'error',
     },
   },
+  // Mojobase console (plain JavaScript, Node runtime)
+  {
+    files: ['console/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.es2021,
+      },
+    },
+  },
   // Global ignores
   {
     ignores: [

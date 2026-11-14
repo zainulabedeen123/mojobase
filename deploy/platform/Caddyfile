@@ -1,0 +1,33 @@
+# Mojobase edge router.
+#   mojobase.dev            -> console (sign up, create projects)
+#   api.mojobase.dev        -> the original single instance
+#   db.mojobase.dev         -> holds the TLS certificate every project's Postgres uses
+#   <ref>.mojobase.dev      -> that project's backend (certificate issued on demand,
+#                              only for projects the console confirms exist)
+{
+	on_demand_tls {
+		ask http://console:3001/tls-ask
+	}
+}
+
+mojobase.dev, www.mojobase.dev {
+	encode zstd gzip
+	reverse_proxy console:3000
+}
+
+api.mojobase.dev {
+	encode zstd gzip
+	reverse_proxy insforge-insforge-1:7130
+}
+
+db.mojobase.dev {
+	respond "Mojobase database endpoint. Connect with the connection string from your project page." 200
+}
+
+https:// {
+	tls {
+		on_demand
+	}
+	encode zstd gzip
+	reverse_proxy mb-{http.request.host.labels.2}-app:7130
+}

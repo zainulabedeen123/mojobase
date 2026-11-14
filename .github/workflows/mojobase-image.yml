@@ -1,9 +1,11 @@
-name: Publish Mojobase image
+name: Publish Mojobase images
 
-# Builds the Mojobase app image and publishes it to GitHub Container Registry:
-#   ghcr.io/<owner>/mojobase:latest      (every push to main)
-#   ghcr.io/<owner>/mojobase:<short-sha> (every push to main)
-#   ghcr.io/<owner>/mojobase:vX.Y.Z      (version tags)
+# Builds and publishes every image the Mojobase platform runs:
+#   ghcr.io/<owner>/mojobase            backend + project dashboard (one per project)
+#   ghcr.io/<owner>/mojobase-postgres   Postgres with Mojobase extensions and init files
+#   ghcr.io/<owner>/mojobase-deno       edge-functions runtime
+#   ghcr.io/<owner>/mojobase-console    console at mojobase.dev (sign up, create projects)
+# Tags: latest (main), <short-sha> (every push), vX.Y.Z (version tags).
 on:
   push:
     branches: [main]
@@ -11,7 +13,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: mojobase-image-${{ github.ref }}
+  group: mojobase-images-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,6 +22,30 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: mojobase
+            context: .
+            file: Dockerfile
+            target: runner
+            description: Mojobase backend and project dashboard (built on InsForge)
+          - image: mojobase-postgres
+            context: .
+            file: deploy/Dockerfile.postgres
+            target: ''
+            description: Postgres for Mojobase projects
+          - image: mojobase-deno
+            context: .
+            file: deploy/Dockerfile.deno
+            target: ''
+            description: Edge-functions runtime for Mojobase projects
+          - image: mojobase-console
+            context: console
+            file: console/Dockerfile
+            target: ''
+            description: Mojobase console - sign up and create projects
     steps:
       - uses: actions/checkout@v6
 
@@ -34,23 +60,24 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository_owner }}/mojobase
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=,format=short
             type=ref,event=tag
           labels: |
-            org.opencontainers.image.title=Mojobase
-            org.opencontainers.image.description=Self-hosted backend platform (built on InsForge)
+            org.opencontainers.image.title=${{ matrix.image }}
+            org.opencontainers.image.description=${{ matrix.description }}
             org.opencontainers.image.licenses=Apache-2.0
 
       - uses: docker/build-push-action@v7
         with:
-          context: .
-          target: runner
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
