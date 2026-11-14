@@ -707,6 +707,9 @@ window.addEventListener('message', (e) => {
       if (typeof msg.path === 'string' && /^\/dashboard[\w\-/]*$/.test(msg.path)) history.replaceState({}, '', `/projects/${ref}${msg.path === '/dashboard' ? '' : msg.path}`);
       return;
     case 'OPEN_AGENT_PROMPT': return void openAgentPrompt(ref);
+    case 'REQUEST_AGENT_PROMPT':
+      return void api(`/projects/${ref}/agent-prompt`)
+        .then(({ prompt }) => sendToFrame({ type: 'AGENT_PROMPT', prompt }), (err) => sendToFrame({ type: 'AGENT_PROMPT_ERROR', error: err.message }));
     case 'OPEN_WHATS_NEW': return void window.open('https://github.com/zainulabedeen123/mojobase/commits/main', '_blank', 'noopener');
     case 'SHOW_UPGRADE_DIALOG': return toast('Paid plans are not available yet — everything on Mojobase is free for now.');
     default:

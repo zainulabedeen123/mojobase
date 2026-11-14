@@ -53,6 +53,7 @@ type PendingRequestKey =
   | 'updateVersion'
   | 'userInfo'
   | 'userApiKey'
+  | 'agentPrompt'
   | 'modelCredits'
   | 'projectMetrics';
 
@@ -76,6 +77,7 @@ type PendingRequestValues = {
   updateVersion: void;
   userInfo: DashboardUserInfo;
   userApiKey: string;
+  agentPrompt: string;
   modelCredits: DashboardModelCreditUsage;
   projectMetrics: DashboardMetricsResponse;
 };
@@ -349,6 +351,9 @@ export function useCloudHosting() {
           return;
         case 'userApiKey':
           pendingRequestsRef.current.userApiKey = pendingRequest as PendingRequest<string>;
+          return;
+        case 'agentPrompt':
+          pendingRequestsRef.current.agentPrompt = pendingRequest as PendingRequest<string>;
           return;
         case 'modelCredits':
           pendingRequestsRef.current.modelCredits =
@@ -627,6 +632,23 @@ export function useCloudHosting() {
               return;
             }
             resolvePendingRequest('userApiKey', apiKey);
+            return;
+          }
+          case 'AGENT_PROMPT': {
+            const prompt =
+              typeof message.prompt === 'string' && message.prompt.trim() ? message.prompt : '';
+            if (!prompt) {
+              rejectPendingRequest('agentPrompt', 'Received an invalid agent prompt payload');
+              return;
+            }
+            resolvePendingRequest('agentPrompt', prompt);
+            return;
+          }
+          case 'AGENT_PROMPT_ERROR': {
+            rejectPendingRequest(
+              'agentPrompt',
+              getErrorMessage(message.error, 'Failed to load the AI agent prompt')
+            );
             return;
           }
           case 'USER_API_KEY_ERROR': {
@@ -973,6 +995,14 @@ export function useCloudHosting() {
     [postMessageToParent]
   );
 
+  const requestAgentPrompt = useCallback(async (): Promise<string> => {
+    await sendMessageToParent(
+      { type: 'REQUEST_AGENT_PROMPT' },
+      'Unable to request the AI agent prompt from the parent window'
+    );
+    return createPendingRequest('agentPrompt', 'AI agent prompt request', { supersede: true });
+  }, [createPendingRequest, sendMessageToParent]);
+
   const requestUserApiKey = useCallback(async (): Promise<string> => {
     await sendMessageToParent(
       { type: 'REQUEST_USER_API_KEY' },
@@ -1153,6 +1183,7 @@ export function useCloudHosting() {
     requestUserInfo,
     updatePreferredLocale,
     requestUserApiKey,
+    requestAgentPrompt,
     requestModelCredits,
     requestProjectMetrics,
     connectPosthog,

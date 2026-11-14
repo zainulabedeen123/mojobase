@@ -23,6 +23,7 @@ export function CloudHostingDashboard() {
     requestUserInfo,
     updatePreferredLocale,
     requestUserApiKey,
+    requestAgentPrompt,
     requestModelCredits,
     requestProjectMetrics,
     connectPosthog,
@@ -47,6 +48,7 @@ export function CloudHostingDashboard() {
       onShowUpgradeDialog={showUpgradeDialog}
       onOpenWhatsNew={openWhatsNew}
       onOpenAgentPrompt={cloudIntegrations ? undefined : openAgentPrompt}
+      onRequestAgentPrompt={cloudIntegrations ? undefined : requestAgentPrompt}
       onRenameProject={renameProject}
       onDeleteProject={deleteProject}
       onRequestBackupInfo={requestBackupInfo}

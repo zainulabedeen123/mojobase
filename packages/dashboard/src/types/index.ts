@@ -206,6 +206,8 @@ export interface DashboardProps {
   onOpenWhatsNew?: () => void;
   /** Opens the host's ready-to-paste AI integration prompt (Mojobase console). */
   onOpenAgentPrompt?: () => void;
+  /** Fetches the host's ready-to-paste AI integration prompt text. */
+  onRequestAgentPrompt?: () => Promise<string>;
   onRenameProject?: (name: string) => Promise<void>;
   onDeleteProject?: () => Promise<void>;
   onRequestBackupInfo?: () => Promise<DashboardBackupInfo>;

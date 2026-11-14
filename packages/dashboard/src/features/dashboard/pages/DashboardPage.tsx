@@ -43,6 +43,7 @@ import { useUsers } from '#features/auth';
 import { CLISection, MCPSection } from '#features/dashboard/components/connect';
 import { useOpenConnectDialog } from '#layout/ConnectDialogContext';
 import { ObservabilitySection } from '#features/dashboard/components/observability';
+import { AgentPromptPanel } from '#features/dashboard/components/AgentPromptPanel';
 import { BackendAdvisorSection } from '#features/dashboard/components/advisor';
 const REGION_COUNTRY_CODE_MAP: Record<string, 'us' | 'de' | 'sg'> = {
   'us-test': 'us',
@@ -376,7 +377,7 @@ function DashboardLoadingState() {
 }
 
 export default function DashboardPage() {
-  const { onOpenAgentPrompt } = useDashboardHost();
+  const { onOpenAgentPrompt, onRequestAgentPrompt } = useDashboardHost();
   const navigate = useNavigate();
   const openConnectDialog = useOpenConnectDialog();
   const isCloudHostingMode = useIsCloudHostingMode();
@@ -404,6 +405,9 @@ export default function DashboardPage() {
   // Branches inherit data from the parent, so treat them as already-connected
   // to skip the "Getting Started / install" block on the dashboard.
   const agentConnected = hasCompletedOnboarding || isBranch;
+  // Hosts that supply an integration prompt (the Mojobase console) show it in the
+  // preview area until an agent has connected.
+  const showAgentPromptPanel = !!onRequestAgentPrompt && !agentConnected;
   const shouldShowLoadingState =
     isMetadataLoading || isMcpUsageLoading || (isCloudProject && isProjectInfoLoading);
   const projectName = isCloudProject ? projectInfo.name : t('overview.myProject');
@@ -595,7 +599,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {onOpenAgentPrompt && (
+            {onOpenAgentPrompt && !showAgentPromptPanel && (
               <div className="flex flex-col gap-3 rounded-lg border border-[var(--alpha-12)] bg-[var(--alpha-4)] p-4">
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -682,25 +686,32 @@ export default function DashboardPage() {
             }}
           />
 
-          <div ref={previewContainerRef} className="relative z-10 h-full w-full min-h-0 min-w-0">
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              nodeTypes={previewNodeTypes}
-              fitView
-              fitViewOptions={PREVIEW_FIT_VIEW_OPTIONS}
-              minZoom={0.6}
-              maxZoom={2}
-              nodesConnectable={false}
-              proOptions={{ hideAttribution: true }}
-              className="!bg-transparent"
-            >
-              <VisualizerAutoFit fitVersion={previewFitVersion} />
-              <VisualizerControls />
-            </ReactFlow>
-          </div>
+          {showAgentPromptPanel && onRequestAgentPrompt ? (
+            <AgentPromptPanel
+              requestPrompt={onRequestAgentPrompt}
+              onOpenFullView={onOpenAgentPrompt}
+            />
+          ) : (
+            <div ref={previewContainerRef} className="relative z-10 h-full w-full min-h-0 min-w-0">
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                nodeTypes={previewNodeTypes}
+                fitView
+                fitViewOptions={PREVIEW_FIT_VIEW_OPTIONS}
+                minZoom={0.6}
+                maxZoom={2}
+                nodesConnectable={false}
+                proOptions={{ hideAttribution: true }}
+                className="!bg-transparent"
+              >
+                <VisualizerAutoFit fitVersion={previewFitVersion} />
+                <VisualizerControls />
+              </ReactFlow>
+            </div>
+          )}
         </section>
       </div>
       <div className="flex flex-col gap-12 px-10 py-10">
