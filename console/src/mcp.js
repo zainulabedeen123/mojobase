@@ -16,6 +16,7 @@ import {
   ServiceError,
 } from './projects-service.js';
 import { backupProject, listBackups } from './provisioner.js';
+import { agentPrompt } from './agent-prompt.js';
 
 const VERSION = '0.1.0';
 
@@ -23,8 +24,8 @@ const INSTRUCTIONS = `Mojobase is an open-source backend platform (Postgres data
 
 Typical workflow:
 1. list_projects, or create_project to get a new backend (takes about a minute; it waits for you).
-2. get_integration_guide for the .env values and code to connect the user's app (SDK, Prisma, Drizzle, psql).
-3. Design the schema with run_sql: CREATE TABLE ..., ENABLE ROW LEVEL SECURITY and policies using auth.uid(); then GRANT the needed privileges to the "authenticated" (and, for public data, "anon") roles. Inspect with list_tables / get_table_schema.
+2. get_agent_prompt: complete integration instructions with every key filled in. Follow it to wire the project into the user's codebase. (get_integration_guide gives just the .env values and snippets.)
+3. Design the schema with run_sql: CREATE TABLE ..., ENABLE ROW LEVEL SECURITY and policies using auth.uid(). Inspect with list_tables / get_table_schema.
 4. Use create_bucket for file uploads and deploy_function for server-side code.
 5. Read get_docs (topic "instructions" first) for exact SDK usage before writing app code.
 
@@ -161,7 +162,11 @@ export function buildServer(user) {
     async ({ name, wait = true }) => {
       const created = createProject(user, name);
       const p = wait ? await waitUntilSettled(created.ref, 180_000) : created;
-      if (p.status === 'ready') return json({ project: projectView(p, { withSecrets: true }) });
+      if (p.status === 'ready')
+        return json({
+          project: projectView(p, { withSecrets: true }),
+          next: 'Call get_agent_prompt with this ref for complete, step-by-step integration instructions with every key filled in.',
+        });
       if (p.status === 'failed')
         return { ...json({ project: projectView(p, { withSecrets: false }) }), isError: true };
       return json({
@@ -183,6 +188,23 @@ export function buildServer(user) {
     async ({ ref: r }) => {
       const p = ownedProject(user, r);
       return json({ project: projectView(p, { withSecrets: p.status === 'ready' }) });
+    }
+  );
+
+  reg(
+    'get_agent_prompt',
+    {
+      title: 'Get AI integration prompt',
+      description:
+        'Complete integration instructions for a project with every key filled in: env values, SDK setup, schema + row-level security, auth, database, storage, edge functions, realtime and security rules. Follow it to wire Mojobase into the current codebase.',
+      inputSchema: { ref },
+      annotations: readOnly,
+    },
+    async ({ ref: r }) => {
+      const p = ownedProject(user, r);
+      if (p.status !== 'ready')
+        throw new ServiceError(409, `Project is ${p.status}, not ready yet.`);
+      return { content: [{ type: 'text', text: agentPrompt(p) }] };
     }
   );
 

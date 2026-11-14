@@ -25,6 +25,7 @@ import {
   ServiceError,
 } from './projects-service.js';
 import { jwks, signProjectAuthorization } from './signing.js';
+import { agentPrompt } from './agent-prompt.js';
 import { handleMcp } from './mcp.js';
 import {
   provision,
@@ -281,6 +282,14 @@ app.post(
     res.json({ code: signProjectAuthorization({ userId: req.user.id, projectRef: p.ref }) });
   }
 );
+
+// Ready-to-paste instructions (with every key filled in) for a coding agent.
+app.get('/api/projects/:ref/agent-prompt', requireUser, (req, res) => {
+  const p = ownProject(req, res);
+  if (!p) return;
+  if (p.status !== 'ready') return res.status(409).json({ error: `Project is ${p.status}` });
+  res.json({ prompt: agentPrompt(p) });
+});
 
 app.patch(
   '/api/projects/:ref',

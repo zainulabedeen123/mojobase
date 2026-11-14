@@ -141,6 +141,7 @@ function renderTopbar(project) {
   $top.replaceChildren(
     h('div', { class: 'top-left' }, menuBtn, ...crumbs),
     h('div', { class: 'top-right' },
+      project && project.status === 'ready' && h('button', { class: 'btn small', type: 'button', title: 'Copy a ready-to-paste prompt for your AI coding agent', onclick: () => openAgentPrompt(project.ref) }, icon('agents', 14), 'AI prompt'),
       project && project.status === 'ready' && h('button', { class: 'btn small primary', type: 'button', onclick: () => openConnect(project.ref) }, icon('plug', 14), 'Connect'),
       h('a', { class: 'top-link', href: FEEDBACK_URL, target: '_blank', rel: 'noopener' }, 'Feedback'),
       h('a', { class: 'top-link', href: DOCS_URL, target: '_blank', rel: 'noopener' }, 'Docs'),
@@ -214,7 +215,7 @@ function newProjectDialog() {
     h('form', {
       onsubmit: async (e) => {
         e.preventDefault(); err.textContent = ''; create.disabled = true;
-        try { const { project } = await api('/projects', { method: 'POST', body: { name: name.value } }); dlg.close(); go(`/projects/${project.ref}`); }
+        try { const { project } = await api('/projects', { method: 'POST', body: { name: name.value } }); dlg.close(); go(`/projects/${project.ref}?welcome=1`); }
         catch (ex) { err.textContent = ex.message; } finally { create.disabled = false; }
       },
     },
@@ -470,6 +471,7 @@ function projectCard(p) {
   if (p.status === 'ready') actions.push(menuItem('Pause project', { onclick: () => pauseResume(p, true) }));
   if (p.status === 'paused') actions.push(menuItem('Resume project', { onclick: () => pauseResume(p, false) }));
   if (p.status === 'failed') actions.push(menuItem('Retry setup', { onclick: async () => { await api(`/projects/${p.ref}/retry`, { method: 'POST', body: {} }); render(); } }));
+  if (p.status === 'ready') actions.push(menuItem('Copy AI agent prompt', { onclick: () => copyAgentPrompt(p.ref) }));
   actions.push(menuItem('Copy project URL', { onclick: async () => { await navigator.clipboard.writeText(p.apiUrl); toast('Project URL copied'); } }));
   if (!BUSY.has(p.status)) actions.push(h('div', { class: 'menu-sep' }), menuItem('Delete project', { danger: true, onclick: () => confirmDelete(p) }));
   return h('div', { class: 'project-card' },
@@ -600,7 +602,7 @@ function projectFor(ref) {
 
 function statusPanel(p) {
   const busyText = {
-    provisioning: ['Setting up your backend…', 'Creating the Postgres database, auth, storage and functions. This takes about a minute.'],
+    provisioning: ['Setting up your backend…', 'Creating the Postgres database, auth, storage and functions. This takes about a minute — then you get a ready-to-paste prompt for your AI coding agent.'],
     resuming: ['Resuming project…', 'Starting the database and services again.'],
     restoring: ['Restoring backup…', 'The project is offline while the database is replaced. A safety backup was taken first.'],
     deleting: ['Deleting project…', 'Removing the database, files and functions.'],
@@ -633,6 +635,10 @@ function projectPage(ref, sub) {
   });
   frame.addEventListener('load', () => sendProjectInfo());
   Object.assign(bridge, { ref, frame, origin });
+  if (new URLSearchParams(location.search).get('welcome') === '1') {
+    history.replaceState({}, '', location.pathname);
+    setTimeout(() => openAgentPrompt(ref, { welcome: true }), 0);
+  }
   return frame;
 }
 
@@ -708,6 +714,43 @@ window.addEventListener('message', (e) => {
   }
 });
 
+// ---------------------------------------------------------------- AI agent prompt
+async function copyText(text, label) {
+  try { await navigator.clipboard.writeText(text); toast(`${label} copied`); }
+  catch { toast('Copy failed — select the text and copy it manually'); }
+}
+async function copyAgentPrompt(ref) {
+  try { const { prompt } = await api(`/projects/${ref}/agent-prompt`); await copyText(prompt, 'AI agent prompt'); }
+  catch (e) { toast(e.message); }
+}
+async function openAgentPrompt(ref, { welcome = false } = {}) {
+  let prompt;
+  try { ({ prompt } = await api(`/projects/${ref}/agent-prompt`)); } catch (e) { return toast(e.message); }
+  const p = projectFor(ref);
+  const copyBtn = h('button', { class: 'btn primary', type: 'button', onclick: async () => {
+    await copyText(prompt, 'AI agent prompt'); copyBtn.textContent = 'Copied ✓'; setTimeout(() => (copyBtn.textContent = 'Copy prompt'), 2000);
+  } }, 'Copy prompt');
+  const download = () => {
+    const url = URL.createObjectURL(new Blob([prompt], { type: 'text/markdown' }));
+    const a = h('a', { href: url, download: `mojobase-${p?.name || ref}-integration.md` });
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const dlg = h('dialog', { class: 'prompt-dialog', onclose: () => dlg.remove() },
+    h('div', { class: 'drawer-head' },
+      h('div', { class: 'row', style: 'gap:10px' }, h('span', { class: 'agent-icon small' }, icon('agents', 16)),
+        h('h2', {}, welcome ? `${p?.name || 'Your project'} is ready` : 'AI agent prompt')),
+      h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, icon('x', 18))),
+    h('div', { class: 'drawer-body' },
+      h('p', {}, 'Paste this into Claude Code, Cursor, Codex, Windsurf, Copilot or any coding agent, inside your app\'s folder. It has everything needed to integrate this project: URL, keys, connection string, schema and security setup, auth, database, storage, functions and realtime.'),
+      h('div', { class: 'warn-note' }, 'It contains your secret API key and database password. Paste it only into tools you trust, and don\'t commit it.'),
+      h('div', { class: 'row', style: 'margin:14px 0' }, copyBtn,
+        h('button', { class: 'btn', type: 'button', onclick: download }, 'Download .md'),
+        welcome && h('button', { class: 'btn', type: 'button', onclick: () => dlg.close() }, 'Open dashboard')),
+      h('pre', { class: 'snippet prompt-text', tabindex: '0' }, prompt)));
+  document.body.append(dlg);
+  dlg.showModal();
+}
+
 // ---------------------------------------------------------------- Connect drawer
 async function openConnect(ref) {
   const { project: p } = await api(`/projects/${ref}`);
@@ -717,6 +760,9 @@ async function openConnect(ref) {
   const dlg = h('dialog', { class: 'drawer', onclose: () => dlg.remove() },
     h('div', { class: 'drawer-head' }, h('h2', {}, `Connect to ${p.name}`), h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, icon('x', 18))),
     h('div', { class: 'drawer-body' },
+      section('AI agent prompt', h('p', { class: 'muted' }, 'One prompt with every key and step your coding agent needs to integrate this project.'),
+        h('div', { class: 'row' }, h('button', { class: 'btn small primary', type: 'button', onclick: () => copyAgentPrompt(ref) }, 'Copy prompt'),
+          h('button', { class: 'btn small', type: 'button', onclick: () => { dlg.close(); openAgentPrompt(ref); } }, 'View prompt'))),
       section('Quick start', h('p', { class: 'muted' }, 'Use the SDK or REST API from your app, or connect straight to Postgres with an ORM.'), snippets(p)),
       section('API', copyField('Project URL', p.apiUrl), copyField('Anon key (safe for browsers and apps)', p.anonKey), copyField('API key (secret — server-side only)', p.apiKey, { secret: true })),
       section('Database',

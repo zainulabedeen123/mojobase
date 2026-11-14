@@ -171,7 +171,9 @@ export function composeFile(ref, port, secrets) {
         },
         volumes: ['storage:/insforge-storage', 'logs:/insforge-logs'],
         mem_limit: config.mem.app,
-        networks: ['internal', 'edge'],
+        // Edge functions reach their project's API at http://insforge:7130 (the
+        // INSFORGE_INTERNAL_URL secret every project seeds), so keep that name.
+        networks: { internal: { aliases: ['insforge'] }, edge: {} },
       },
       deno: {
         ...hardening,
