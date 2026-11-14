@@ -523,13 +523,11 @@ export async function handleMcp(req, res) {
   const n = (hits.get(user.tokenId) || 0) + 1;
   hits.set(user.tokenId, n);
   if (n > 120) {
-    res
-      .status(429)
-      .json({
-        jsonrpc: '2.0',
-        error: { code: -32000, message: 'Rate limit: 120 requests per minute' },
-        id: null,
-      });
+    res.status(429).json({
+      jsonrpc: '2.0',
+      error: { code: -32000, message: 'Rate limit: 120 requests per minute' },
+      id: null,
+    });
     return;
   }
   if (req.method !== 'POST') {
