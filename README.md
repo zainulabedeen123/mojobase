@@ -40,6 +40,22 @@ projects, and each project gets its own isolated backend at `<ref>.your-domain`,
 a project dashboard and a Postgres connection string (`db.your-domain:<port>`, TLS required).
 See [deploy/platform/README.md](deploy/platform/README.md).
 
+## Use with AI agents (MCP)
+
+Mojobase has a hosted MCP server at `https://mojobase.dev/mcp`. Create an access token on
+your Account page, then connect any MCP client, for example Claude Code:
+
+```bash
+claude mcp add --transport http mojobase https://mojobase.dev/mcp --header "Authorization: Bearer mbp_..."
+```
+
+Agents can then create projects, get keys and connection strings, run SQL (tables, RLS
+policies), inspect tables, create storage buckets, deploy edge functions, list users, take
+backups and read the SDK docs. Tools: `list_projects`, `create_project`, `get_project`,
+`get_integration_guide`, `delete_project`, `backup_project`, `list_backups`, `run_sql`,
+`list_tables`, `get_table_schema`, `list_buckets`, `create_bucket`, `list_functions`,
+`deploy_function`, `delete_function`, `list_users`, `get_docs`.
+
 ## Using it from your apps
 
 Mojobase speaks the InsForge API, so use the InsForge client libraries and point them at your

@@ -347,3 +347,91 @@ test('account deletion needs the password and removes the account', async () => 
     201
   );
 });
+
+test('MCP server: token auth, tools, ownership, revocation', async () => {
+  const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
+  const { StreamableHTTPClientTransport } =
+    await import('@modelcontextprotocol/sdk/client/streamableHttp.js');
+  const connect = async (token) => {
+    const client = new Client({ name: 'test', version: '1.0.0' });
+    await client.connect(
+      new StreamableHTTPClientTransport(new URL(`${BASE}/mcp`), {
+        requestInit: { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+      })
+    );
+    return client;
+  };
+
+  // No token / bad token
+  await assert.rejects(connect(null));
+  await assert.rejects(connect('mbp_not-a-real-token'));
+
+  // Create a token in the console (cookie session), shown once
+  await call('m', 'POST', '/api/signup', { email: 'mcp@example.com', password: 'mcp-user-pass-1' });
+  const created = await call('m', 'POST', '/api/tokens', { name: 'Claude Code' });
+  assert.equal(created.status, 201);
+  assert.match(created.body.token, /^mbp_[A-Za-z0-9_-]{43}$/);
+  const listed = await call('m', 'GET', '/api/tokens');
+  assert.equal(listed.body.tokens.length, 1);
+  assert.equal(listed.body.tokens[0].token, undefined, 'raw token is never listed again');
+  assert.equal(
+    (
+      await call(
+        'm',
+        'POST',
+        '/api/tokens',
+        { name: 'evil' },
+        { Origin: 'https://evil.example.com' }
+      )
+    ).status,
+    403,
+    'tokens cannot be minted cross-origin'
+  );
+
+  const client = await connect(created.body.token);
+  assert.equal(client.getServerVersion().name, 'mojobase');
+  assert.match(client.getInstructions(), /InsForge-compatible/);
+  const { tools } = await client.listTools();
+  const names = tools.map((t) => t.name).sort();
+  for (const n of [
+    'create_project',
+    'list_projects',
+    'get_project',
+    'get_integration_guide',
+    'run_sql',
+    'list_tables',
+    'deploy_function',
+    'create_bucket',
+    'get_docs',
+    'delete_project',
+  ])
+    assert.ok(names.includes(n), `missing tool ${n}`);
+  assert.equal(tools.find((t) => t.name === 'delete_project').annotations.destructiveHint, true);
+  assert.equal(tools.find((t) => t.name === 'list_projects').annotations.readOnlyHint, true);
+
+  const empty = await client.callTool({ name: 'list_projects', arguments: {} });
+  assert.deepEqual(JSON.parse(empty.content[0].text), { projects: [] });
+
+  // Email not confirmed yet: same rule as the website
+  const early = await client.callTool({
+    name: 'create_project',
+    arguments: { name: 'From agent', wait: false },
+  });
+  assert.equal(early.isError, true);
+  assert.match(early.content[0].text, /Confirm your email/);
+
+  // Other users' projects are invisible
+  const others = await call('a', 'GET', '/api/projects');
+  void others;
+  const foreign = await client.callTool({
+    name: 'get_project',
+    arguments: { ref: 'aaaaaaaaaaaaaaaa' },
+  });
+  assert.equal(foreign.isError, true);
+  assert.match(foreign.content[0].text, /Project not found/);
+
+  // Revoked tokens stop working immediately
+  assert.equal((await call('m', 'DELETE', `/api/tokens/${created.body.id}`)).status, 200);
+  await assert.rejects(client.callTool({ name: 'list_projects', arguments: {} }));
+  await client.close().catch(() => {});
+});

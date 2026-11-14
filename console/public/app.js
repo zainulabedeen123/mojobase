@@ -345,10 +345,96 @@ function accountPage() {
         await api('/forgot-password', { method: 'POST', body: { email: me.email } });
         toast('Password reset link sent to your email');
       } }, 'Change password'))),
+    mcpCard(),
     h('div', { class: 'card' },
       h('h2', {}, 'Delete account'),
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Deletes all of your projects and their data, then your account.'),
       h('button', { class: 'btn danger', type: 'button', onclick: () => dlg.showModal() }, 'Delete account'), dlg));
+}
+
+// ---------------------------------------------------------------- AI agents (MCP)
+const MCP_URL = `${location.origin}/mcp`;
+function mcpSetups(token) {
+  return {
+    'Claude Code': `claude mcp add --transport http mojobase ${MCP_URL} \\
+  --header "Authorization: Bearer ${token}"`,
+    'Cursor / Windsurf': `// ~/.cursor/mcp.json  (Windsurf: ~/.codeium/windsurf/mcp_config.json)
+{
+  "mcpServers": {
+    "mojobase": {
+      "url": "${MCP_URL}",
+      "headers": { "Authorization": "Bearer ${token}" }
+    }
+  }
+}`,
+    'VS Code': `// .vscode/mcp.json
+{
+  "servers": {
+    "mojobase": {
+      "type": "http",
+      "url": "${MCP_URL}",
+      "headers": { "Authorization": "Bearer ${token}" }
+    }
+  }
+}`,
+    'Claude Desktop / others': `// For clients that only run local (stdio) servers, bridge with mcp-remote:
+{
+  "mcpServers": {
+    "mojobase": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "${MCP_URL}", "--header", "Authorization: Bearer ${token}"]
+    }
+  }
+}`,
+  };
+}
+function tabbedSnippets(tabs) {
+  const pre = h('pre', { class: 'snippet' });
+  const names = Object.keys(tabs);
+  const buttons = names.map((name, i) => h('button', {
+    type: 'button', role: 'tab', 'aria-selected': i === 0 ? 'true' : 'false',
+    onclick: (e) => { buttons.forEach((b) => b.setAttribute('aria-selected', 'false')); e.currentTarget.setAttribute('aria-selected', 'true'); pre.textContent = tabs[name]; },
+  }, name));
+  pre.textContent = tabs[names[0]];
+  return h('div', {}, h('div', { class: 'tabs', role: 'tablist' }, buttons), pre,
+    h('button', { class: 'btn small', type: 'button', onclick: async () => { await navigator.clipboard.writeText(pre.textContent); toast('Copied'); } }, 'Copy'));
+}
+function mcpCard() {
+  const list = h('div', {});
+  const created = h('div', {});
+  const err = h('div', { class: 'error', role: 'alert' });
+  const name = h('input', { type: 'text', id: 'tokname', maxlength: 40, placeholder: 'e.g. Claude Code on my laptop' });
+  const load = async () => {
+    const { tokens } = await api('/tokens');
+    list.replaceChildren(...(tokens.length ? tokens.map((tk) => h('div', { class: 'copy', style: 'margin-bottom:8px' },
+      h('code', {}, `${tk.name} · mbp_…${tk.hint} · ${tk.last_used_at ? 'last used ' + new Date(tk.last_used_at + 'Z').toLocaleString() : 'never used'}`),
+      h('button', { class: 'btn small danger', type: 'button', onclick: async () => {
+        if (!confirm(`Revoke "${tk.name}"? Agents using it will lose access.`)) return;
+        await api(`/tokens/${tk.id}`, { method: 'DELETE' }); toast('Token revoked'); load();
+      } }, 'Revoke'))) : [h('p', { class: 'muted' }, 'No tokens yet.')]));
+  };
+  const btn = h('button', { class: 'btn primary', type: 'submit' }, 'Create token');
+  const form = h('form', { class: 'row', style: 'align-items:flex-end', onsubmit: async (e) => {
+    e.preventDefault(); err.textContent = ''; btn.disabled = true;
+    try {
+      const { token } = await api('/tokens', { method: 'POST', body: { name: name.value } });
+      name.value = '';
+      created.replaceChildren(h('div', { class: 'card', style: 'background:var(--panel-2)' },
+        h('strong', {}, 'Copy your token now — it won’t be shown again.'),
+        copyField('Access token', token, { secret: true }),
+        h('div', { class: 'k', style: 'font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:8px 0 6px' }, 'Connect your agent'),
+        tabbedSnippets(mcpSetups(token))));
+      load();
+    } catch (ex) { err.textContent = ex.message; } finally { btn.disabled = false; }
+  } }, h('div', { style: 'flex:1;min-width:220px' }, h('label', { for: 'tokname', style: 'margin-top:0' }, 'Token name'), name), btn);
+  load().catch((e) => list.replaceChildren(h('p', { class: 'error' }, e.message)));
+  return h('div', { class: 'card' },
+    h('h2', {}, 'AI agents (MCP)'),
+    h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Connect Claude Code, Cursor, Windsurf, VS Code or any MCP client to Mojobase. Agents can create projects, run SQL, manage storage and functions, and get your connection details. A token has the same access as your account — revoke it any time.'),
+    copyField('MCP server URL', MCP_URL),
+    form, err, created,
+    h('div', { class: 'k', style: 'font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:16px 0 6px' }, 'Your tokens'),
+    list);
 }
 
 // ---------------------------------------------------------------- backups

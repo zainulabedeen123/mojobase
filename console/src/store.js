@@ -34,6 +34,18 @@ db.exec(`
     expires_at INTEGER NOT NULL
   );
 `);
+db.exec(`
+  -- Personal access tokens for the MCP server and API. Only a hash is stored.
+  CREATE TABLE IF NOT EXISTS access_tokens (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    hash TEXT NOT NULL UNIQUE,
+    hint TEXT NOT NULL,              -- last 4 characters, to tell tokens apart
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_used_at TEXT
+  );
+`);
 // Additive migrations for databases created by earlier versions.
 const userColumns = new Set(
   db
@@ -148,4 +160,37 @@ export const projects = {
     ),
   exists: (ref) =>
     !!db.prepare("SELECT 1 FROM projects WHERE ref = ? AND status != 'deleting'").get(ref),
+};
+
+export const accessTokens = {
+  // Returns the raw token once; only its hash is kept.
+  create(userId, name) {
+    const raw = `mbp_${crypto.randomBytes(32).toString('base64url')}`;
+    const id = crypto.randomUUID();
+    db.prepare(
+      'INSERT INTO access_tokens (id, user_id, name, hash, hint) VALUES (?, ?, ?, ?, ?)'
+    ).run(id, userId, name, sha256(raw), raw.slice(-4));
+    return { id, token: raw };
+  },
+  forUser: (userId) =>
+    db
+      .prepare(
+        'SELECT id, name, hint, created_at, last_used_at FROM access_tokens WHERE user_id = ? ORDER BY created_at DESC'
+      )
+      .all(userId),
+  countForUser: (userId) =>
+    db.prepare('SELECT COUNT(*) AS n FROM access_tokens WHERE user_id = ?').get(userId).n,
+  revoke: (userId, id) =>
+    db.prepare('DELETE FROM access_tokens WHERE user_id = ? AND id = ?').run(userId, id).changes,
+  // Resolves a raw token to its user (or null) and records when it was last used.
+  authenticate(raw) {
+    if (typeof raw !== 'string' || !raw.startsWith('mbp_')) return null;
+    const row = db.prepare('SELECT id, user_id FROM access_tokens WHERE hash = ?').get(sha256(raw));
+    if (!row) return null;
+    db.prepare("UPDATE access_tokens SET last_used_at = datetime('now') WHERE id = ?").run(row.id);
+    const user = users.byId(row.user_id);
+    return user
+      ? { id: user.id, email: user.email, emailVerified: !!user.email_verified, tokenId: row.id }
+      : null;
+  },
 };

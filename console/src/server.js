@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { config } from './config.js';
-import { users, projects, tokens } from './store.js';
+import { users, projects, tokens, accessTokens } from './store.js';
 import { emails } from './mailer.js';
 import {
   hashPassword,
@@ -15,14 +15,9 @@ import {
   sameOrigin,
   rateLimit,
 } from './auth.js';
-import {
-  newRef,
-  newSecrets,
-  projectHost,
-  connectionString,
-  DB_USER,
-  DB_NAME,
-} from './project-stack.js';
+import { projectHost } from './project-stack.js';
+import { projectView, createProject, ServiceError } from './projects-service.js';
+import { handleMcp } from './mcp.js';
 import {
   provision,
   destroy,
@@ -38,7 +33,21 @@ import {
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 'loopback, uniquelocal');
-app.use(express.json({ limit: '16kb' }));
+// MCP endpoint: bearer-token auth only (no cookies), so cross-origin use is fine.
+app.use('/mcp', (req, res, next) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers':
+      'Authorization, Content-Type, Accept, Mcp-Protocol-Version, Mcp-Session-Id',
+    'Access-Control-Allow-Methods': 'POST, GET, DELETE, OPTIONS',
+  });
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+app.use('/mcp', express.json({ limit: '2mb' }));
+app.all('/mcp', (req, res, next) => handleMcp(req, res).catch(next));
+
+app.use('/api', express.json({ limit: '16kb' }));
 app.use((_req, res, next) => {
   res.set({
     'X-Content-Type-Options': 'nosniff',
@@ -180,34 +189,7 @@ app.get('/api/me', (req, res) => {
 });
 
 // ------------------------------------------------------------------ projects
-function view(p, { withSecrets }) {
-  const base = {
-    ref: p.ref,
-    name: p.name,
-    status: p.status,
-    error: p.error,
-    createdAt: p.created_at,
-    apiUrl: `https://${projectHost(p.ref)}`,
-    dashboardUrl: `https://${projectHost(p.ref)}/dashboard`,
-  };
-  if (!withSecrets) return base;
-  const s = p.secrets;
-  return {
-    ...base,
-    anonKey: s.anonKey,
-    apiKey: s.apiKey,
-    dashboard: { username: 'admin', password: s.adminPassword },
-    database: {
-      host: config.dbHost,
-      port: p.db_port,
-      database: DB_NAME,
-      user: DB_USER,
-      password: s.dbPassword,
-      sslmode: 'require',
-      connectionString: connectionString(p.ref, p.db_port, s),
-    },
-  };
-}
+const view = projectView;
 function ownProject(req, res) {
   const p = projects.get(req.params.ref);
   if (!p || p.owner_id !== req.user.id) {
@@ -226,43 +208,32 @@ app.get('/api/projects', requireUser, (req, res) => {
 });
 
 app.post('/api/projects', requireUser, rateLimit({ windowMs: 60_000, max: 5 }), (req, res) => {
-  if (config.requireVerifiedEmail && !req.user.emailVerified)
-    return res.status(403).json({ error: 'Confirm your email address before creating a project' });
+  try {
+    const p = createProject(req.user, req.body?.name);
+    res.status(202).json({ project: view(p, { withSecrets: false }) });
+  } catch (e) {
+    if (e instanceof ServiceError) return res.status(e.status).json({ error: e.message });
+    throw e;
+  }
+});
+
+// ------------------------------------------------------------------ access tokens (MCP / API)
+app.get('/api/tokens', requireUser, (req, res) => {
+  res.json({ tokens: accessTokens.forUser(req.user.id) });
+});
+app.post('/api/tokens', requireUser, rateLimit({ windowMs: 60_000, max: 10 }), (req, res) => {
   const name = String(req.body?.name || '').trim();
   if (!NAME.test(name))
-    return res
-      .status(400)
-      .json({ error: 'Name must be 1–40 letters, numbers, spaces, dots, dashes or underscores' });
-  if (projects.countForOwner(req.user.id) >= config.maxProjectsPerUser) {
-    return res
-      .status(403)
-      .json({ error: `Each account can have up to ${config.maxProjectsPerUser} projects` });
-  }
-  if (projects.count() >= config.maxProjects) {
-    return res
-      .status(503)
-      .json({ error: 'Mojobase is at capacity right now. Please try again later.' });
-  }
-  if (!dbCertReady())
-    return res
-      .status(503)
-      .json({ error: 'The platform is still starting up. Try again in a minute.' });
-  const used = projects.usedPorts();
-  let dbPort = config.dbPortMin;
-  while (used.has(dbPort) && dbPort <= config.dbPortMax) dbPort++;
-  if (dbPort > config.dbPortMax) return res.status(503).json({ error: 'No database ports left' });
-  let ref = newRef();
-  while (projects.get(ref)) ref = newRef();
-  projects.insert({
-    ref,
-    ownerId: req.user.id,
-    name,
-    status: 'provisioning',
-    dbPort,
-    secrets: newSecrets(),
-  });
-  provision(ref);
-  res.status(202).json({ project: view(projects.get(ref), { withSecrets: false }) });
+    return res.status(400).json({ error: 'Give the token a name (1–40 characters)' });
+  if (accessTokens.countForUser(req.user.id) >= 10)
+    return res.status(403).json({ error: 'You can have up to 10 access tokens' });
+  const { id, token } = accessTokens.create(req.user.id, name);
+  res.status(201).json({ id, name, token });
+});
+app.delete('/api/tokens/:id', requireUser, (req, res) => {
+  if (!accessTokens.revoke(req.user.id, req.params.id))
+    return res.status(404).json({ error: 'Token not found' });
+  res.json({ ok: true });
 });
 
 app.get('/api/projects/:ref', requireUser, (req, res) => {
