@@ -104,7 +104,7 @@ async function projectsPage() {
       : h('div', { class: 'card empty' },
           h('h2', {}, 'Create your first project'),
           h('p', { class: 'muted' }, 'Each project gets its own Postgres database, auth, storage, edge functions, realtime, API keys and a connection string.'),
-          h('button', { class: 'btn primary', onclick: () => dlg.showModal() }, '+ New project')),
+          h('button', { class: 'btn primary', disabled: needsVerify, onclick: () => dlg.showModal() }, '+ New project')),
     dlg,
   );
 }
