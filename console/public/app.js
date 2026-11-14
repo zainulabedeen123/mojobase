@@ -1,7 +1,10 @@
 // Mojobase console — a small dependency-free SPA. All user data is inserted
 // with textContent (never innerHTML) so nothing a user types can run as markup.
 const $app = document.getElementById('app');
-const $nav = document.getElementById('nav');
+const $side = document.getElementById('sidebar');
+const $shell = document.getElementById('shell');
+let sideProjects = [];
+let lastPath = '';
 let me = null;
 let pollTimer = null;
 
@@ -36,16 +39,67 @@ function go(path) { history.pushState({}, '', path); render(); }
 window.addEventListener('popstate', render);
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[data-link]');
-  if (a && !e.metaKey && !e.ctrlKey) { e.preventDefault(); go(a.getAttribute('href')); }
+  if (a && !e.metaKey && !e.ctrlKey) {
+    e.preventDefault();
+    const url = new URL(a.getAttribute('href'), location.origin);
+    if (url.pathname === location.pathname && url.hash) {
+      history.pushState({}, '', url.pathname + url.hash);
+      document.getElementById(url.hash.slice(1))?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      $side.classList.remove('open');
+      renderSidebar();
+      return;
+    }
+    go(url.pathname + url.hash);
+  }
 });
 
-function renderNav() {
-  $nav.replaceChildren(
-    ...(me
-      ? [h('a', { href: '/account', 'data-link': true, class: 'muted', style: 'text-decoration:none' }, me.email), h('button', { class: 'btn small', onclick: logout }, 'Sign out')]
-      : [])
+// ---------------------------------------------------------------- sidebar
+const dot = (status) => h('span', { class: `dot ${status}`, title: status });
+function navLink(href, label, { active = false, external = false, icon = '' } = {}) {
+  return h('a', {
+    href, class: `nav-item${active ? ' active' : ''}`,
+    ...(external ? { target: '_blank', rel: 'noopener' } : { 'data-link': true }),
+    'aria-current': active ? 'page' : undefined,
+  }, icon && h('span', { class: 'nav-icon', 'aria-hidden': 'true' }, icon), h('span', { class: 'nav-label' }, label), external && h('span', { class: 'nav-ext', 'aria-hidden': 'true' }, '↗'));
+}
+function renderSidebar() {
+  $shell.classList.toggle('signed-out', !me);
+  if (!me) { $side.replaceChildren(); return; }
+  const path = location.pathname;
+  const m = path.match(/^\/projects\/([a-z0-9]+)$/);
+  const currentRef = m && m[1];
+  const current = sideProjects.find((p) => p.ref === currentRef);
+  const section = location.hash.slice(1);
+  const menuBtn = h('button', { class: 'btn small menu-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'sidenav',
+    onclick: () => { const open = $side.classList.toggle('open'); menuBtn.setAttribute('aria-expanded', String(open)); } }, 'Menu');
+  $side.replaceChildren(
+    h('div', { class: 'side-top' },
+      h('a', { href: '/', 'data-link': true, class: 'brand', 'aria-label': 'Mojobase home' },
+        h('img', { src: '/logo-dark.svg', alt: 'Mojobase', class: 'logo logo-dark' }),
+        h('img', { src: '/logo-light.svg', alt: 'Mojobase', class: 'logo logo-light' })),
+      menuBtn),
+    h('nav', { id: 'sidenav', class: 'side-nav' },
+      navLink('/', 'Projects', { active: path === '/', icon: '▦' }),
+      sideProjects.length > 0 && h('div', { class: 'nav-group' },
+        h('div', { class: 'nav-heading' }, 'Your projects'),
+        sideProjects.map((p) => h('div', {},
+          h('a', { href: `/projects/${p.ref}`, 'data-link': true, class: `nav-item project-item${p.ref === currentRef ? ' active' : ''}`, 'aria-current': p.ref === currentRef ? 'page' : undefined },
+            dot(p.status), h('span', { class: 'nav-label' }, p.name)),
+          p.ref === currentRef && current?.status === 'ready' && h('div', { class: 'nav-sub' },
+            [['connect', 'Connect'], ['api', 'API keys'], ['database', 'Database'], ['backups', 'Backups'], ['dashboard', 'Dashboard'], ['danger', 'Settings']]
+              .map(([id, label]) => navLink(`/projects/${p.ref}#${id}`, label, { active: section === id })),
+            navLink(`${p.apiUrl}/dashboard`, 'Open dashboard', { external: true }))))),
+      h('div', { class: 'nav-group' },
+        h('div', { class: 'nav-heading' }, 'Account'),
+        navLink('/account#mcp', 'AI agents (MCP)', { active: path === '/account' && section === 'mcp', icon: '✦' }),
+        navLink('/account', 'Account', { active: path === '/account' && section !== 'mcp', icon: '◉' }),
+        navLink('https://github.com/zainulabedeen123/mojobase#readme', 'Docs', { external: true, icon: '❐' }))),
+    h('div', { class: 'side-user' },
+      h('div', { class: 'side-email', title: me.email }, me.email),
+      h('button', { class: 'btn small', type: 'button', onclick: logout }, 'Sign out')),
   );
 }
+
 async function logout() { await api('/logout', { method: 'POST', body: {} }); me = null; go('/login'); }
 
 // ---------------------------------------------------------------- auth pages
@@ -208,16 +262,16 @@ async function projectPage(ref) {
 
   const db = p.database;
   return h('div', {}, header,
-    h('div', { class: 'card' },
+    h('div', { class: 'card', id: 'connect' },
       h('h2', {}, 'Connect your app'),
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Use the SDK or REST API from your app, or connect straight to Postgres with the connection string (Prisma, Drizzle, psql, TablePlus…).'),
       snippets(p)),
-    h('div', { class: 'card' },
+    h('div', { class: 'card', id: 'api' },
       h('h2', {}, 'API'),
       copyField('Project URL', p.apiUrl),
       copyField('Anon key (safe for browsers and apps)', p.anonKey),
       copyField('API key (secret — server-side only, full admin access)', p.apiKey, { secret: true })),
-    h('div', { class: 'card' },
+    h('div', { class: 'card', id: 'database' },
       h('h2', {}, 'Database'),
       copyField('Connection string', db.connectionString, { secret: true, display: db.connectionString }),
       h('div', { class: 'grid' },
@@ -225,13 +279,13 @@ async function projectPage(ref) {
         copyField('Database', db.database), copyField('User', db.user),
         copyField('Password', db.password, { secret: true })),
       h('p', { class: 'muted', style: 'font-size:13px;margin:0' }, 'TLS is required (sslmode=require). The connection uses a project admin role: full access to your tables, no server superuser.')),
-    h('div', { class: 'card' },
+    h('div', { class: 'card', id: 'dashboard' },
       h('h2', {}, 'Project dashboard'),
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Tables, auth users, storage, functions, logs and SQL editor for this project.'),
       h('div', { class: 'grid' }, copyField('Username', p.dashboard.username), copyField('Password', p.dashboard.password, { secret: true })),
       h('a', { class: 'btn primary', href: p.dashboardUrl, target: '_blank', rel: 'noopener' }, 'Open dashboard ↗')),
     backupsCard(p),
-    h('div', { class: 'card' },
+    h('div', { class: 'card', id: 'danger' },
       h('h2', {}, 'Danger zone'),
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Deleting a project permanently removes its database, users, files and functions.'),
       deleteButton(p)));
@@ -428,7 +482,7 @@ function mcpCard() {
     } catch (ex) { err.textContent = ex.message; } finally { btn.disabled = false; }
   } }, h('div', { style: 'flex:1;min-width:220px' }, h('label', { for: 'tokname', style: 'margin-top:0' }, 'Token name'), name), btn);
   load().catch((e) => list.replaceChildren(h('p', { class: 'error' }, e.message)));
-  return h('div', { class: 'card' },
+  return h('div', { class: 'card', id: 'mcp' },
     h('h2', {}, 'AI agents (MCP)'),
     h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Connect Claude Code, Cursor, Windsurf, VS Code or any MCP client to Mojobase. Agents can create projects, run SQL, manage storage and functions, and get your connection details. A token has the same access as your account — revoke it any time.'),
     copyField('MCP server URL', MCP_URL),
@@ -457,7 +511,7 @@ function backupsCard(p) {
     catch (e) { toast(e.message); } finally { btn.disabled = false; btn.textContent = 'Back up now'; }
   } }, 'Back up now');
   load().catch((e) => list.replaceChildren(h('p', { class: 'error' }, e.message)));
-  return h('div', { class: 'card' },
+  return h('div', { class: 'card', id: 'backups' },
     h('div', { class: 'row spread' }, h('h2', { style: 'margin:0' }, 'Backups'), btn),
     h('div', { style: 'margin-top:12px' }, list),
     h('p', { class: 'muted', style: 'font-size:13px;margin:8px 0 0' }, 'Backups are PostgreSQL custom-format dumps (pg_restore). Uploaded files in storage are not included yet.'));
@@ -472,7 +526,8 @@ async function render() {
       const r = await api('/me');
       me = r.user ? { ...r.user, limits: r.limits, requireVerifiedEmail: r.requireVerifiedEmail } : null;
     }
-    renderNav();
+    if (me) sideProjects = (await api('/projects')).projects;
+    renderSidebar();
     // Pages reached from email links work whether or not you are signed in.
     if (path === '/verify') { $app.replaceChildren(await verifyPage()); return; }
     if (path === '/reset-password') { $app.replaceChildren(resetPage()); return; }
@@ -484,6 +539,13 @@ async function render() {
     }
     const m = path.match(/^\/projects\/([a-z0-9]+)$/);
     $app.replaceChildren(path === '/account' ? accountPage() : m ? await projectPage(m[1]) : await projectsPage());
+    $side.classList.remove('open');
+    const target = location.hash && document.getElementById(location.hash.slice(1));
+    // Jump to #section links; otherwise start new pages at the top (but keep the
+    // scroll position when the same page re-renders, e.g. while polling).
+    if (target) target.scrollIntoView({ block: 'start' });
+    else if (lastPath !== path) window.scrollTo(0, 0);
+    lastPath = path;
     if (path === '/login' || path === '/signup') history.replaceState({}, '', '/');
   } catch (e) {
     if (e.status === 401) { me = null; return render(); }
