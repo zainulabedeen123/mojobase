@@ -33,6 +33,13 @@ docker compose -f deploy/docker-compose/docker-compose.yml --env-file .env up -d
 
 Open `http://localhost:7130` and sign in with the admin credentials from `.env`.
 
+## Run it as a platform (many projects)
+
+`deploy/platform/` runs the Mojobase console at your domain: people sign up, create
+projects, and each project gets its own isolated backend at `<ref>.your-domain`, API keys,
+a project dashboard and a Postgres connection string (`db.your-domain:<port>`, TLS required).
+See [deploy/platform/README.md](deploy/platform/README.md).
+
 ## Using it from your apps
 
 Mojobase speaks the InsForge API, so use the InsForge client libraries and point them at your

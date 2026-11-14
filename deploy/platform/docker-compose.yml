@@ -1,0 +1,92 @@
+services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    restart: unless-stopped
+    command:
+      - sh
+      - -c
+      - |
+        cat > /etc/caddy/Caddyfile <<'CADDY'
+        # Mojobase edge router.
+        #   mojobase.dev            -> console (sign up, create projects)
+        #   api.mojobase.dev        -> the original single instance
+        #   db.mojobase.dev         -> holds the TLS certificate every project's Postgres uses
+        #   <ref>.mojobase.dev      -> that project's backend (certificate issued on demand,
+        #                              only for projects the console confirms exist)
+        {
+        	on_demand_tls {
+        		ask http://console:3001/tls-ask
+        	}
+        }
+
+        mojobase.dev, www.mojobase.dev {
+        	encode zstd gzip
+        	reverse_proxy console:3000
+        }
+
+        api.mojobase.dev {
+        	encode zstd gzip
+        	reverse_proxy insforge-insforge-1:7130
+        }
+
+        db.mojobase.dev {
+        	respond "Mojobase database endpoint. Connect with the connection string from your project page." 200
+        }
+
+        https:// {
+        	tls {
+        		on_demand
+        	}
+        	encode zstd gzip
+        	reverse_proxy mb-{http.request.host.labels.2}-app:7130
+        }
+        CADDY
+        exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - edge
+    depends_on:
+      - console
+
+  console:
+    image: ghcr.io/zainulabedeen123/mojobase-console:${MOJOBASE_TAG:?set MOJOBASE_TAG}
+    restart: unless-stopped
+    environment:
+      CONSOLE_SECRET: ${CONSOLE_SECRET:?set CONSOLE_SECRET}
+      CONSOLE_ORIGIN: https://mojobase.dev
+      BASE_DOMAIN: mojobase.dev
+      DB_HOST: db.mojobase.dev
+      PROJECT_APP_IMAGE: ghcr.io/zainulabedeen123/mojobase:${MOJOBASE_TAG}
+      PROJECT_POSTGRES_IMAGE: ghcr.io/zainulabedeen123/mojobase-postgres:${MOJOBASE_TAG}
+      PROJECT_DENO_IMAGE: ghcr.io/zainulabedeen123/mojobase-deno:${MOJOBASE_TAG}
+      EDGE_NETWORK: mojobase-edge
+      CADDY_DATA_VOLUME: mojobase-caddy-data
+      DB_PORT_MIN: "15400"
+      DB_PORT_MAX: "15499"
+      MAX_PROJECTS: "8"
+      MAX_PROJECTS_PER_USER: "2"
+    volumes:
+      - console-data:/data
+      - caddy-data:/caddy-data:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - edge
+
+volumes:
+  caddy-data:
+    name: mojobase-caddy-data
+  caddy-config:
+    name: mojobase-caddy-config
+  console-data:
+    name: mojobase-console-data
+
+networks:
+  edge:
+    external: true
+    name: mojobase-edge
