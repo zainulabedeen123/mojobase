@@ -1,0 +1,68 @@
+---
+title: "Products"
+description: "Every Mojobase project includes a Postgres database, auth, storage, realtime, edge functions, a model gateway, messaging, payments and compute."
+---
+
+Each Mojobase project ships the same set of products. They share one REST surface, one JWT-based identity, the same row-level security policies, and the same SDK.
+
+<CardGroup cols={2}>
+  <Card title="Database" icon="database" href="/core-concepts/database/overview">
+    Postgres for every project. Migrations, backups, pgvector, and a direct TLS connection string.
+    Every table becomes a REST and SDK surface.
+  </Card>
+
+  <Card title="Authentication" icon="shield" href="/core-concepts/authentication/overview">
+    Email and password, passwordless, OAuth, and mobile logins through one
+    API. JWT sessions and row-level security.
+  </Card>
+
+  <Card title="Storage" icon="folder" href="/core-concepts/storage/overview">
+    File storage with buckets, signed URLs and row-level policies.
+  </Card>
+
+  <Card title="Realtime" icon="tower-broadcast" href="/core-concepts/realtime/overview">
+    Database changes, broadcast, and presence over one WebSocket connection.
+    Subscriptions and client publish use RLS checks.
+  </Card>
+
+  <Card title="Edge Functions" icon="bolt" href="/core-concepts/functions/overview">
+    Deno-powered serverless TypeScript with first-class schedules. Invoke
+    on-demand, chain from DB triggers, or run on cron.
+  </Card>
+
+  <Card title="Model Gateway" icon="sparkles" href="/core-concepts/ai/overview">
+    OpenRouter-backed chat, streaming, and embeddings through one
+    OpenAI-compatible API, with usage tracking.
+  </Card>
+
+  <Card title="Messaging" icon="envelope" href="/core-concepts/messaging/overview">
+    Transactional email through your own SMTP provider.
+  </Card>
+
+  <Card title="Payments" icon="credit-card" href="/core-concepts/payments/overview">
+    Stripe and Razorpay checkout, subscriptions, and customer portal flows.
+  </Card>
+
+  <Card title="Compute" icon="server" href="/core-concepts/compute/overview">
+    Long-running services beyond the edge-function model.
+  </Card>
+</CardGroup>
+
+## How they fit together
+
+A user signed in through **Auth** gets a JWT that the **Database**, **Storage**, **Realtime**, and
+**Edge Functions** layers all use to enforce the same access rules.
+
+<CardGroup cols={3}>
+  <Card title="MCP server" icon="plug" href="/mcp-setup">
+    Let agents create projects, read schemas, run SQL, and deploy functions.
+  </Card>
+
+  <Card title="SDKs" icon="code" href="/sdks/typescript/overview">
+    TypeScript, Swift, Kotlin, and a plain REST API.
+  </Card>
+
+  <Card title="Direct Postgres" icon="database" href="/core-concepts/database/connection-string">
+    Connect psql, Prisma or Drizzle over TLS.
+  </Card>
+</CardGroup>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storage SDK Reference · Mojobase Docs</title>
+<meta name="description" content="Upload, download, list, and delete files in S3-compatible Mojobase buckets from browser or Node.js apps with the Mojobase TypeScript SDK storage client.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link active" href="/docs/sdks/typescript/storage" aria-current="page">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">TypeScript</div>
+      <h1>Storage SDK Reference</h1>
+      <p class="lead">Upload, download, list, and delete files in S3-compatible Mojobase buckets from browser or Node.js apps with the Mojobase TypeScript SDK storage client.</p>
+      <div class="prose">
+<h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true" tabindex="-1">#</a>Installation</h2>
+<div class="tabs code-group" data-tabs><div class="tab-list" role="tablist"><button class="tab" type="button" role="tab" id="g1-tab-0" aria-controls="g1-panel-0" aria-selected="true" tabindex="0">npm</button><button class="tab" type="button" role="tab" id="g1-tab-1" aria-controls="g1-panel-1" aria-selected="false" tabindex="-1">yarn</button><button class="tab" type="button" role="tab" id="g1-tab-2" aria-controls="g1-panel-2" aria-selected="false" tabindex="-1">pnpm</button></div><div class="tab-panel" role="tabpanel" id="g1-panel-0" aria-labelledby="g1-tab-0"><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">npm install @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-1" aria-labelledby="g1-tab-1" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">yarn add @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-2" aria-labelledby="g1-tab-2" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">pnpm add @mojobase/sdk@latest</code></pre></div></div></div><div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">import</span> { createClient } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@mojobase/sdk&#x27;</span>;
+
+<span class="hljs-keyword">const</span> mojobase = <span class="hljs-title function_">createClient</span>({
+  <span class="hljs-attr">baseUrl</span>: <span class="hljs-string">&#x27;https://your-project.mojobase.dev&#x27;</span>,
+  <span class="hljs-attr">anonKey</span>: <span class="hljs-string">&#x27;your-anon-key&#x27;</span>  <span class="hljs-comment">// Optional: for public/unauthenticated requests</span>
+});</code></pre></div><p>Find the project URL and anon key in your project&#39;s <strong>Connect</strong> panel in the <a href="https://mojobase.dev" rel="noopener" target="_blank">Mojobase console</a>.</p>
+<h2 id="from"><a class="anchor" href="#from" aria-hidden="true" tabindex="-1">#</a>from()</h2>
+<p>Get a bucket instance for file operations.</p>
+<h3 id="parameters"><a class="anchor" href="#parameters" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>bucketName</code> (string, required) - Name of the storage bucket</li>
+</ul>
+<h3 id="returns"><a class="anchor" href="#returns" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-title class_">StorageBucket</span> <span class="hljs-comment">// Instance with upload, uploadAuto, download, remove methods</span></code></pre></div><h3 id="example"><a class="anchor" href="#example" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> bucket = mojobase.<span class="hljs-property">storage</span>.<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;images&#x27;</span>)</code></pre></div><hr>
+<h2 id="upload"><a class="anchor" href="#upload" aria-hidden="true" tabindex="-1">#</a>upload()</h2>
+<p>Upload a file with a specific path/key.</p>
+<h3 id="parameters-1"><a class="anchor" href="#parameters-1" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>path</code> (string, required) - The object key/path for the file</li>
+<li><code>file</code> (File | Blob, required) - File or Blob to upload</li>
+</ul>
+<h3 id="returns-1"><a class="anchor" href="#returns-1" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">bucket</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">size</span>: <span class="hljs-built_in">number</span>,
+    <span class="hljs-attr">mimeType</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">uploadedAt</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span>
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Uploading to an existing key replaces the current object. Use <code>uploadAuto()</code> when you want a unique key generated automatically.</p>
+</div></div><h3 id="example-1"><a class="anchor" href="#example-1" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">storage</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;images&#x27;</span>)
+  .<span class="hljs-title function_">upload</span>(<span class="hljs-string">&#x27;posts/post-123/cover.jpg&#x27;</span>, fileObject)
+
+<span class="hljs-comment">// Save BOTH url and key to database</span>
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">database</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)
+  .<span class="hljs-title function_">update</span>({
+    <span class="hljs-attr">image_url</span>: data.<span class="hljs-property">url</span>,
+    <span class="hljs-attr">image_key</span>: data.<span class="hljs-property">key</span>  <span class="hljs-comment">// Save key for download/delete operations</span>
+  })
+  .<span class="hljs-title function_">eq</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;post-123&#x27;</span>)</code></pre></div><h3 id="output"><a class="anchor" href="#output" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;bucket&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;images&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts/post-123/cover.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">45678</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;mimeType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;uploadedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/storage/buckets/images/objects/posts%2Fpost-123%2Fcover.jpg&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="uploadauto"><a class="anchor" href="#uploadauto" aria-hidden="true" tabindex="-1">#</a>uploadAuto()</h2>
+<p>Upload a file with auto-generated unique key.</p>
+<h3 id="parameters-2"><a class="anchor" href="#parameters-2" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>file</code> (File | Blob, required) - File or Blob to upload</li>
+</ul>
+<h3 id="returns-2"><a class="anchor" href="#returns-2" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">bucket</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">size</span>: <span class="hljs-built_in">number</span>,
+    <span class="hljs-attr">mimeType</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">uploadedAt</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span>
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-2"><a class="anchor" href="#example-2" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">storage</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;uploads&#x27;</span>)
+  .<span class="hljs-title function_">uploadAuto</span>(fileObject)
+
+<span class="hljs-comment">// Save url and key to database</span>
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">database</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)
+  .<span class="hljs-title function_">insert</span>([{
+    <span class="hljs-attr">image_url</span>: data.<span class="hljs-property">url</span>,
+    <span class="hljs-attr">image_key</span>: data.<span class="hljs-property">key</span>,  <span class="hljs-comment">// Save key for download/delete operations</span>
+    <span class="hljs-attr">user_id</span>: userId
+  }])</code></pre></div><h3 id="output-1"><a class="anchor" href="#output-1" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;bucket&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uploads&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;myfile-1705315200000-abc123.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">45678</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;mimeType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;uploadedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/storage/buckets/uploads/objects/myfile-1705315200000-abc123.jpg&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="download"><a class="anchor" href="#download" aria-hidden="true" tabindex="-1">#</a>download()</h2>
+<p>Download a file as Blob.</p>
+<h3 id="parameters-3"><a class="anchor" href="#parameters-3" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>path</code> (string, required) - The object key/path to download</li>
+</ul>
+<h3 id="returns-3"><a class="anchor" href="#returns-3" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: <span class="hljs-title class_">Blob</span> | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-3"><a class="anchor" href="#example-3" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-comment">// 1. Get the file key from your database</span>
+<span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: post, <span class="hljs-attr">error</span>: dbError } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">database</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)
+  .<span class="hljs-title function_">select</span>(<span class="hljs-string">&#x27;image_key&#x27;</span>)
+  .<span class="hljs-title function_">eq</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;post-123&#x27;</span>)
+  .<span class="hljs-title function_">single</span>()
+
+<span class="hljs-comment">// 2. Download the file using the key</span>
+<span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: blob, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">storage</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;images&#x27;</span>)
+  .<span class="hljs-title function_">download</span>(post.<span class="hljs-property">image_key</span>)
+
+<span class="hljs-comment">// 3. Create download link or display image</span>
+<span class="hljs-keyword">const</span> url = <span class="hljs-variable constant_">URL</span>.<span class="hljs-title function_">createObjectURL</span>(blob)
+<span class="hljs-keyword">const</span> img = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;img&#x27;</span>)
+img.<span class="hljs-property">src</span> = url</code></pre></div><h3 id="output-2"><a class="anchor" href="#output-2" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Blob { size: 45678, type: &#x27;image/jpeg&#x27; }&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="remove"><a class="anchor" href="#remove" aria-hidden="true" tabindex="-1">#</a>remove()</h2>
+<p>Delete a file from storage.</p>
+<h3 id="parameters-4"><a class="anchor" href="#parameters-4" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>path</code> (string, required) - The object key/path to delete</li>
+</ul>
+<h3 id="returns-4"><a class="anchor" href="#returns-4" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span> } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-4"><a class="anchor" href="#example-4" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-comment">// 1. Get the file key from your database</span>
+<span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: post, <span class="hljs-attr">error</span>: dbError } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">database</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)
+  .<span class="hljs-title function_">select</span>(<span class="hljs-string">&#x27;image_key&#x27;</span>)
+  .<span class="hljs-title function_">eq</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;post-123&#x27;</span>)
+  .<span class="hljs-title function_">single</span>()
+
+<span class="hljs-comment">// 2. Delete the file from storage</span>
+<span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">storage</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;images&#x27;</span>)
+  .<span class="hljs-title function_">remove</span>(post.<span class="hljs-property">image_key</span>)
+
+<span class="hljs-comment">// 3. Clear the database reference</span>
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">database</span>
+  .<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)
+  .<span class="hljs-title function_">update</span>({ <span class="hljs-attr">image_url</span>: <span class="hljs-literal">null</span>, <span class="hljs-attr">image_key</span>: <span class="hljs-literal">null</span> })
+  .<span class="hljs-title function_">eq</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;post-123&#x27;</span>)</code></pre></div><h3 id="output-3"><a class="anchor" href="#output-3" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Object deleted successfully&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/typescript/auth"><span class="pager-dir">Previous</span><span class="pager-title">Authentication SDK Reference</span></a>
+        <a class="pager-link next" href="/docs/sdks/typescript/functions"><span class="pager-dir">Next</span><span class="pager-title">Functions SDK Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#installation">Installation</a></li><li class="toc-d2"><a href="#from">from()</a></li><li class="toc-d3"><a href="#parameters">Parameters</a></li><li class="toc-d3"><a href="#returns">Returns</a></li><li class="toc-d3"><a href="#example">Example</a></li><li class="toc-d2"><a href="#upload">upload()</a></li><li class="toc-d3"><a href="#parameters-1">Parameters</a></li><li class="toc-d3"><a href="#returns-1">Returns</a></li><li class="toc-d3"><a href="#example-1">Example</a></li><li class="toc-d3"><a href="#output">Output</a></li><li class="toc-d2"><a href="#uploadauto">uploadAuto()</a></li><li class="toc-d3"><a href="#parameters-2">Parameters</a></li><li class="toc-d3"><a href="#returns-2">Returns</a></li><li class="toc-d3"><a href="#example-2">Example</a></li><li class="toc-d3"><a href="#output-1">Output</a></li><li class="toc-d2"><a href="#download">download()</a></li><li class="toc-d3"><a href="#parameters-3">Parameters</a></li><li class="toc-d3"><a href="#returns-3">Returns</a></li><li class="toc-d3"><a href="#example-3">Example</a></li><li class="toc-d3"><a href="#output-2">Output</a></li><li class="toc-d2"><a href="#remove">remove()</a></li><li class="toc-d3"><a href="#parameters-4">Parameters</a></li><li class="toc-d3"><a href="#returns-4">Returns</a></li><li class="toc-d3"><a href="#example-4">Example</a></li><li class="toc-d3"><a href="#output-3">Output</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

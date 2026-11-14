@@ -1,0 +1,31 @@
+---
+title: "Database backups and restore"
+description: "Create manual database backups, schedule automatic ones, and restore snapshots of your Mojobase project's database."
+---
+
+Back up and restore your database from **Database → Backup & Restore** in the project dashboard. Backups cover the database only — files uploaded to Storage are not included.
+
+<Frame caption="Database → Backup & Restore in the project dashboard.">
+  <img src="/images/dashboard-backup-restore.png" alt="Dashboard Backup & Restore page showing manual backups and scheduled backups with a Restore button" />
+</Frame>
+
+## Manual backups
+
+Click **Create a Backup** before a risky change and optionally give it a name. The backup runs in the background; the list shows its status, size, and creation time, and lets you rename or delete it. Manual backups are kept until you delete them.
+
+Your coding agent can do the same through the hosted [MCP server](/mcp-setup) with the `backup_project` and `list_backups` tools.
+
+## Scheduled backups
+
+Turn on scheduled backups from the **Database Settings** dialog (the gear icon in the Database sidebar, or **Configure** on the Backup & Restore page): pick a frequency — presets from every 6 hours to weekly, or any 5-field cron expression, evaluated in UTC and limited to at most one backup per hour — and a retention period. Expired scheduled backups are deleted automatically after each successful run.
+
+## Restore
+
+Click **Restore** next to any completed backup — scheduled or manual. Restoring replaces the current database with the backup: the project goes offline during the restore, you lose data created after the backup, and you can't undo the action. Take a manual backup first if you're unsure.
+
+You can also keep your own copies with `pg_dump` over the [connection string](/core-concepts/database/connection-string).
+
+## More resources
+
+- [Database overview](/core-concepts/database/overview) for how the database is exposed to your app.
+- [Database migrations](/core-concepts/database/migrations) to version schema changes instead of restoring to undo them.

@@ -1,0 +1,16 @@
+{
+  "name": "mojobase-docs-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static generator for the Mojobase documentation served at /docs.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "devDependencies": {
+    "highlight.js": "11.11.1",
+    "js-yaml": "4.1.0",
+    "marked": "15.0.12"
+  }
+}

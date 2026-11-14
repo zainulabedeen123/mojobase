@@ -1,0 +1,155 @@
+---
+title: "Set up MCP for Claude Code, Cursor, Windsurf, VS Code and more"
+sidebarTitle: "MCP setup"
+description: "Connect your AI coding agent to Mojobase over MCP, either account-wide with the hosted server or per project with @mojobase/install."
+---
+
+## Overview
+
+The Model Context Protocol (MCP) gives your AI coding assistant direct access to your Mojobase backend: it can create projects, read schemas, run SQL, manage storage buckets and deploy edge functions. There are two ways to connect:
+
+| | Hosted MCP | Per-project MCP |
+|---|---|---|
+| Endpoint | `https://mojobase.dev/mcp` (HTTP) | Local server installed by `npx @mojobase/install` |
+| Credential | Personal access token `mbp_...` | The project's admin API key `ik_...` |
+| Scope | Every project in your account | One project |
+| Best for | Creating projects and managing several backends | Working inside a single app's repo |
+
+<Note>
+  Both credentials have full access. A personal access token can do anything your account can, and an API key bypasses row-level security on its project. Keep them out of your repo, and revoke tokens at [mojobase.dev/agents](https://mojobase.dev/agents) when you no longer need them.
+</Note>
+
+## Hosted MCP (recommended)
+
+<Steps>
+  <Step title="Create a personal access token">
+    Open [mojobase.dev/agents](https://mojobase.dev/agents) and create a token. It starts with `mbp_` and is shown only once, so copy it now.
+  </Step>
+  <Step title="Add the server to your client">
+    Pick your client below and replace `mbp_your_token` with your token.
+  </Step>
+  <Step title="Restart and verify">
+    Restart the client, then ask your agent: *"List my Mojobase projects."*
+  </Step>
+</Steps>
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http mojobase https://mojobase.dev/mcp \
+      --header "Authorization: Bearer mbp_your_token"
+    ```
+  </Tab>
+  <Tab title="Cursor / Windsurf">
+    Add to `~/.cursor/mcp.json` (Windsurf: `~/.codeium/windsurf/mcp_config.json`):
+
+    ```json
+    {
+      "mcpServers": {
+        "mojobase": {
+          "url": "https://mojobase.dev/mcp",
+          "headers": { "Authorization": "Bearer mbp_your_token" }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="VS Code">
+    Add to `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "mojobase": {
+          "type": "http",
+          "url": "https://mojobase.dev/mcp",
+          "headers": { "Authorization": "Bearer mbp_your_token" }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Claude Desktop / others">
+    For clients that only run local (stdio) servers, bridge with `mcp-remote`:
+
+    ```json
+    {
+      "mcpServers": {
+        "mojobase": {
+          "command": "npx",
+          "args": ["-y", "mcp-remote", "https://mojobase.dev/mcp", "--header", "Authorization: Bearer mbp_your_token"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Hosted MCP tools
+
+| Area | Tools |
+|---|---|
+| Projects | `list_projects`, `create_project`, `get_project`, `delete_project` |
+| Integration | `get_agent_prompt`, `get_integration_guide`, `get_docs` |
+| Database | `run_sql`, `list_tables`, `get_table_schema` |
+| Backups | `backup_project`, `list_backups` |
+| Storage | `list_buckets`, `create_bucket` |
+| Functions | `list_functions`, `deploy_function`, `delete_function` |
+| Auth | `list_users` |
+
+## Per-project MCP
+
+Install the project-scoped server with your project's API key and URL, both from the project's **Connect** panel:
+
+```bash
+npx @mojobase/install --client claude-code \
+  --env API_KEY=ik_your_api_key \
+  --env API_BASE_URL=https://your-project.mojobase.dev
+```
+
+Use the `--client` value for your tool: `claude-code`, `cursor`, `windsurf`, `vscode`, `codex`, and others. The installer writes the MCP configuration for that client; restart the client afterwards.
+
+If you prefer to configure it by hand, the equivalent MCP JSON is:
+
+```json
+{
+  "mcpServers": {
+    "mojobase": {
+      "command": "npx",
+      "args": ["-y", "@mojobase/mcp@latest"],
+      "env": {
+        "API_KEY": "ik_your_api_key",
+        "API_BASE_URL": "https://your-project.mojobase.dev"
+      }
+    }
+  }
+}
+```
+
+The per-project server exposes tools such as `get-backend-metadata`, `get-table-schema`, `run-raw-sql`, `bulk-upsert`, storage bucket management, edge function create/update/delete, `get-anon-key` and `fetch-docs`.
+
+<Note>
+  Raw SQL runs through the same [strict-mode endpoint](/sdks/rest/database) as the REST API: admin key required, system tables and `auth.users` blocked.
+</Note>
+
+### Verify installation
+
+Start a new chat in your client and send:
+
+```
+I'm using Mojobase as my backend. Use the Mojobase MCP server to read my backend metadata and list my tables.
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Changes not taking effect">
+    Most AI clients require a full restart after MCP config changes. Close and reopen the application.
+  </Accordion>
+  <Accordion title="401 Unauthorized">
+    For the hosted server, check that the `Authorization` header is `Bearer mbp_...` and that the token has not been revoked. For the per-project server, check that `API_KEY` is the project's `ik_...` key (not the anon key) and that `API_BASE_URL` matches the project URL.
+  </Accordion>
+  <Accordion title="My client does not support HTTP MCP servers">
+    Use the `mcp-remote` bridge shown in the **Claude Desktop / others** tab, or install the per-project server, which runs locally over stdio.
+  </Accordion>
+</AccordionGroup>

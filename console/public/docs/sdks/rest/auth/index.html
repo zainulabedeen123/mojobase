@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentication API Reference · Mojobase Docs</title>
+<meta name="description" content="REST endpoints for user sign-up, password and email OTP sign-in, email verification, password reset, OAuth, and session management.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link active" href="/docs/sdks/rest/auth" aria-current="page">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">REST API</div>
+      <h1>Authentication API Reference</h1>
+      <p class="lead">REST endpoints for user sign-up, password and email OTP sign-in, email verification, password reset, OAuth, and session management.</p>
+      <div class="prose">
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true" tabindex="-1">#</a>Overview</h2>
+<p>The Authentication API provides endpoints for user registration, login, email verification, password reset, and OAuth integration.</p>
+<h2 id="headers"><a class="anchor" href="#headers" aria-hidden="true" tabindex="-1">#</a>Headers</h2>
+<p>For authenticated function invocations:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">Authorization: Bearer your-jwt-token-or-anon-key
+Content-Type: application/json</code></pre></div><p>For admin endpoints:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">Authorization: Bearer admin-jwt-token-Or-API-Key
+Content-Type: application/json</code></pre></div><hr>
+<h2 id="register-user"><a class="anchor" href="#register-user" aria-hidden="true" tabindex="-1">#</a>Register User</h2>
+<p>Create a new user account.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/users</code></pre></div><h3 id="query-parameters"><a class="anchor" href="#query-parameters" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h3 id="request-body"><a class="anchor" href="#request-body" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>password</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Password (must meet configured requirements)</td>
+</tr><tr><td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>User display name</td>
+</tr><tr><td><code>redirectTo</code></td>
+<td>string</td>
+<td>No</td>
+<td>Used for link-based email verification. The email link always opens a Mojobase backend endpoint first; after the token is verified, Mojobase redirects the browser to this URL with the verification result. Required when <code>verifyEmailMethod</code> is <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s sign-in page.</td>
+</tr></tbody></table></div>
+<h3 id="example-web-client"><a class="anchor" href="#example-web-client" aria-hidden="true" tabindex="-1">#</a>Example (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/users&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;password&quot;: &quot;securepassword123&quot;,
+    &quot;name&quot;: &quot;John Doe&quot;,
+    &quot;redirectTo&quot;: &quot;http://localhost:3000/sign-in&quot;
+  }&#x27;</span></code></pre></div><h3 id="example-non-web-client"><a class="anchor" href="#example-non-web-client" aria-hidden="true" tabindex="-1">#</a>Example (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/users?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;password&quot;: &quot;securepassword123&quot;,
+    &quot;name&quot;: &quot;John Doe&quot;,
+    &quot;redirectTo&quot;: &quot;myapp://sign-in&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-web-client"><a class="anchor" href="#response-web-client" aria-hidden="true" tabindex="-1">#</a>Response (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;abc123...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireEmailVerification&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="response-non-web-client"><a class="anchor" href="#response-non-web-client" aria-hidden="true" tabindex="-1">#</a>Response (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireEmailVerification&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><ul>
+<li>For <strong>web clients</strong>: A <code>csrfToken</code> is returned and the refresh token is stored in an httpOnly cookie.</li>
+<li>For <strong>non-web clients</strong> (<code>mobile</code>, <code>desktop</code>, <code>server</code>): A <code>refreshToken</code> is returned directly in the response. Store it securely in your client or server runtime.</li>
+<li>Use <strong><code>server</code></strong> for trusted server-side callers such as SSR apps, BFFs, or CLIs that cannot rely on browser cookies.</li>
+<li>If <code>requireEmailVerification</code> is <code>true</code>, <code>accessToken</code> and tokens will be <code>null</code> and the user must verify their email before logging in.</li>
+</ul>
+</div></div><hr>
+<h2 id="sign-in"><a class="anchor" href="#sign-in" aria-hidden="true" tabindex="-1">#</a>Sign In</h2>
+<p>Authenticate user and get access token.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/sessions</code></pre></div><h3 id="query-parameters-1"><a class="anchor" href="#query-parameters-1" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h3 id="request-body-1"><a class="anchor" href="#request-body-1" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>method</code></td>
+<td>string</td>
+<td>No</td>
+<td>Authentication method. Defaults to <code>password</code>; use <code>otp</code> for email OTP sign-in</td>
+</tr><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>password</code></td>
+<td>string</td>
+<td>For password</td>
+<td>User password</td>
+</tr></tbody></table></div>
+<h3 id="example-web-client-1"><a class="anchor" href="#example-web-client-1" aria-hidden="true" tabindex="-1">#</a>Example (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/sessions&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;method&quot;: &quot;password&quot;,
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;password&quot;: &quot;securepassword123&quot;
+  }&#x27;</span></code></pre></div><h3 id="example-non-web-client-1"><a class="anchor" href="#example-non-web-client-1" aria-hidden="true" tabindex="-1">#</a>Example (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/sessions?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;method&quot;: &quot;password&quot;,
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;password&quot;: &quot;securepassword123&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-web-client-1"><a class="anchor" href="#response-web-client-1" aria-hidden="true" tabindex="-1">#</a>Response (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;abc123...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="response-non-web-client-1"><a class="anchor" href="#response-non-web-client-1" aria-hidden="true" tabindex="-1">#</a>Response (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><ul>
+<li>For <strong>web clients</strong>: A <code>csrfToken</code> is returned and the refresh token is stored in an httpOnly cookie. Include the <code>csrfToken</code> in the <code>X-CSRF-Token</code> header when calling <code>/api/auth/refresh</code>.</li>
+<li>For <strong>non-web clients</strong> (<code>mobile</code>, <code>desktop</code>, <code>server</code>): A <code>refreshToken</code> is returned directly. Store it securely and include it in the request body when calling <code>/api/auth/refresh</code>.</li>
+</ul>
+</div></div><hr>
+<h2 id="email-otp-sign-in"><a class="anchor" href="#email-otp-sign-in" aria-hidden="true" tabindex="-1">#</a>Email OTP Sign In</h2>
+<p>Use this passwordless flow when a user should sign in with a 6-digit code sent to their email address.</p>
+<h3 id="send-a-sign-in-code"><a class="anchor" href="#send-a-sign-in-code" aria-hidden="true" tabindex="-1">#</a>Send a Sign-In Code</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/send-otp</code></pre></div><h4 id="request-body-2"><a class="anchor" href="#request-body-2" aria-hidden="true" tabindex="-1">#</a>Request Body</h4>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Email address that receives the sign-in code</td>
+</tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/send-otp&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{ &quot;email&quot;: &quot;user@example.com&quot; }&#x27;</span></code></pre></div><p>The endpoint returns <code>202 Accepted</code> with a generic message. It does not reveal whether the email already belongs to a user.</p>
+<h3 id="create-a-session-with-the-code"><a class="anchor" href="#create-a-session-with-the-code" aria-hidden="true" tabindex="-1">#</a>Create a Session with the Code</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/sessions</code></pre></div><h4 id="query-parameters-2"><a class="anchor" href="#query-parameters-2" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h4>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h4 id="request-body-3"><a class="anchor" href="#request-body-3" aria-hidden="true" tabindex="-1">#</a>Request Body</h4>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>method</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Must be <code>otp</code></td>
+</tr><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Email address that received the code</td>
+</tr><tr><td><code>otp</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>6-digit sign-in code</td>
+</tr><tr><td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Profile name used only if verification creates a new user</td>
+</tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/sessions?client_type=server&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;method&quot;: &quot;otp&quot;,
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;otp&quot;: &quot;123456&quot;,
+    &quot;name&quot;: &quot;Ada Lovelace&quot;
+  }&#x27;</span></code></pre></div><p>The response uses the same session shape and <code>client_type</code> behavior as password sign-in.</p>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><ul>
+<li>Codes expire after 5 minutes, can be used once, and are consumed after three failed attempts.</li>
+<li>Mojobase does not create a user when the code is sent. If the email is new, a verified passwordless user is created only after successful verification.</li>
+<li>Verifying a code for an existing unverified account clears its stored password, leaving the account passwordless.</li>
+<li>If public signups are disabled, an existing user can still sign in. A valid code for an unknown email is consumed and returns HTTP 403.</li>
+</ul>
+</div></div><hr>
+<h2 id="refresh-token"><a class="anchor" href="#refresh-token" aria-hidden="true" tabindex="-1">#</a>Refresh Token</h2>
+<p>Refresh access token using refresh token.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/refresh</code></pre></div><h3 id="query-parameters-3"><a class="anchor" href="#query-parameters-3" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h3 id="headers-web-client"><a class="anchor" href="#headers-web-client" aria-hidden="true" tabindex="-1">#</a>Headers (Web Client)</h3>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>X-CSRF-Token</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>CSRF token received from login/register response</td>
+</tr></tbody></table></div>
+<h3 id="request-body-non-web-client"><a class="anchor" href="#request-body-non-web-client" aria-hidden="true" tabindex="-1">#</a>Request Body (Non-Web Client)</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>refreshToken</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Refresh token received from login/register response</td>
+</tr></tbody></table></div>
+<h3 id="example-web-client-2"><a class="anchor" href="#example-web-client-2" aria-hidden="true" tabindex="-1">#</a>Example (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/refresh&quot;</span> \
+  -H <span class="hljs-string">&quot;X-CSRF-Token: abc123...&quot;</span> \
+  --cookie <span class="hljs-string">&quot;refresh_token=...&quot;</span></code></pre></div><h3 id="example-non-web-client-2"><a class="anchor" href="#example-non-web-client-2" aria-hidden="true" tabindex="-1">#</a>Example (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/refresh?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;refreshToken&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-web-client-2"><a class="anchor" href="#response-web-client-2" aria-hidden="true" tabindex="-1">#</a>Response (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;def456...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="response-non-web-client-2"><a class="anchor" href="#response-non-web-client-2" aria-hidden="true" tabindex="-1">#</a>Response (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Token rotation is implemented for security:</p>
+<ul>
+<li><strong>Web clients</strong>: Each refresh returns a new <code>csrfToken</code> that must be used for subsequent refresh requests.</li>
+<li><strong>Non-web clients</strong> (<code>mobile</code>, <code>desktop</code>, <code>server</code>): Each refresh returns a new <code>refreshToken</code>. You must persist this new token and use it for the next refresh. Update the <code>accessToken</code> in memory.</li>
+</ul>
+</div></div><hr>
+<h2 id="logout"><a class="anchor" href="#logout" aria-hidden="true" tabindex="-1">#</a>Logout</h2>
+<p>Logout and clear refresh token cookie.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/logout</code></pre></div><h3 id="example"><a class="anchor" href="#example" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/logout&quot;</span></code></pre></div><h3 id="response"><a class="anchor" href="#response" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Logged out successfully&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="get-current-user"><a class="anchor" href="#get-current-user" aria-hidden="true" tabindex="-1">#</a>Get Current User</h2>
+<p>Get the currently authenticated user&#39;s info from JWT token.</p>
+<p>This REST endpoint does not refresh expired access tokens by itself.</p>
+<ul>
+<li>For raw REST clients, call <code>POST /api/auth/refresh</code> when needed.</li>
+<li>For browser apps using the TypeScript SDK, call <code>auth.getCurrentUser()</code> during startup. The SDK will use the httpOnly refresh cookie automatically when it can refresh the session.</li>
+<li>This automatic refresh behavior is browser-only. Server, mobile, and other non-browser clients should refresh explicitly.</li>
+</ul>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/sessions/current</code></pre></div><h3 id="example-1"><a class="anchor" href="#example-1" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/sessions/current&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span></code></pre></div><h3 id="response-1"><a class="anchor" href="#response-1" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;authenticated&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="update-profile"><a class="anchor" href="#update-profile" aria-hidden="true" tabindex="-1">#</a>Update Profile</h2>
+<p>Update the current user&#39;s profile.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">PATCH /api/auth/profiles/current</code></pre></div><h3 id="request-body-4"><a class="anchor" href="#request-body-4" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>profile</code></td>
+<td>object</td>
+<td>Yes</td>
+<td>Profile data (name, avatar_url, custom fields)</td>
+</tr></tbody></table></div>
+<h3 id="example-2"><a class="anchor" href="#example-2" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X PATCH <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/profiles/current&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;profile&quot;: {
+      &quot;name&quot;: &quot;John Doe&quot;,
+      &quot;avatar_url&quot;: &quot;https://example.com/avatar.jpg&quot;
+    }
+  }&#x27;</span></code></pre></div><h3 id="response-2"><a class="anchor" href="#response-2" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="get-user-profile"><a class="anchor" href="#get-user-profile" aria-hidden="true" tabindex="-1">#</a>Get User Profile</h2>
+<p>Get public profile information for a user by ID.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/profiles/{userId}</code></pre></div><h3 id="example-3"><a class="anchor" href="#example-3" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/profiles/123e4567-e89b-12d3-a456-426614174000&quot;</span></code></pre></div><h3 id="response-3"><a class="anchor" href="#response-3" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="email-verification"><a class="anchor" href="#email-verification" aria-hidden="true" tabindex="-1">#</a>Email Verification</h2>
+<h3 id="send-verification-email"><a class="anchor" href="#send-verification-email" aria-hidden="true" tabindex="-1">#</a>Send Verification Email</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/send-verification</code></pre></div><h3 id="request-body-5"><a class="anchor" href="#request-body-5" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>redirectTo</code></td>
+<td>string</td>
+<td>No</td>
+<td>Used for link-based email verification. The email link always opens a Mojobase backend endpoint first; after the token is verified, Mojobase redirects the browser to this URL with the verification result. Required when <code>verifyEmailMethod</code> is <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s sign-in page.</td>
+</tr></tbody></table></div>
+<h3 id="example-4"><a class="anchor" href="#example-4" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/send-verification&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;redirectTo&quot;: &quot;http://localhost:3000/sign-in&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-4"><a class="anchor" href="#response-4" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;If your email is registered, we have sent you a verification code/link.&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="verify-email"><a class="anchor" href="#verify-email" aria-hidden="true" tabindex="-1">#</a>Verify Email</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/verify</code></pre></div><h3 id="query-parameters-4"><a class="anchor" href="#query-parameters-4" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h3 id="request-body-6"><a class="anchor" href="#request-body-6" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>otp</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>6-digit verification code</td>
+</tr></tbody></table></div>
+<p>For link-based verification, email clicks use:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/email/verify-link?token=...</code></pre></div><p>That browser-oriented GET flow verifies the token on the backend and redirects to the stored <code>redirectTo</code> URL. <code>POST /api/auth/email/verify</code> is the JSON API for 6-digit code submission.</p>
+<p>Handle the browser redirect like this:</p>
+<ul>
+<li>Success: <code>?insforge_status=success&amp;insforge_type=verify_email</code></li>
+<li>Error: <code>?insforge_status=error&amp;insforge_type=verify_email&amp;insforge_error=...</code></li>
+<li><code>insforge_status</code>: Result of the browser link flow. For verification, values are <code>success</code> or <code>error</code>.</li>
+<li><code>insforge_type</code>: Flow identifier. For verification links this is always <code>verify_email</code>.</li>
+<li><code>insforge_error</code>: Present only when <code>insforge_status=error</code>. Human-readable error message for display or logging.</li>
+<li>Recommended handling: use your sign-in page as <code>redirectTo</code>. When <code>insforge_status=success</code>, show a confirmation message and ask the user to sign in with their email and password.</li>
+<li>If <code>redirectTo</code> is not allowlisted, Mojobase returns a <code>400</code> error whose message includes the rejected URL and whose <code>nextActions</code> tells you to add it to <code>allowedRedirectUrls</code>.</li>
+</ul>
+<h3 id="example-web-client-3"><a class="anchor" href="#example-web-client-3" aria-hidden="true" tabindex="-1">#</a>Example (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/verify&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;otp&quot;: &quot;123456&quot;
+  }&#x27;</span></code></pre></div><h3 id="example-non-web-client-3"><a class="anchor" href="#example-non-web-client-3" aria-hidden="true" tabindex="-1">#</a>Example (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/verify?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;otp&quot;: &quot;123456&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-web-client-3"><a class="anchor" href="#response-web-client-3" aria-hidden="true" tabindex="-1">#</a>Response (Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;abc123...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="response-non-web-client-3"><a class="anchor" href="#response-non-web-client-3" aria-hidden="true" tabindex="-1">#</a>Response (Non-Web Client)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="password-reset"><a class="anchor" href="#password-reset" aria-hidden="true" tabindex="-1">#</a>Password Reset</h2>
+<h3 id="send-reset-email"><a class="anchor" href="#send-reset-email" aria-hidden="true" tabindex="-1">#</a>Send Reset Email</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/send-reset-password</code></pre></div><h3 id="request-body-7"><a class="anchor" href="#request-body-7" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>redirectTo</code></td>
+<td>string</td>
+<td>No</td>
+<td>Used for link-based password reset. The email link always opens a Mojobase backend endpoint first; Mojobase then redirects the browser to this URL with the reset <code>token</code> in the query string so your app can render its own reset-password page. Required when <code>resetPasswordMethod</code> is <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s dedicated reset-password page.</td>
+</tr></tbody></table></div>
+<h3 id="example-5"><a class="anchor" href="#example-5" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/send-reset-password&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;redirectTo&quot;: &quot;http://localhost:3000/reset-password&quot;
+  }&#x27;</span></code></pre></div><h3 id="exchange-code-for-token-code-method-only"><a class="anchor" href="#exchange-code-for-token-code-method-only" aria-hidden="true" tabindex="-1">#</a>Exchange Code for Token (Code Method Only)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/exchange-reset-password-token</code></pre></div><h3 id="request-body-8"><a class="anchor" href="#request-body-8" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>email</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>User email address</td>
+</tr><tr><td><code>code</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>6-digit code from email</td>
+</tr></tbody></table></div>
+<h3 id="example-6"><a class="anchor" href="#example-6" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/exchange-reset-password-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;code&quot;: &quot;123456&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-5"><a class="anchor" href="#response-5" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;abc123...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;expiresAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T11:00:00Z&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="reset-password"><a class="anchor" href="#reset-password" aria-hidden="true" tabindex="-1">#</a>Reset Password</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/email/reset-password</code></pre></div><p>For link-based password reset, email clicks use:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/email/reset-password-link?token=...</code></pre></div><p>That browser-oriented GET flow validates the token on the backend and redirects to the stored <code>redirectTo</code> URL with the reset token in the query string. <code>POST /api/auth/email/reset-password</code> remains the JSON API that accepts the new password.</p>
+<p>Handle the browser redirect like this:</p>
+<ul>
+<li>Ready to reset: <code>?token=...&amp;insforge_status=ready&amp;insforge_type=reset_password</code></li>
+<li>Error: <code>?insforge_status=error&amp;insforge_type=reset_password&amp;insforge_error=...</code></li>
+<li><code>token</code>: Present only when <code>insforge_status=ready</code>. Pass this value to <code>POST /api/auth/email/reset-password</code> as <code>otp</code>.</li>
+<li><code>insforge_status</code>: Result of the browser link flow. For reset links, values are <code>ready</code> or <code>error</code>.</li>
+<li><code>insforge_type</code>: Flow identifier. For reset links this is always <code>reset_password</code>.</li>
+<li><code>insforge_error</code>: Present only when <code>insforge_status=error</code>. Human-readable error message for display or logging.</li>
+<li>Your app should only render the reset-password form when <code>insforge_status=ready</code> and <code>token</code> is present.</li>
+</ul>
+<h3 id="request-body-9"><a class="anchor" href="#request-body-9" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>newPassword</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>New password</td>
+</tr><tr><td><code>otp</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Reset token from either the code exchange endpoint or the magic link URL</td>
+</tr></tbody></table></div>
+<h3 id="example-7"><a class="anchor" href="#example-7" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/email/reset-password&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;newPassword&quot;: &quot;newSecurePassword123&quot;,
+    &quot;otp&quot;: &quot;abc123...&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-6"><a class="anchor" href="#response-6" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Password reset successfully&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="native-id-token-sign-in"><a class="anchor" href="#native-id-token-sign-in" aria-hidden="true" tabindex="-1">#</a>Native ID Token Sign-In</h2>
+<p>Exchange an ID token from Google or Apple&#39;s native AuthenticationServices framework for an
+Mojobase session:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/id-token?client_type=mobile</code></pre></div><h3 id="query-parameters-5"><a class="anchor" href="#query-parameters-5" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td><code>web</code> | <code>mobile</code> | <code>desktop</code> | <code>server</code></td>
+<td>No</td>
+<td>Defaults to <code>web</code>. Controls whether the refresh token is set as a cookie or returned in the response body.</td>
+</tr></tbody></table></div>
+<h3 id="request-body-10"><a class="anchor" href="#request-body-10" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>provider</code></td>
+<td><code>google</code> | <code>apple</code></td>
+<td>Yes</td>
+<td>Native identity provider that issued the token.</td>
+</tr><tr><td><code>token</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Raw provider ID token. For Apple, use <code>identityToken</code> from <code>ASAuthorizationAppleIDCredential</code>.</td>
+</tr><tr><td><code>nonce</code></td>
+<td>string</td>
+<td>Apple only</td>
+<td>Original raw nonce, 1–255 characters. It is hashed without normalization and must match Apple&#39;s signed <code>nonce</code> claim.</td>
+</tr><tr><td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Apple first-authorization display name, 1–100 characters. Apple may only provide this value once.</td>
+</tr></tbody></table></div>
+<p>For native Sign in with Apple, generate a high-entropy raw nonce and attach its lowercase
+SHA-256 hex digest to the <code>ASAuthorizationAppleIDRequest</code>. Send the original raw nonce with the
+returned identity token. Mojobase hashes it before comparing it with Apple&#39;s signed <code>nonce</code>
+claim. If Apple returns a name on first authorization, send the display name in the same request;
+later authorizations may omit it.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/id-token?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;provider&quot;: &quot;apple&quot;,
+    &quot;token&quot;: &quot;APPLE_IDENTITY_TOKEN&quot;,
+    &quot;nonce&quot;: &quot;ORIGINAL_RAW_NONCE&quot;,
+    &quot;name&quot;: &quot;Optional First Sign-In Name&quot;
+  }&#x27;</span></code></pre></div><p>Mojobase verifies Apple&#39;s signature, issuer, expiry, subject, nonce, and token audience. The
+audience is selected exclusively from the project&#39;s Apple OAuth configuration; the sign-in
+request cannot override it. Configure the native App ID (normally the iOS bundle identifier) in
+<code>nativeClientIds</code> while retaining <code>clientId</code> for the browser/service OAuth client when needed:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X PUT <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/oauth/apple/config&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer ADMIN_ACCESS_TOKEN&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;nativeClientIds&quot;: [&quot;com.example.ios-app&quot;]
+  }&#x27;</span></code></pre></div><p>Apple private-relay addresses are supported. Mojobase finds returning accounts by Apple&#39;s stable
+subject before inspecting profile claims, so a returning user can sign in when optional profile
+data is absent. Creating or email-linking a new account requires a verified email from the Apple
+identity token; Mojobase never creates a fabricated placeholder address.</p>
+<p>Google keeps its existing request shape:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;provider&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;google&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;GOOGLE_ID_TOKEN&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="response-7"><a class="anchor" href="#response-7" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>user</code></td>
+<td>object</td>
+<td>Authenticated Mojobase user, including <code>id</code>, <code>email</code>, verification state, providers, profile, metadata, and timestamps.</td>
+</tr><tr><td><code>accessToken</code></td>
+<td>string</td>
+<td>Mojobase access token for authenticated API requests.</td>
+</tr><tr><td><code>refreshToken</code></td>
+<td>string</td>
+<td>Returned for <code>mobile</code>, <code>desktop</code>, and <code>server</code> clients. Omitted for web clients.</td>
+</tr><tr><td><code>csrfToken</code></td>
+<td>string</td>
+<td>Returned for web clients alongside the HTTP-only refresh-token cookie.</td>
+</tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;00000000-0000-4000-8000-000000000001&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;apple&quot;</span><span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;MOJOBASE_ACCESS_TOKEN&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;MOJOBASE_REFRESH_TOKEN&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="errors"><a class="anchor" href="#errors" aria-hidden="true" tabindex="-1">#</a>Errors</h3>
+<div class="table-wrap"><table><thead><tr><th>Status</th>
+<th>Meaning</th>
+</tr></thead><tbody><tr><td><code>400</code></td>
+<td>Invalid request shape, unsupported provider, missing nonce, or missing verified email for a new Apple identity.</td>
+</tr><tr><td><code>401</code></td>
+<td>Provider token is invalid, expired, has an untrusted audience, or fails Apple nonce verification.</td>
+</tr><tr><td><code>429</code></td>
+<td>Too many ID-token sign-in attempts from the requesting IP.</td>
+</tr></tbody></table></div>
+<p>For <code>client_type=mobile</code>, <code>desktop</code>, or <code>server</code>, the response includes <code>refreshToken</code> in the
+JSON body. Web clients receive the refresh token in an HTTP-only cookie and a <code>csrfToken</code> in the
+response body.</p>
+<hr>
+<h2 id="oauth-authentication"><a class="anchor" href="#oauth-authentication" aria-hidden="true" tabindex="-1">#</a>OAuth Authentication</h2>
+<p>OAuth authentication now uses the PKCE (Proof Key for Code Exchange) flow for enhanced security. Instead of returning tokens directly in the redirect URL, an authorization code is returned which must be exchanged for tokens.</p>
+<h3 id="initiate-oauth-flow"><a class="anchor" href="#initiate-oauth-flow" aria-hidden="true" tabindex="-1">#</a>Initiate OAuth Flow</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/oauth/{provider}</code></pre></div><p>For custom providers configured in the dashboard, use:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/oauth/custom/{key}</code></pre></div><h3 id="query-parameters-6"><a class="anchor" href="#query-parameters-6" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>redirect_uri</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>URL to redirect after authentication</td>
+</tr><tr><td><code>code_challenge</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>PKCE code challenge (Base64 URL-encoded SHA256 hash of code_verifier)</td>
+</tr><tr><td>Other string query params</td>
+<td>string</td>
+<td>No</td>
+<td>Provider-specific OAuth hints, such as Google&#39;s <code>prompt=select_account</code></td>
+</tr></tbody></table></div>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Extra query params are forwarded as provider-specific hints only when they do not collide with
+server-owned OAuth fields. Do not pass <code>client_id</code>, <code>redirect_uri</code>, <code>code_challenge</code>, <code>state</code>,
+<code>response_type</code>, or <code>scope</code>; Mojobase/provider-generated values win and colliding client
+values are ignored.</p>
+</div></div><h3 id="supported-providers"><a class="anchor" href="#supported-providers" aria-hidden="true" tabindex="-1">#</a>Supported Providers</h3>
+<ul>
+<li><code>google</code></li>
+<li><code>github</code></li>
+<li><code>discord</code></li>
+<li><code>linkedin</code></li>
+<li><code>facebook</code></li>
+<li><code>apple</code></li>
+<li><code>microsoft</code></li>
+<li><code>x</code></li>
+<li><code>spotify</code></li>
+<li>Any custom provider key returned by <code>GET /api/auth/public-config</code> in <code>customOAuthProviders</code></li>
+</ul>
+<h3 id="example-8"><a class="anchor" href="#example-8" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Generate code_verifier (random string, 43-128 characters)</span>
+CODE_VERIFIER=$(openssl rand -<span class="hljs-built_in">base64</span> 32 | <span class="hljs-built_in">tr</span> -d <span class="hljs-string">&#x27;=&#x27;</span> | <span class="hljs-built_in">tr</span> <span class="hljs-string">&#x27;/+&#x27;</span> <span class="hljs-string">&#x27;_-&#x27;</span>)
+
+<span class="hljs-comment"># Generate code_challenge (SHA256 hash of code_verifier, Base64 URL-encoded)</span>
+CODE_CHALLENGE=$(<span class="hljs-built_in">echo</span> -n <span class="hljs-variable">$CODE_VERIFIER</span> | openssl dgst -sha256 -binary | <span class="hljs-built_in">base64</span> | <span class="hljs-built_in">tr</span> -d <span class="hljs-string">&#x27;=&#x27;</span> | <span class="hljs-built_in">tr</span> <span class="hljs-string">&#x27;/+&#x27;</span> <span class="hljs-string">&#x27;_-&#x27;</span>)
+
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/oauth/google?redirect_uri=https://myapp.com/callback&amp;code_challenge=<span class="hljs-variable">$CODE_CHALLENGE</span>&amp;prompt=select_account&quot;</span></code></pre></div><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Custom provider example</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/oauth/custom/acme?redirect_uri=https://myapp.com/callback&amp;code_challenge=<span class="hljs-variable">$CODE_CHALLENGE</span>&quot;</span></code></pre></div><h3 id="response-8"><a class="anchor" href="#response-8" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;authUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://accounts.google.com/o/oauth2/v2/auth?client_id=...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="oauth-callback"><a class="anchor" href="#oauth-callback" aria-hidden="true" tabindex="-1">#</a>OAuth Callback</h3>
+<p>After the user authenticates with the provider, they will be redirected to your <code>redirect_uri</code> with an authorization code:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">https://myapp.com/callback?insforge_code=abc123...</code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>The <code>insforge_code</code> is a temporary authorization code that must be exchanged for tokens using the <code>/api/auth/oauth/exchange</code> endpoint.</p>
+</div></div><hr>
+<h3 id="exchange-code-for-tokens"><a class="anchor" href="#exchange-code-for-tokens" aria-hidden="true" tabindex="-1">#</a>Exchange Code for Tokens</h3>
+<p>Exchange the authorization code for access and refresh tokens.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/oauth/exchange</code></pre></div><h3 id="query-parameters-7"><a class="anchor" href="#query-parameters-7" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>client_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>Client type: <code>web</code> (default), <code>mobile</code>, <code>desktop</code>, or <code>server</code></td>
+</tr></tbody></table></div>
+<h3 id="request-body-11"><a class="anchor" href="#request-body-11" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>code</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>The <code>insforge_code</code> received in the callback</td>
+</tr><tr><td><code>code_verifier</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>The original code_verifier used to generate the code_challenge</td>
+</tr></tbody></table></div>
+<h3 id="example-9"><a class="anchor" href="#example-9" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/oauth/exchange?client_type=mobile&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;code&quot;: &quot;abc123...&quot;,
+    &quot;code_verifier&quot;: &quot;your-original-code-verifier&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-9"><a class="anchor" href="#response-9" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;google&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refreshToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><ul>
+<li>For <strong>web clients</strong>: The <code>refreshToken</code> will be <code>null</code> and a <code>csrfToken</code> is returned instead. The refresh token is stored in an httpOnly cookie.</li>
+<li>For <strong>non-web clients</strong> (<code>mobile</code>, <code>desktop</code>, <code>server</code>): A <code>refreshToken</code> is returned directly. Store it securely.</li>
+</ul>
+</div></div><hr>
+<h3 id="complete-oauth-flow-example-non-web"><a class="anchor" href="#complete-oauth-flow-example-non-web" aria-hidden="true" tabindex="-1">#</a>Complete OAuth Flow Example (Non-Web)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-comment">// 1. Generate PKCE code verifier and challenge</span>
+<span class="hljs-keyword">let</span> codeVerifier <span class="hljs-operator">=</span> generateRandomString(length: <span class="hljs-number">43</span>)
+<span class="hljs-keyword">let</span> codeChallenge <span class="hljs-operator">=</span> sha256(codeVerifier).base64URLEncoded()
+
+<span class="hljs-comment">// 2. Initiate OAuth flow</span>
+<span class="hljs-keyword">let</span> authURL <span class="hljs-operator">=</span> <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/oauth/google&quot;</span> <span class="hljs-operator">+</span>
+    <span class="hljs-string">&quot;?redirect_uri=myapp://callback&quot;</span> <span class="hljs-operator">+</span>
+    <span class="hljs-string">&quot;&amp;code_challenge=<span class="hljs-subst">\(codeChallenge)</span>&quot;</span>
+
+<span class="hljs-comment">// 3. Open browser/WebView and wait for callback</span>
+<span class="hljs-comment">// User completes authentication...</span>
+
+<span class="hljs-comment">// 4. Handle callback with insforge_code</span>
+<span class="hljs-comment">// myapp://callback?insforge_code=abc123...</span>
+
+<span class="hljs-comment">// 5. Exchange code for tokens</span>
+<span class="hljs-keyword">let</span> response <span class="hljs-operator">=</span> <span class="hljs-type">POST</span>(<span class="hljs-string">&quot;/api/auth/oauth/exchange?client_type=mobile&quot;</span>, body: {
+    <span class="hljs-string">&quot;code&quot;</span>: mojobaseCode,
+    <span class="hljs-string">&quot;code_verifier&quot;</span>: codeVerifier
+})
+
+<span class="hljs-comment">// 6. Store tokens</span>
+accessToken <span class="hljs-operator">=</span> response.accessToken
+refreshToken <span class="hljs-operator">=</span> response.refreshToken  <span class="hljs-comment">// Persist securely</span></code></pre></div><hr>
+<h2 id="public-configuration"><a class="anchor" href="#public-configuration" aria-hidden="true" tabindex="-1">#</a>Public Configuration</h2>
+<p>Get public authentication settings (no auth required).</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/public-config</code></pre></div><h3 id="example-10"><a class="anchor" href="#example-10" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/public-config&quot;</span></code></pre></div><h3 id="response-10"><a class="anchor" href="#response-10" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;oAuthProviders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;google&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;github&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;customOAuthProviders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;acme&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireEmailVerification&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;passwordMinLength&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireLowercase&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireUppercase&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireSpecialChar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;verifyEmailMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;code&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;resetPasswordMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;link&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="admin-endpoints"><a class="anchor" href="#admin-endpoints" aria-hidden="true" tabindex="-1">#</a>Admin Endpoints</h2>
+<p>These endpoints require <code>project_admin</code> role.</p>
+<h3 id="list-all-users"><a class="anchor" href="#list-all-users" aria-hidden="true" tabindex="-1">#</a>List All Users</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/users?offset=0&amp;limit=10&amp;search=john</code></pre></div><h3 id="get-user-by-id"><a class="anchor" href="#get-user-by-id" aria-hidden="true" tabindex="-1">#</a>Get User by ID</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/users/{userId}</code></pre></div><h3 id="delete-users"><a class="anchor" href="#delete-users" aria-hidden="true" tabindex="-1">#</a>Delete Users</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X DELETE <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/users&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;userIds&quot;: [&quot;user-id-1&quot;, &quot;user-id-2&quot;]}&#x27;</span></code></pre></div><h3 id="generate-anonymous-token"><a class="anchor" href="#generate-anonymous-token" aria-hidden="true" tabindex="-1">#</a>Generate Anonymous Token</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/tokens/anon</code></pre></div><h3 id="get-auth-configuration"><a class="anchor" href="#get-auth-configuration" aria-hidden="true" tabindex="-1">#</a>Get Auth Configuration</h3>
+<p>Get current authentication settings (admin only).</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/config</code></pre></div><h4 id="example-11"><a class="anchor" href="#example-11" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/config&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token&quot;</span></code></pre></div><h4 id="response-11"><a class="anchor" href="#response-11" aria-hidden="true" tabindex="-1">#</a>Response</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireEmailVerification&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;passwordMinLength&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireLowercase&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireUppercase&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requireSpecialChar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;verifyEmailMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;code&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;resetPasswordMethod&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;link&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;allowedRedirectUrls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;https://myapp.com/dashboard&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;https://*.myapp.com&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:30:00Z&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><p><code>allowedRedirectUrls</code> entries are matched against the full <code>redirectTo</code> value, including scheme, host, optional port, and path.</p>
+<ul>
+<li>Exact entries must match exactly, such as <code>https://myapp.com/dashboard</code>.</li>
+<li>Wildcards are supported only in the host portion, such as <code>https://*.myapp.com/callback</code>.</li>
+<li>Deep links are allowed when explicitly listed, such as <code>com.example.app:/oauth2redirect</code> or <code>myapp://auth/callback</code>.</li>
+<li>If <code>allowedRedirectUrls</code> is empty, Mojobase allows all redirects for developer convenience. This is insecure for production and should be avoided outside local development.</li>
+</ul>
+<h3 id="update-auth-configuration"><a class="anchor" href="#update-auth-configuration" aria-hidden="true" tabindex="-1">#</a>Update Auth Configuration</h3>
+<p>Update authentication settings (admin only).</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">PUT /api/auth/config</code></pre></div><h4 id="request-body-12"><a class="anchor" href="#request-body-12" aria-hidden="true" tabindex="-1">#</a>Request Body</h4>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>requireEmailVerification</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Whether email verification is required</td>
+</tr><tr><td><code>passwordMinLength</code></td>
+<td>integer</td>
+<td>No</td>
+<td>Minimum password length (4-128)</td>
+</tr><tr><td><code>requireNumber</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Require numbers in password</td>
+</tr><tr><td><code>requireLowercase</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Require lowercase in password</td>
+</tr><tr><td><code>requireUppercase</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Require uppercase in password</td>
+</tr><tr><td><code>requireSpecialChar</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Require special characters in password</td>
+</tr><tr><td><code>verifyEmailMethod</code></td>
+<td>string</td>
+<td>No</td>
+<td>Email verification method (<code>code</code> or <code>link</code>)</td>
+</tr><tr><td><code>resetPasswordMethod</code></td>
+<td>string</td>
+<td>No</td>
+<td>Password reset method (<code>code</code> or <code>link</code>)</td>
+</tr><tr><td><code>allowedRedirectUrls</code></td>
+<td>array</td>
+<td>No</td>
+<td>List of allowed redirect URLs. Entries are matched against the full <code>redirectTo</code> value. Exact URLs must match exactly, host wildcards such as <code>https://*.domain.com/callback</code> are supported, and custom deep links such as <code>com.example.app:/oauth2redirect</code> are allowed when explicitly listed. If empty, all redirects are allowed, which is insecure for production.</td>
+</tr></tbody></table></div>
+<h4 id="example-12"><a class="anchor" href="#example-12" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X PUT <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/config&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;requireEmailVerification&quot;: true,
+    &quot;passwordMinLength&quot;: 10,
+    &quot;verifyEmailMethod&quot;: &quot;link&quot;
+  }&#x27;</span></code></pre></div><h3 id="exchange-admin-session"><a class="anchor" href="#exchange-admin-session" aria-hidden="true" tabindex="-1">#</a>Exchange Admin Session</h3>
+<p>Exchange a dashboard authorization code for an admin session. This is used by the embedded project dashboard; apps should not need it.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/admin/sessions/exchange</code></pre></div><h4 id="request-body-13"><a class="anchor" href="#request-body-13" aria-hidden="true" tabindex="-1">#</a>Request Body</h4>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>code</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Authorization code or JWT issued by the Mojobase console</td>
+</tr></tbody></table></div>
+<h4 id="example-13"><a class="anchor" href="#example-13" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/admin/sessions/exchange&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;code&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;}&#x27;</span></code></pre></div><h4 id="response-12"><a class="anchor" href="#response-12" aria-hidden="true" tabindex="-1">#</a>Response</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;admin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cloud:user_123&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;abc123...&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="get-current-admin-session"><a class="anchor" href="#get-current-admin-session" aria-hidden="true" tabindex="-1">#</a>Get Current Admin Session</h3>
+<p>Get the current dashboard admin session from a project admin access token.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/auth/admin/sessions/current</code></pre></div><h4 id="response-13"><a class="anchor" href="#response-13" aria-hidden="true" tabindex="-1">#</a>Response</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;admin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;local:admin&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="refresh-admin-session"><a class="anchor" href="#refresh-admin-session" aria-hidden="true" tabindex="-1">#</a>Refresh Admin Session</h3>
+<p>Refresh a dashboard admin access token. This endpoint uses the dashboard-only
+<code>insforge_admin_refresh_token</code> httpOnly cookie and does not share the app/user
+refresh cookie.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/admin/refresh</code></pre></div><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/auth/admin/refresh&quot;</span> \
+  -H <span class="hljs-string">&quot;X-CSRF-Token: abc123...&quot;</span> \
+  --cookie <span class="hljs-string">&quot;insforge_admin_refresh_token=...&quot;</span></code></pre></div><h3 id="logout-admin-session"><a class="anchor" href="#logout-admin-session" aria-hidden="true" tabindex="-1">#</a>Logout Admin Session</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/auth/admin/logout</code></pre></div><hr>
+<h2 id="error-responses"><a class="anchor" href="#error-responses" aria-hidden="true" tabindex="-1">#</a>Error Responses</h2>
+<h3 id="invalid-credentials-401"><a class="anchor" href="#invalid-credentials-401" aria-hidden="true" tabindex="-1">#</a>Invalid Credentials (401)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;INVALID_CREDENTIALS&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Invalid email or password&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">401</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Check your email and password&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="user-already-exists-409"><a class="anchor" href="#user-already-exists-409" aria-hidden="true" tabindex="-1">#</a>User Already Exists (409)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;USER_EXISTS&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;User with this email already exists&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">409</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Use a different email or sign in&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="email-not-verified-403"><a class="anchor" href="#email-not-verified-403" aria-hidden="true" tabindex="-1">#</a>Email Not Verified (403)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;EMAIL_NOT_VERIFIED&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Please verify your email before signing in&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">403</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Check your inbox for verification email&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/rest/database"><span class="pager-dir">Previous</span><span class="pager-title">Database API Reference</span></a>
+        <a class="pager-link next" href="/docs/sdks/rest/storage"><span class="pager-dir">Next</span><span class="pager-title">Storage API Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#overview">Overview</a></li><li class="toc-d2"><a href="#headers">Headers</a></li><li class="toc-d2"><a href="#register-user">Register User</a></li><li class="toc-d3"><a href="#query-parameters">Query Parameters</a></li><li class="toc-d3"><a href="#request-body">Request Body</a></li><li class="toc-d3"><a href="#example-web-client">Example (Web Client)</a></li><li class="toc-d3"><a href="#example-non-web-client">Example (Non-Web Client)</a></li><li class="toc-d3"><a href="#response-web-client">Response (Web Client)</a></li><li class="toc-d3"><a href="#response-non-web-client">Response (Non-Web Client)</a></li><li class="toc-d2"><a href="#sign-in">Sign In</a></li><li class="toc-d3"><a href="#query-parameters-1">Query Parameters</a></li><li class="toc-d3"><a href="#request-body-1">Request Body</a></li><li class="toc-d3"><a href="#example-web-client-1">Example (Web Client)</a></li><li class="toc-d3"><a href="#example-non-web-client-1">Example (Non-Web Client)</a></li><li class="toc-d3"><a href="#response-web-client-1">Response (Web Client)</a></li><li class="toc-d3"><a href="#response-non-web-client-1">Response (Non-Web Client)</a></li><li class="toc-d2"><a href="#email-otp-sign-in">Email OTP Sign In</a></li><li class="toc-d3"><a href="#send-a-sign-in-code">Send a Sign-In Code</a></li><li class="toc-d3"><a href="#create-a-session-with-the-code">Create a Session with the Code</a></li><li class="toc-d2"><a href="#refresh-token">Refresh Token</a></li><li class="toc-d3"><a href="#query-parameters-3">Query Parameters</a></li><li class="toc-d3"><a href="#headers-web-client">Headers (Web Client)</a></li><li class="toc-d3"><a href="#request-body-non-web-client">Request Body (Non-Web Client)</a></li><li class="toc-d3"><a href="#example-web-client-2">Example (Web Client)</a></li><li class="toc-d3"><a href="#example-non-web-client-2">Example (Non-Web Client)</a></li><li class="toc-d3"><a href="#response-web-client-2">Response (Web Client)</a></li><li class="toc-d3"><a href="#response-non-web-client-2">Response (Non-Web Client)</a></li><li class="toc-d2"><a href="#logout">Logout</a></li><li class="toc-d3"><a href="#example">Example</a></li><li class="toc-d3"><a href="#response">Response</a></li><li class="toc-d2"><a href="#get-current-user">Get Current User</a></li><li class="toc-d3"><a href="#example-1">Example</a></li><li class="toc-d3"><a href="#response-1">Response</a></li><li class="toc-d2"><a href="#update-profile">Update Profile</a></li><li class="toc-d3"><a href="#request-body-4">Request Body</a></li><li class="toc-d3"><a href="#example-2">Example</a></li><li class="toc-d3"><a href="#response-2">Response</a></li><li class="toc-d2"><a href="#get-user-profile">Get User Profile</a></li><li class="toc-d3"><a href="#example-3">Example</a></li><li class="toc-d3"><a href="#response-3">Response</a></li><li class="toc-d2"><a href="#email-verification">Email Verification</a></li><li class="toc-d3"><a href="#send-verification-email">Send Verification Email</a></li><li class="toc-d3"><a href="#request-body-5">Request Body</a></li><li class="toc-d3"><a href="#example-4">Example</a></li><li class="toc-d3"><a href="#response-4">Response</a></li><li class="toc-d3"><a href="#verify-email">Verify Email</a></li><li class="toc-d3"><a href="#query-parameters-4">Query Parameters</a></li><li class="toc-d3"><a href="#request-body-6">Request Body</a></li><li class="toc-d3"><a href="#example-web-client-3">Example (Web Client)</a></li><li class="toc-d3"><a href="#example-non-web-client-3">Example (Non-Web Client)</a></li><li class="toc-d3"><a href="#response-web-client-3">Response (Web Client)</a></li><li class="toc-d3"><a href="#response-non-web-client-3">Response (Non-Web Client)</a></li><li class="toc-d2"><a href="#password-reset">Password Reset</a></li><li class="toc-d3"><a href="#send-reset-email">Send Reset Email</a></li><li class="toc-d3"><a href="#request-body-7">Request Body</a></li><li class="toc-d3"><a href="#example-5">Example</a></li><li class="toc-d3"><a href="#exchange-code-for-token-code-method-only">Exchange Code for Token (Code Method Only)</a></li><li class="toc-d3"><a href="#request-body-8">Request Body</a></li><li class="toc-d3"><a href="#example-6">Example</a></li><li class="toc-d3"><a href="#response-5">Response</a></li><li class="toc-d3"><a href="#reset-password">Reset Password</a></li><li class="toc-d3"><a href="#request-body-9">Request Body</a></li><li class="toc-d3"><a href="#example-7">Example</a></li><li class="toc-d3"><a href="#response-6">Response</a></li><li class="toc-d2"><a href="#native-id-token-sign-in">Native ID Token Sign-In</a></li><li class="toc-d3"><a href="#query-parameters-5">Query Parameters</a></li><li class="toc-d3"><a href="#request-body-10">Request Body</a></li><li class="toc-d3"><a href="#response-7">Response</a></li><li class="toc-d3"><a href="#errors">Errors</a></li><li class="toc-d2"><a href="#oauth-authentication">OAuth Authentication</a></li><li class="toc-d3"><a href="#initiate-oauth-flow">Initiate OAuth Flow</a></li><li class="toc-d3"><a href="#query-parameters-6">Query Parameters</a></li><li class="toc-d3"><a href="#supported-providers">Supported Providers</a></li><li class="toc-d3"><a href="#example-8">Example</a></li><li class="toc-d3"><a href="#response-8">Response</a></li><li class="toc-d3"><a href="#oauth-callback">OAuth Callback</a></li><li class="toc-d3"><a href="#exchange-code-for-tokens">Exchange Code for Tokens</a></li><li class="toc-d3"><a href="#query-parameters-7">Query Parameters</a></li><li class="toc-d3"><a href="#request-body-11">Request Body</a></li><li class="toc-d3"><a href="#example-9">Example</a></li><li class="toc-d3"><a href="#response-9">Response</a></li><li class="toc-d3"><a href="#complete-oauth-flow-example-non-web">Complete OAuth Flow Example (Non-Web)</a></li><li class="toc-d2"><a href="#public-configuration">Public Configuration</a></li><li class="toc-d3"><a href="#example-10">Example</a></li><li class="toc-d3"><a href="#response-10">Response</a></li><li class="toc-d2"><a href="#admin-endpoints">Admin Endpoints</a></li><li class="toc-d3"><a href="#list-all-users">List All Users</a></li><li class="toc-d3"><a href="#get-user-by-id">Get User by ID</a></li><li class="toc-d3"><a href="#delete-users">Delete Users</a></li><li class="toc-d3"><a href="#generate-anonymous-token">Generate Anonymous Token</a></li><li class="toc-d3"><a href="#get-auth-configuration">Get Auth Configuration</a></li><li class="toc-d3"><a href="#update-auth-configuration">Update Auth Configuration</a></li><li class="toc-d3"><a href="#exchange-admin-session">Exchange Admin Session</a></li><li class="toc-d3"><a href="#get-current-admin-session">Get Current Admin Session</a></li><li class="toc-d3"><a href="#refresh-admin-session">Refresh Admin Session</a></li><li class="toc-d3"><a href="#logout-admin-session">Logout Admin Session</a></li><li class="toc-d2"><a href="#error-responses">Error Responses</a></li><li class="toc-d3"><a href="#invalid-credentials-401">Invalid Credentials (401)</a></li><li class="toc-d3"><a href="#user-already-exists-409">User Already Exists (409)</a></li><li class="toc-d3"><a href="#email-not-verified-403">Email Not Verified (403)</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

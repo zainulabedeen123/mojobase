@@ -65,3 +65,7 @@ examples/
 openapi/
 # Published npm packages (@mojobase/*) carry their own formatting setup
 npm/
+
+# Generated documentation site and its MDX page sources (rendered by docs-site/build.mjs)
+console/public/docs/
+docs-site/content/pages/

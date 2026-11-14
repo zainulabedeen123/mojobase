@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Razorpay Payments SDK · Mojobase Docs</title>
+<meta name="description" content="Create Razorpay Orders, verify signatures, and manage Subscriptions from your TypeScript frontend with the Mojobase SDK payments.razorpay helpers.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16"><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link active" href="/docs/sdks/typescript/payments-razorpay" aria-current="page">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">Payments</div>
+      <h1>Razorpay Payments SDK</h1>
+      <p class="lead">Create Razorpay Orders, verify signatures, and manage Subscriptions from your TypeScript frontend with the Mojobase SDK payments.razorpay helpers.</p>
+      <div class="prose">
+<div class="tabs code-group" data-tabs><div class="tab-list" role="tablist"><button class="tab" type="button" role="tab" id="g1-tab-0" aria-controls="g1-panel-0" aria-selected="true" tabindex="0">npm</button><button class="tab" type="button" role="tab" id="g1-tab-1" aria-controls="g1-panel-1" aria-selected="false" tabindex="-1">yarn</button><button class="tab" type="button" role="tab" id="g1-tab-2" aria-controls="g1-panel-2" aria-selected="false" tabindex="-1">pnpm</button></div><div class="tab-panel" role="tabpanel" id="g1-panel-0" aria-labelledby="g1-tab-0"><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">npm install @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-1" aria-labelledby="g1-tab-1" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">yarn add @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-2" aria-labelledby="g1-tab-2" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">pnpm add @mojobase/sdk@latest</code></pre></div></div></div><div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">import</span> { createClient } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@mojobase/sdk&#x27;</span>;
+
+<span class="hljs-keyword">const</span> mojobase = <span class="hljs-title function_">createClient</span>({
+  <span class="hljs-attr">baseUrl</span>: <span class="hljs-string">&#x27;https://your-project.mojobase.dev&#x27;</span>,
+  <span class="hljs-attr">anonKey</span>: <span class="hljs-string">&#x27;your-anon-key&#x27;</span>  <span class="hljs-comment">// Optional: for public/unauthenticated requests</span>
+});</code></pre></div><p>Find the project URL and anon key in your project&#39;s <strong>Connect</strong> panel in the <a href="https://mojobase.dev" rel="noopener" target="_blank">Mojobase console</a>.</p>
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true" tabindex="-1">#</a>Overview</h2>
+<p>The TypeScript SDK exposes Razorpay runtime helpers for generated app frontends:</p>
+<ul>
+<li><code>mojobase.payments.razorpay.createOrder(...)</code></li>
+<li><code>mojobase.payments.razorpay.verifyOrder(...)</code></li>
+<li><code>mojobase.payments.razorpay.createSubscription(...)</code></li>
+<li><code>mojobase.payments.razorpay.verifySubscription(...)</code></li>
+<li><code>mojobase.payments.razorpay.cancelSubscription(...)</code></li>
+<li><code>mojobase.payments.razorpay.pauseSubscription(...)</code></li>
+<li><code>mojobase.payments.razorpay.resumeSubscription(...)</code></li>
+</ul>
+<p>Razorpay does not return a hosted Checkout URL. The backend creates a Razorpay Order or Subscription and returns <code>checkoutOptions</code>. The browser loads Razorpay Checkout and opens it with those options.</p>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>See <a href="/docs/core-concepts/payments/razorpay">Razorpay Payments</a> for provider setup,
+manual webhooks, database tables, and fulfillment patterns.</p>
+</div></div><h2 id="sdk-setup"><a class="anchor" href="#sdk-setup" aria-hidden="true" tabindex="-1">#</a>SDK setup</h2>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> { createClient } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@mojobase/sdk&#x27;</span>;
+
+<span class="hljs-keyword">const</span> mojobase = <span class="hljs-title function_">createClient</span>({
+  <span class="hljs-attr">baseUrl</span>: <span class="hljs-string">&#x27;https://your-project.mojobase.dev&#x27;</span>,
+  <span class="hljs-attr">anonKey</span>: <span class="hljs-string">&#x27;your-anon-key&#x27;</span>
+});
+
+<span class="hljs-keyword">declare</span> <span class="hljs-variable language_">global</span> {
+  <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Window</span> {
+    <span class="hljs-title class_">Razorpay</span>?: <span class="hljs-title function_">new</span> (<span class="hljs-attr">options</span>: <span class="hljs-title class_">Record</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">unknown</span>&gt;) =&gt; { <span class="hljs-attr">open</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">void</span> };
+  }
+}
+</code></pre></div><p>The SDK calls Razorpay runtime routes with the current Mojobase user token. Do not call these routes with provider secret keys.</p>
+<h2 id="load-razorpay-checkout"><a class="anchor" href="#load-razorpay-checkout" aria-hidden="true" tabindex="-1">#</a>Load Razorpay Checkout</h2>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">loadRazorpayCheckout</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">window</span>.<span class="hljs-property">Razorpay</span>) {
+      <span class="hljs-title function_">resolve</span>();
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">const</span> script = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&#x27;script&#x27;</span>);
+    script.<span class="hljs-property">src</span> = <span class="hljs-string">&#x27;https://checkout.razorpay.com/v1/checkout.js&#x27;</span>;
+    script.<span class="hljs-property">onload</span> = <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">resolve</span>();
+    script.<span class="hljs-property">onerror</span> = <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Failed to load Razorpay Checkout&#x27;</span>));
+    <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-title function_">appendChild</span>(script);
+  });
+}</code></pre></div><h2 id="one-time-order"><a class="anchor" href="#one-time-order" aria-hidden="true" tabindex="-1">#</a>One-time order</h2>
+<p>Create an app-owned pending order first. Then create the Razorpay Order through Mojobase:</p>
+<p>Razorpay Orders can be amount-only, but creating Razorpay Items for one-time sellable products is a good practice because synced Items make the catalog visible in Mojobase and Razorpay. Treat Orders as payment attempts.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">type</span> <span class="hljs-title class_">CreateRazorpayOrderResponse</span> = {
+  <span class="hljs-attr">order</span>: {
+    <span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">orderId</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">status</span>: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">checkoutOptions</span>: {
+    <span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">amount</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">currency</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">order_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">description</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">callback_url</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">prefill</span>: {
+      <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+      <span class="hljs-attr">email</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+      <span class="hljs-attr">contact</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    };
+  };
+};
+
+<span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: orderResponse, error } =
+  <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">createOrder</span>(<span class="hljs-string">&#x27;test&#x27;</span>, {
+    <span class="hljs-attr">amount</span>: <span class="hljs-number">50000</span>,
+    <span class="hljs-attr">currency</span>: <span class="hljs-string">&#x27;INR&#x27;</span>,
+    <span class="hljs-attr">receipt</span>: order.<span class="hljs-property">id</span>,
+    <span class="hljs-attr">subject</span>: { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;team&#x27;</span>, <span class="hljs-attr">id</span>: teamId },
+    <span class="hljs-attr">customerEmail</span>: user.<span class="hljs-property">email</span>,
+    <span class="hljs-attr">notes</span>: { <span class="hljs-attr">order_id</span>: order.<span class="hljs-property">id</span> }
+  });
+
+<span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error;
+<span class="hljs-keyword">if</span> (!orderResponse) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Razorpay order creation returned no data&#x27;</span>);</code></pre></div><p>If your webhook trigger reads <code>notes.order_id</code>, pass <code>notes: { order_id: ... }</code> when creating the Order.</p>
+<p>Open Razorpay Checkout and verify the returned signature:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">await</span> <span class="hljs-title function_">loadRazorpayCheckout</span>();
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">RazorpayCheckout</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Razorpay</span>;
+<span class="hljs-keyword">if</span> (!<span class="hljs-title class_">RazorpayCheckout</span>) {
+  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Razorpay Checkout failed to load&#x27;</span>);
+}
+
+<span class="hljs-keyword">const</span> checkout = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RazorpayCheckout</span>({
+  ...orderResponse.<span class="hljs-property">checkoutOptions</span>,
+  <span class="hljs-attr">handler</span>: <span class="hljs-title function_">async</span> (<span class="hljs-attr">response</span>: {
+    <span class="hljs-attr">razorpay_order_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">razorpay_payment_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">razorpay_signature</span>: <span class="hljs-built_in">string</span>;
+  }) =&gt; {
+    <span class="hljs-keyword">const</span> { error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">verifyOrder</span>(<span class="hljs-string">&#x27;test&#x27;</span>, {
+      <span class="hljs-attr">orderId</span>: response.<span class="hljs-property">razorpay_order_id</span>,
+      <span class="hljs-attr">paymentId</span>: response.<span class="hljs-property">razorpay_payment_id</span>,
+      <span class="hljs-attr">signature</span>: response.<span class="hljs-property">razorpay_signature</span>
+    });
+
+    <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error;
+  }
+});
+
+checkout.<span class="hljs-title function_">open</span>();</code></pre></div><p>Signature verification protects the immediate browser callback. Durable fulfillment should still come from verified Razorpay webhook events.</p>
+<h2 id="subscription"><a class="anchor" href="#subscription" aria-hidden="true" tabindex="-1">#</a>Subscription</h2>
+<p>Create or sync a Razorpay Plan first. Then create the subscription through Mojobase:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">type</span> <span class="hljs-title class_">CreateRazorpaySubscriptionResponse</span> = {
+  <span class="hljs-attr">subscription</span>: {
+    <span class="hljs-attr">subscriptionId</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">status</span>: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">checkoutOptions</span>: {
+    <span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">subscription_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">description</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">callback_url</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    <span class="hljs-attr">prefill</span>: {
+      <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+      <span class="hljs-attr">email</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+      <span class="hljs-attr">contact</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    };
+  };
+};
+
+<span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: subscriptionResponse, error } =
+  <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">createSubscription</span>(<span class="hljs-string">&#x27;test&#x27;</span>, {
+    <span class="hljs-attr">planId</span>: <span class="hljs-string">&#x27;plan_123&#x27;</span>,
+    <span class="hljs-attr">totalCount</span>: <span class="hljs-number">12</span>,
+    <span class="hljs-attr">subject</span>: { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;team&#x27;</span>, <span class="hljs-attr">id</span>: teamId },
+    <span class="hljs-attr">customerEmail</span>: user.<span class="hljs-property">email</span>
+  });
+
+<span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error;
+<span class="hljs-keyword">if</span> (!subscriptionResponse) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Razorpay subscription creation returned no data&#x27;</span>);</code></pre></div><p>Pass Razorpay subscription <code>notes</code> when webhook triggers need app identifiers later.</p>
+<p>Open Razorpay Checkout with the returned subscription ID:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">await</span> <span class="hljs-title function_">loadRazorpayCheckout</span>();
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">RazorpayCheckout</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Razorpay</span>;
+<span class="hljs-keyword">if</span> (!<span class="hljs-title class_">RazorpayCheckout</span>) {
+  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Razorpay Checkout failed to load&#x27;</span>);
+}
+
+<span class="hljs-keyword">const</span> checkout = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RazorpayCheckout</span>({
+  ...subscriptionResponse.<span class="hljs-property">checkoutOptions</span>,
+  <span class="hljs-attr">handler</span>: <span class="hljs-title function_">async</span> (<span class="hljs-attr">response</span>: {
+    <span class="hljs-attr">razorpay_subscription_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">razorpay_payment_id</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">razorpay_signature</span>: <span class="hljs-built_in">string</span>;
+  }) =&gt; {
+    <span class="hljs-keyword">const</span> { error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">verifySubscription</span>(<span class="hljs-string">&#x27;test&#x27;</span>, {
+      <span class="hljs-attr">subscriptionId</span>: response.<span class="hljs-property">razorpay_subscription_id</span>,
+      <span class="hljs-attr">paymentId</span>: response.<span class="hljs-property">razorpay_payment_id</span>,
+      <span class="hljs-attr">signature</span>: response.<span class="hljs-property">razorpay_signature</span>
+    });
+
+    <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">throw</span> error;
+  }
+});
+
+checkout.<span class="hljs-title function_">open</span>();</code></pre></div><h2 id="manage-subscriptions"><a class="anchor" href="#manage-subscriptions" aria-hidden="true" tabindex="-1">#</a>Manage subscriptions</h2>
+<p>Razorpay does not provide a Stripe Billing Portal equivalent. Use backend routes for subscription management:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript"><span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">cancelSubscription</span>(<span class="hljs-string">&#x27;test&#x27;</span>, <span class="hljs-string">&#x27;sub_123&#x27;</span>, {
+  <span class="hljs-attr">cancelAtCycleEnd</span>: <span class="hljs-literal">false</span>
+});
+
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">pauseSubscription</span>(<span class="hljs-string">&#x27;test&#x27;</span>, <span class="hljs-string">&#x27;sub_123&#x27;</span>);
+
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">payments</span>.<span class="hljs-property">razorpay</span>.<span class="hljs-title function_">resumeSubscription</span>(<span class="hljs-string">&#x27;test&#x27;</span>, <span class="hljs-string">&#x27;sub_123&#x27;</span>);</code></pre></div><p>Subscription creation checks <code>INSERT</code> policies on <code>payments.razorpay_subscriptions</code>. Cancel, pause, and resume check <code>UPDATE</code> policies on the same table. PostgreSQL also applies <code>SELECT</code> policies to rows returned by <code>INSERT/UPDATE ... RETURNING</code>, so add matching <code>SELECT</code> visibility for the same billing subject when a policy probe needs to return the row. Add app-specific RLS or server-side membership checks before exposing these controls for shared subjects.</p>
+<h2 id="fulfillment"><a class="anchor" href="#fulfillment" aria-hidden="true" tabindex="-1">#</a>Fulfillment</h2>
+<p>Do not mark orders paid, grant credits, or activate subscriptions from the Checkout handler alone. Use verified Razorpay webhook events in <code>payments.webhook_events</code>. Do not attach fulfillment triggers to provider mirror tables such as <code>payments.razorpay_subscriptions</code>.</p>
+<p>Create app-owned fulfillment tables with RLS, then update them from webhook triggers. See <a href="/docs/core-concepts/payments/razorpay">Razorpay Payments</a> for a trigger example.</p>
+<h2 id="livetest-environment"><a class="anchor" href="#livetest-environment" aria-hidden="true" tabindex="-1">#</a>Live/test environment</h2>
+<p>Pass <code>&#39;test&#39;</code> as the first SDK argument while developing. Only switch to <code>&#39;live&#39;</code> after the developer explicitly approves production Razorpay changes and live Items, Plans, and webhooks are configured.</p>
+<div class="callout callout-warning"><span class="callout-icon" aria-hidden="true">!</span><div class="callout-body"><p>Never put Razorpay Key Secret or webhook secret in frontend code. The frontend
+only receives the public Razorpay Key ID as <code>checkoutOptions.key</code>.</p>
+</div></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/typescript/payments-stripe"><span class="pager-dir">Previous</span><span class="pager-title">Stripe Payments SDK</span></a>
+        <a class="pager-link next" href="/docs/examples/framework-guides/nextjs"><span class="pager-dir">Next</span><span class="pager-title">Next.js</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#overview">Overview</a></li><li class="toc-d2"><a href="#sdk-setup">SDK setup</a></li><li class="toc-d2"><a href="#load-razorpay-checkout">Load Razorpay Checkout</a></li><li class="toc-d2"><a href="#one-time-order">One-time order</a></li><li class="toc-d2"><a href="#subscription">Subscription</a></li><li class="toc-d2"><a href="#manage-subscriptions">Manage subscriptions</a></li><li class="toc-d2"><a href="#fulfillment">Fulfillment</a></li><li class="toc-d2"><a href="#livetest-environment">Live/test environment</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

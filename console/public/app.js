@@ -102,7 +102,7 @@ function fmtBytes(n) {
   return `${Math.max(n ? 1 : 0, Math.round(n / 1024))} KB`;
 }
 const gb = (n) => (n === null || n === undefined ? '—' : `${(n / 1073741824).toFixed(3)} GB`);
-const DOCS_URL = 'https://github.com/zainulabedeen123/mojobase#readme';
+const DOCS_URL = '/docs';
 const FEEDBACK_URL = 'https://github.com/zainulabedeen123/mojobase/issues';
 
 // ---------------------------------------------------------------- top bar

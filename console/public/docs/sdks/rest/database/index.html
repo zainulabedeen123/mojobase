@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Database API Reference · Mojobase Docs</title>
+<meta name="description" content="Query, insert, update, and delete rows in your Mojobase Postgres tables over HTTP using PostgREST-style operations with JWT tokens and Row Level Security.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link active" href="/docs/sdks/rest/database" aria-current="page">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">REST API</div>
+      <h1>Database API Reference</h1>
+      <p class="lead">Query, insert, update, and delete rows in your Mojobase Postgres tables over HTTP using PostgREST-style operations with JWT tokens and Row Level Security.</p>
+      <div class="prose">
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true" tabindex="-1">#</a>Overview</h2>
+<p>The Database API provides PostgREST-style CRUD operations for your database tables. All requests require authentication headers.</p>
+<h2 id="headers"><a class="anchor" href="#headers" aria-hidden="true" tabindex="-1">#</a>Headers</h2>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">Authorization: Bearer your-jwt-token-or-anon-key
+Content-Type: application/json</code></pre></div><hr>
+<h2 id="query-records"><a class="anchor" href="#query-records" aria-hidden="true" tabindex="-1">#</a>Query Records</h2>
+<p>Retrieve records from a table with filtering, sorting, and pagination.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/records/{tableName}</code></pre></div><h3 id="query-parameters"><a class="anchor" href="#query-parameters" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>limit</code></td>
+<td>integer</td>
+<td>Maximum records to return (1-1000, default: 100)</td>
+</tr><tr><td><code>offset</code></td>
+<td>integer</td>
+<td>Records to skip for pagination (default: 0)</td>
+</tr><tr><td><code>order</code></td>
+<td>string</td>
+<td>Sort order (e.g., <code>createdAt.desc</code>, <code>name.asc</code>)</td>
+</tr><tr><td><code>select</code></td>
+<td>string</td>
+<td>Comma-separated columns to return</td>
+</tr><tr><td><code>{field}</code></td>
+<td>string</td>
+<td>PostgREST filter (e.g., <code>status=eq.active</code>)</td>
+</tr></tbody></table></div>
+<h3 id="filter-operators"><a class="anchor" href="#filter-operators" aria-hidden="true" tabindex="-1">#</a>Filter Operators</h3>
+<div class="table-wrap"><table><thead><tr><th>Operator</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead><tbody><tr><td><code>eq</code></td>
+<td>Equal</td>
+<td><code>status=eq.active</code></td>
+</tr><tr><td><code>neq</code></td>
+<td>Not equal</td>
+<td><code>status=neq.deleted</code></td>
+</tr><tr><td><code>gt</code></td>
+<td>Greater than</td>
+<td><code>age=gt.18</code></td>
+</tr><tr><td><code>gte</code></td>
+<td>Greater than or equal</td>
+<td><code>price=gte.100</code></td>
+</tr><tr><td><code>lt</code></td>
+<td>Less than</td>
+<td><code>quantity=lt.10</code></td>
+</tr><tr><td><code>lte</code></td>
+<td>Less than or equal</td>
+<td><code>score=lte.50</code></td>
+</tr><tr><td><code>like</code></td>
+<td>Pattern match (case-sensitive)</td>
+<td><code>name=like.*john*</code></td>
+</tr><tr><td><code>ilike</code></td>
+<td>Pattern match (case-insensitive)</td>
+<td><code>email=ilike.*@gmail.com</code></td>
+</tr><tr><td><code>in</code></td>
+<td>In list</td>
+<td><code>status=in.(active,pending)</code></td>
+</tr><tr><td><code>is</code></td>
+<td>Is null/true/false</td>
+<td><code>deleted_at=is.null</code></td>
+</tr></tbody></table></div>
+<h3 id="example"><a class="anchor" href="#example" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Get all posts</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span>
+
+<span class="hljs-comment"># Get posts with filters</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?status=eq.published&amp;order=createdAt.desc&amp;limit=10&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span>
+
+<span class="hljs-comment"># Select specific columns</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?select=id,title,author&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span></code></pre></div><h3 id="response"><a class="anchor" href="#response" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;248373e1-0aea-45ce-8844-5ef259203749&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Getting Started with Mojobase&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;This is a guide to help you get started...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-07-18T05:37:24.338Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-07-18T05:37:24.338Z&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><h3 id="response-headers"><a class="anchor" href="#response-headers" aria-hidden="true" tabindex="-1">#</a>Response Headers</h3>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>X-Total-Count</code></td>
+<td>Total records matching the query</td>
+</tr><tr><td><code>Content-Range</code></td>
+<td>Range of records returned (e.g., <code>0-99/1234</code>)</td>
+</tr></tbody></table></div>
+<hr>
+<h2 id="create-records"><a class="anchor" href="#create-records" aria-hidden="true" tabindex="-1">#</a>Create Records</h2>
+<p>Create one or more records in a table.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/records/{tableName}</code></pre></div><div class="callout callout-warning"><span class="callout-icon" aria-hidden="true">!</span><div class="callout-body"><p><strong>Important</strong>: Request body MUST be an array, even for single records.</p>
+</div></div><h3 id="headers-1"><a class="anchor" href="#headers-1" aria-hidden="true" tabindex="-1">#</a>Headers</h3>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Value</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>Prefer</code></td>
+<td><code>return=representation</code></td>
+<td>Include to return created records</td>
+</tr></tbody></table></div>
+<h3 id="example-1"><a class="anchor" href="#example-1" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Create a single record</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -H <span class="hljs-string">&quot;Prefer: return=representation&quot;</span> \
+  -d <span class="hljs-string">&#x27;[{
+    &quot;title&quot;: &quot;My First Post&quot;,
+    &quot;content&quot;: &quot;Hello world!&quot;,
+    &quot;published&quot;: true
+  }]&#x27;</span>
+
+<span class="hljs-comment"># Create multiple records</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -H <span class="hljs-string">&quot;Prefer: return=representation&quot;</span> \
+  -d <span class="hljs-string">&#x27;[
+    {&quot;title&quot;: &quot;Post 1&quot;, &quot;content&quot;: &quot;Content 1&quot;},
+    {&quot;title&quot;: &quot;Post 2&quot;, &quot;content&quot;: &quot;Content 2&quot;}
+  ]&#x27;</span></code></pre></div><h3 id="response-1"><a class="anchor" href="#response-1" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<p>Without <code>Prefer</code> header:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span></code></pre></div><p>With <code>Prefer: return=representation</code>:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;248373e1-0aea-45ce-8844-5ef259203749&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;My First Post&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Hello world!&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;published&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-07-18T05:37:24.338Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-07-18T05:37:24.338Z&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="update-records"><a class="anchor" href="#update-records" aria-hidden="true" tabindex="-1">#</a>Update Records</h2>
+<p>Update records matching query filters.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">PATCH /api/database/records/{tableName}</code></pre></div><h3 id="query-parameters-1"><a class="anchor" href="#query-parameters-1" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<p>Use filter operators to specify which records to update.</p>
+<h3 id="headers-2"><a class="anchor" href="#headers-2" aria-hidden="true" tabindex="-1">#</a>Headers</h3>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Value</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>Prefer</code></td>
+<td><code>return=representation</code></td>
+<td>Include to return updated records</td>
+</tr></tbody></table></div>
+<h3 id="example-2"><a class="anchor" href="#example-2" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Update a single record by ID</span>
+curl -X PATCH <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?id=eq.248373e1-0aea-45ce-8844-5ef259203749&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -H <span class="hljs-string">&quot;Prefer: return=representation&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;title&quot;: &quot;Updated Post Title&quot;,
+    &quot;content&quot;: &quot;This content has been updated.&quot;
+  }&#x27;</span>
+
+<span class="hljs-comment"># Update multiple records</span>
+curl -X PATCH <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?status=eq.draft&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;status&quot;: &quot;archived&quot;}&#x27;</span></code></pre></div><h3 id="response-2"><a class="anchor" href="#response-2" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;248373e1-0aea-45ce-8844-5ef259203749&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Updated Post Title&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;This content has been updated.&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-01T00:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-21T11:00:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="delete-records"><a class="anchor" href="#delete-records" aria-hidden="true" tabindex="-1">#</a>Delete Records</h2>
+<p>Delete records matching query filters.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">DELETE /api/database/records/{tableName}</code></pre></div><h3 id="query-parameters-2"><a class="anchor" href="#query-parameters-2" aria-hidden="true" tabindex="-1">#</a>Query Parameters</h3>
+<p>Use filter operators to specify which records to delete.</p>
+<h3 id="headers-3"><a class="anchor" href="#headers-3" aria-hidden="true" tabindex="-1">#</a>Headers</h3>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Value</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>Prefer</code></td>
+<td><code>return=representation</code></td>
+<td>Include to return deleted records</td>
+</tr></tbody></table></div>
+<h3 id="example-3"><a class="anchor" href="#example-3" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Delete by ID</span>
+curl -X DELETE <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?id=eq.248373e1-0aea-45ce-8844-5ef259203749&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span>
+
+<span class="hljs-comment"># Delete with Prefer header to see deleted records</span>
+curl -X DELETE <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?status=eq.archived&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Prefer: return=representation&quot;</span></code></pre></div><h3 id="response-3"><a class="anchor" href="#response-3" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<p>Without <code>Prefer</code> header: <code>204 No Content</code></p>
+<p>With <code>Prefer: return=representation</code>:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;248373e1-0aea-45ce-8844-5ef259203749&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Deleted Post&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-01T00:00:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="error-responses"><a class="anchor" href="#error-responses" aria-hidden="true" tabindex="-1">#</a>Error Responses</h2>
+<h3 id="table-not-found-404"><a class="anchor" href="#table-not-found-404" aria-hidden="true" tabindex="-1">#</a>Table Not Found (404)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;TABLE_NOT_FOUND&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table &#x27;nonexistent&#x27; does not exist&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">404</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Check table name and try again&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="invalid-query-400"><a class="anchor" href="#invalid-query-400" aria-hidden="true" tabindex="-1">#</a>Invalid Query (400)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;INVALID_QUERY&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Invalid filter syntax&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">400</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Check PostgREST filter documentation&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><h3 id="validation-error-400"><a class="anchor" href="#validation-error-400" aria-hidden="true" tabindex="-1">#</a>Validation Error (400)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;VALIDATION_ERROR&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Invalid field type: expected boolean for &#x27;published&#x27;&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">400</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Ensure field types match the table schema&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="examples"><a class="anchor" href="#examples" aria-hidden="true" tabindex="-1">#</a>Examples</h2>
+<h3 id="pagination"><a class="anchor" href="#pagination" aria-hidden="true" tabindex="-1">#</a>Pagination</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Page 1 (first 20 records)</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?limit=20&amp;offset=0&quot;</span>
+
+<span class="hljs-comment"># Page 2 (next 20 records)</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?limit=20&amp;offset=20&quot;</span></code></pre></div><h3 id="complex-filters"><a class="anchor" href="#complex-filters" aria-hidden="true" tabindex="-1">#</a>Complex Filters</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Multiple conditions</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/posts?status=eq.published&amp;author_id=eq.123&amp;order=createdAt.desc&quot;</span>
+
+<span class="hljs-comment"># Search with pattern</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/users?email=ilike.*@company.com&quot;</span>
+
+<span class="hljs-comment"># In list</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/orders?status=in.(pending,processing)&quot;</span>
+
+<span class="hljs-comment"># Null check</span>
+curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/tasks?completed_at=is.null&quot;</span></code></pre></div><h3 id="upsert-insert-or-update"><a class="anchor" href="#upsert-insert-or-update" aria-hidden="true" tabindex="-1">#</a>Upsert (Insert or Update)</h3>
+<p>Insert a record or update it if a conflict occurs on a unique constraint.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/records/{tableName}</code></pre></div><h4 id="headers-4"><a class="anchor" href="#headers-4" aria-hidden="true" tabindex="-1">#</a>Headers</h4>
+<div class="table-wrap"><table><thead><tr><th>Header</th>
+<th>Value</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>Prefer</code></td>
+<td><code>resolution=merge-duplicates</code></td>
+<td>Update existing record on conflict</td>
+</tr><tr><td><code>Prefer</code></td>
+<td><code>resolution=ignore-duplicates</code></td>
+<td>Ignore insert if record exists</td>
+</tr></tbody></table></div>
+<h4 id="example-4"><a class="anchor" href="#example-4" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Upsert: insert or update on conflict</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/records/user_settings&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -H <span class="hljs-string">&quot;Prefer: resolution=merge-duplicates,return=representation&quot;</span> \
+  -d <span class="hljs-string">&#x27;[{
+    &quot;user_id&quot;: &quot;123e4567-e89b-12d3-a456-426614174000&quot;,
+    &quot;theme&quot;: &quot;dark&quot;,
+    &quot;notifications&quot;: true
+  }]&#x27;</span></code></pre></div><h4 id="response-4"><a class="anchor" href="#response-4" aria-hidden="true" tabindex="-1">#</a>Response</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;user_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123e4567-e89b-12d3-a456-426614174000&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;theme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;dark&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;notifications&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-01T00:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-21T11:00:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Upsert requires a unique constraint (e.g., primary key or unique index) on the table. The conflict resolution is based on this constraint.</p>
+</div></div><hr>
+<h2 id="call-rpc-function"><a class="anchor" href="#call-rpc-function" aria-hidden="true" tabindex="-1">#</a>Call RPC Function</h2>
+<p>Execute a database function via PostgREST RPC. Supports all HTTP methods (GET, POST, PUT, PATCH, DELETE).</p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/rpc/{functionName}</code></pre></div><h3 id="example-5"><a class="anchor" href="#example-5" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Call a function with parameters</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/rpc/get_user_stats&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{&quot;user_id&quot;: &quot;123e4567-e89b-12d3-a456-426614174000&quot;}&#x27;</span>
+
+<span class="hljs-comment"># Call a function without parameters</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/rpc/get_total_count&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer your-jwt-token&quot;</span></code></pre></div><h3 id="response-5"><a class="anchor" href="#response-5" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;total_posts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;total_comments&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">128</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;last_activity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-01-15T10:30:00Z&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="admin-endpoints"><a class="anchor" href="#admin-endpoints" aria-hidden="true" tabindex="-1">#</a>Admin Endpoints</h2>
+<p>The following endpoints require admin authentication.</p>
+<h3 id="headers-for-admin-endpoints"><a class="anchor" href="#headers-for-admin-endpoints" aria-hidden="true" tabindex="-1">#</a>Headers for Admin Endpoints</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">Authorization: Bearer admin-jwt-token-Or-API-Key
+Content-Type: application/json</code></pre></div><hr>
+<h2 id="list-database-functions"><a class="anchor" href="#list-database-functions" aria-hidden="true" tabindex="-1">#</a>List Database Functions</h2>
+<p>Get all database functions in the public schema. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/functions</code></pre></div><h3 id="example-6"><a class="anchor" href="#example-6" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/functions&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span></code></pre></div><h3 id="response-6"><a class="anchor" href="#response-6" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;get_user_stats&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;schema&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;public&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;language&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;plpgsql&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;returnType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;json&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;arguments&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user_id uuid&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;definition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;BEGIN ... END;&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="list-database-indexes"><a class="anchor" href="#list-database-indexes" aria-hidden="true" tabindex="-1">#</a>List Database Indexes</h2>
+<p>Get all database indexes. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/indexes</code></pre></div><h3 id="example-7"><a class="anchor" href="#example-7" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/indexes&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span></code></pre></div><h3 id="response-7"><a class="anchor" href="#response-7" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts_pkey&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;tableName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;columns&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;id&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;isUnique&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;isPrimary&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;definition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;CREATE UNIQUE INDEX posts_pkey ON public.posts USING btree (id)&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="list-rls-policies"><a class="anchor" href="#list-rls-policies" aria-hidden="true" tabindex="-1">#</a>List RLS Policies</h2>
+<p>Get all Row Level Security policies. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/policies</code></pre></div><h3 id="example-8"><a class="anchor" href="#example-8" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/policies&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span></code></pre></div><h3 id="response-8"><a class="anchor" href="#response-8" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Users can view own posts&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;tableName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SELECT&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;roles&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;authenticated&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;using&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;(auth.uid() = user_id)&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;withCheck&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="list-database-triggers"><a class="anchor" href="#list-database-triggers" aria-hidden="true" tabindex="-1">#</a>List Database Triggers</h2>
+<p>Get all database triggers. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/triggers</code></pre></div><h3 id="example-9"><a class="anchor" href="#example-9" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/triggers&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span></code></pre></div><h3 id="response-9"><a class="anchor" href="#response-9" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;update_timestamp&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;tableName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;timing&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;BEFORE&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;events&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;UPDATE&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;functionName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;update_updated_at_column&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;enabled&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span></code></pre></div><hr>
+<h2 id="list-database-migrations"><a class="anchor" href="#list-database-migrations" aria-hidden="true" tabindex="-1">#</a>List Database Migrations</h2>
+<p>Get the history of successful custom migrations. Mojobase stores these in <code>system.custom_migrations</code>, but the endpoint returns only the migration metadata and executed statements. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">GET /api/database/migrations</code></pre></div><h3 id="example-10"><a class="anchor" href="#example-10" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/migrations&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span></code></pre></div><h3 id="response-10"><a class="anchor" href="#response-10" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;migrations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;20260416170500&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;create-posts-table&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;statements&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-string">&quot;CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);&quot;</span>
+      <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-04-16T17:05:00.000Z&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="create-database-migration"><a class="anchor" href="#create-database-migration" aria-hidden="true" tabindex="-1">#</a>Create Database Migration</h2>
+<p>Create and immediately execute a custom migration against the database. The migration is recorded only if every statement succeeds. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/migrations</code></pre></div><h3 id="request-body"><a class="anchor" href="#request-body" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>version</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Numeric migration version (up to 64 digits). Accepts Drizzle-style sequential prefixes (e.g. <code>0001</code>) or a <code>YYYYMMDDHHmmss</code> timestamp. Versions are compared numerically. A 14-digit UTC timestamp (<code>YYYYMMDDHHmmss</code>) is a good default.</td>
+</tr><tr><td><code>name</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Migration name using lowercase letters, numbers, and hyphens only</td>
+</tr><tr><td><code>sql</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SQL text to parse and execute</td>
+</tr></tbody></table></div>
+<h3 id="example-11"><a class="anchor" href="#example-11" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/migrations&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;version&quot;: &quot;20260416170500&quot;,
+    &quot;name&quot;: &quot;create-posts-table&quot;,
+    &quot;sql&quot;: &quot;CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-11"><a class="anchor" href="#response-11" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;20260416170500&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;create-posts-table&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statements&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-string">&quot;CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);&quot;</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2026-04-16T17:05:00.000Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Migration executed successfully&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-warning"><span class="callout-icon" aria-hidden="true">!</span><div class="callout-body"><p>Do not include <code>BEGIN</code>, <code>COMMIT</code>, or <code>ROLLBACK</code> inside a custom migration. Mojobase executes the migration inside its own transaction.</p>
+</div></div><hr>
+<h2 id="execute-raw-sql-strict-mode"><a class="anchor" href="#execute-raw-sql-strict-mode" aria-hidden="true" tabindex="-1">#</a>Execute Raw SQL (Strict Mode)</h2>
+<p>Execute raw SQL query with strict sanitization. Blocks access to system tables and auth.users. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/advance/rawsql</code></pre></div><h3 id="request-body-1"><a class="anchor" href="#request-body-1" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>query</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SQL query to execute</td>
+</tr><tr><td><code>params</code></td>
+<td>array</td>
+<td>No</td>
+<td>Query parameters for parameterized queries</td>
+</tr></tbody></table></div>
+<h3 id="example-12"><a class="anchor" href="#example-12" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/rawsql&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;query&quot;: &quot;SELECT * FROM posts WHERE published = $1&quot;,
+    &quot;params&quot;: [true]
+  }&#x27;</span></code></pre></div><h3 id="response-12"><a class="anchor" href="#response-12" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;rows&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;248373e1-0aea-45ce-8844-5ef259203749&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;My Post&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;published&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;rowCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SELECT&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="execute-raw-sql-relaxed-mode"><a class="anchor" href="#execute-raw-sql-relaxed-mode" aria-hidden="true" tabindex="-1">#</a>Execute Raw SQL (Relaxed Mode)</h2>
+<p>Execute raw SQL query with relaxed sanitization. Allows SELECT and INSERT into system tables. <strong>Use with caution. Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/advance/rawsql/unrestricted</code></pre></div><h3 id="request-body-2"><a class="anchor" href="#request-body-2" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>query</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SQL query to execute</td>
+</tr><tr><td><code>params</code></td>
+<td>array</td>
+<td>No</td>
+<td>Query parameters for parameterized queries</td>
+</tr></tbody></table></div>
+<h3 id="example-13"><a class="anchor" href="#example-13" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/rawsql/unrestricted&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;query&quot;: &quot;SELECT * FROM auth.users LIMIT 10&quot;
+  }&#x27;</span></code></pre></div><h3 id="response-13"><a class="anchor" href="#response-13" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;rows&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>...<span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;rowCount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">10</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SELECT&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div><div class="callout callout-warning"><span class="callout-icon" aria-hidden="true">!</span><div class="callout-body"><p>This endpoint has relaxed restrictions and can access system tables. Use only when necessary and ensure proper authorization.</p>
+</div></div><hr>
+<h2 id="export-database"><a class="anchor" href="#export-database" aria-hidden="true" tabindex="-1">#</a>Export Database</h2>
+<p>Export database schema and/or data in SQL or JSON format. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/advance/export</code></pre></div><h3 id="request-body-3"><a class="anchor" href="#request-body-3" aria-hidden="true" tabindex="-1">#</a>Request Body</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>tables</code></td>
+<td>array</td>
+<td>No</td>
+<td>all</td>
+<td>List of tables to export</td>
+</tr><tr><td><code>format</code></td>
+<td>string</td>
+<td>No</td>
+<td>sql</td>
+<td>Export format (<code>sql</code> or <code>json</code>)</td>
+</tr><tr><td><code>includeData</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>true</td>
+<td>Include table data</td>
+</tr><tr><td><code>includeFunctions</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>false</td>
+<td>Include database functions</td>
+</tr><tr><td><code>includeSequences</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>false</td>
+<td>Include sequences</td>
+</tr><tr><td><code>includeViews</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>false</td>
+<td>Include views</td>
+</tr><tr><td><code>rowLimit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Maximum rows per table</td>
+</tr></tbody></table></div>
+<h3 id="example-14"><a class="anchor" href="#example-14" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/export&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \
+  -d <span class="hljs-string">&#x27;{
+    &quot;tables&quot;: [&quot;posts&quot;, &quot;comments&quot;],
+    &quot;format&quot;: &quot;sql&quot;,
+    &quot;includeData&quot;: true,
+    &quot;rowLimit&quot;: 1000
+  }&#x27;</span></code></pre></div><h3 id="response-14"><a class="anchor" href="#response-14" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;format&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sql&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;CREATE TABLE posts (...); INSERT INTO posts VALUES (...);&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;tables&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;comments&quot;</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="import-database"><a class="anchor" href="#import-database" aria-hidden="true" tabindex="-1">#</a>Import Database</h2>
+<p>Import database from SQL file. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/advance/import</code></pre></div><h3 id="request-multipartform-data"><a class="anchor" href="#request-multipartform-data" aria-hidden="true" tabindex="-1">#</a>Request (multipart/form-data)</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>file</code></td>
+<td>file</td>
+<td>Yes</td>
+<td>-</td>
+<td>SQL file to import</td>
+</tr><tr><td><code>truncate</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>false</td>
+<td>Truncate existing tables before import</td>
+</tr></tbody></table></div>
+<h3 id="example-15"><a class="anchor" href="#example-15" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/import&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -F <span class="hljs-string">&quot;file=@backup.sql&quot;</span> \
+  -F <span class="hljs-string">&quot;truncate=false&quot;</span></code></pre></div><h3 id="response-15"><a class="anchor" href="#response-15" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;filename&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;backup.sql&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;fileSize&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">102400</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;tables&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;comments&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;users&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;rowsImported&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1500</span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="bulk-upsert"><a class="anchor" href="#bulk-upsert" aria-hidden="true" tabindex="-1">#</a>Bulk Upsert</h2>
+<p>Bulk insert or update data from CSV or JSON file. <strong>Requires admin authentication.</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">POST /api/database/advance/bulk-upsert</code></pre></div><h3 id="request-multipartform-data-1"><a class="anchor" href="#request-multipartform-data-1" aria-hidden="true" tabindex="-1">#</a>Request (multipart/form-data)</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>file</code></td>
+<td>file</td>
+<td>Yes</td>
+<td>CSV or JSON file containing data</td>
+</tr><tr><td><code>table</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Target table name</td>
+</tr><tr><td><code>upsertKey</code></td>
+<td>string</td>
+<td>No</td>
+<td>Column name for upsert conflict resolution</td>
+</tr></tbody></table></div>
+<h3 id="example-16"><a class="anchor" href="#example-16" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-comment"># Import from CSV</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/bulk-upsert&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -F <span class="hljs-string">&quot;file=@data.csv&quot;</span> \
+  -F <span class="hljs-string">&quot;table=posts&quot;</span> \
+  -F <span class="hljs-string">&quot;upsertKey=id&quot;</span>
+
+<span class="hljs-comment"># Import from JSON</span>
+curl -X POST <span class="hljs-string">&quot;https://your-project.mojobase.dev/api/database/advance/bulk-upsert&quot;</span> \
+  -H <span class="hljs-string">&quot;Authorization: Bearer admin-jwt-token-Or-API-Key&quot;</span> \
+  -F <span class="hljs-string">&quot;file=@data.json&quot;</span> \
+  -F <span class="hljs-string">&quot;table=posts&quot;</span></code></pre></div><h3 id="response-16"><a class="anchor" href="#response-16" aria-hidden="true" tabindex="-1">#</a>Response</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;rowsAffected&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">150</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;totalRecords&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">150</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;table&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/rest/overview"><span class="pager-dir">Previous</span><span class="pager-title">Mojobase REST API overview</span></a>
+        <a class="pager-link next" href="/docs/sdks/rest/auth"><span class="pager-dir">Next</span><span class="pager-title">Authentication API Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#overview">Overview</a></li><li class="toc-d2"><a href="#headers">Headers</a></li><li class="toc-d2"><a href="#query-records">Query Records</a></li><li class="toc-d3"><a href="#query-parameters">Query Parameters</a></li><li class="toc-d3"><a href="#filter-operators">Filter Operators</a></li><li class="toc-d3"><a href="#example">Example</a></li><li class="toc-d3"><a href="#response">Response</a></li><li class="toc-d3"><a href="#response-headers">Response Headers</a></li><li class="toc-d2"><a href="#create-records">Create Records</a></li><li class="toc-d3"><a href="#headers-1">Headers</a></li><li class="toc-d3"><a href="#example-1">Example</a></li><li class="toc-d3"><a href="#response-1">Response</a></li><li class="toc-d2"><a href="#update-records">Update Records</a></li><li class="toc-d3"><a href="#query-parameters-1">Query Parameters</a></li><li class="toc-d3"><a href="#headers-2">Headers</a></li><li class="toc-d3"><a href="#example-2">Example</a></li><li class="toc-d3"><a href="#response-2">Response</a></li><li class="toc-d2"><a href="#delete-records">Delete Records</a></li><li class="toc-d3"><a href="#query-parameters-2">Query Parameters</a></li><li class="toc-d3"><a href="#headers-3">Headers</a></li><li class="toc-d3"><a href="#example-3">Example</a></li><li class="toc-d3"><a href="#response-3">Response</a></li><li class="toc-d2"><a href="#error-responses">Error Responses</a></li><li class="toc-d3"><a href="#table-not-found-404">Table Not Found (404)</a></li><li class="toc-d3"><a href="#invalid-query-400">Invalid Query (400)</a></li><li class="toc-d3"><a href="#validation-error-400">Validation Error (400)</a></li><li class="toc-d2"><a href="#examples">Examples</a></li><li class="toc-d3"><a href="#pagination">Pagination</a></li><li class="toc-d3"><a href="#complex-filters">Complex Filters</a></li><li class="toc-d3"><a href="#upsert-insert-or-update">Upsert (Insert or Update)</a></li><li class="toc-d2"><a href="#call-rpc-function">Call RPC Function</a></li><li class="toc-d3"><a href="#example-5">Example</a></li><li class="toc-d3"><a href="#response-5">Response</a></li><li class="toc-d2"><a href="#admin-endpoints">Admin Endpoints</a></li><li class="toc-d3"><a href="#headers-for-admin-endpoints">Headers for Admin Endpoints</a></li><li class="toc-d2"><a href="#list-database-functions">List Database Functions</a></li><li class="toc-d3"><a href="#example-6">Example</a></li><li class="toc-d3"><a href="#response-6">Response</a></li><li class="toc-d2"><a href="#list-database-indexes">List Database Indexes</a></li><li class="toc-d3"><a href="#example-7">Example</a></li><li class="toc-d3"><a href="#response-7">Response</a></li><li class="toc-d2"><a href="#list-rls-policies">List RLS Policies</a></li><li class="toc-d3"><a href="#example-8">Example</a></li><li class="toc-d3"><a href="#response-8">Response</a></li><li class="toc-d2"><a href="#list-database-triggers">List Database Triggers</a></li><li class="toc-d3"><a href="#example-9">Example</a></li><li class="toc-d3"><a href="#response-9">Response</a></li><li class="toc-d2"><a href="#list-database-migrations">List Database Migrations</a></li><li class="toc-d3"><a href="#example-10">Example</a></li><li class="toc-d3"><a href="#response-10">Response</a></li><li class="toc-d2"><a href="#create-database-migration">Create Database Migration</a></li><li class="toc-d3"><a href="#request-body">Request Body</a></li><li class="toc-d3"><a href="#example-11">Example</a></li><li class="toc-d3"><a href="#response-11">Response</a></li><li class="toc-d2"><a href="#execute-raw-sql-strict-mode">Execute Raw SQL (Strict Mode)</a></li><li class="toc-d3"><a href="#request-body-1">Request Body</a></li><li class="toc-d3"><a href="#example-12">Example</a></li><li class="toc-d3"><a href="#response-12">Response</a></li><li class="toc-d2"><a href="#execute-raw-sql-relaxed-mode">Execute Raw SQL (Relaxed Mode)</a></li><li class="toc-d3"><a href="#request-body-2">Request Body</a></li><li class="toc-d3"><a href="#example-13">Example</a></li><li class="toc-d3"><a href="#response-13">Response</a></li><li class="toc-d2"><a href="#export-database">Export Database</a></li><li class="toc-d3"><a href="#request-body-3">Request Body</a></li><li class="toc-d3"><a href="#example-14">Example</a></li><li class="toc-d3"><a href="#response-14">Response</a></li><li class="toc-d2"><a href="#import-database">Import Database</a></li><li class="toc-d3"><a href="#request-multipartform-data">Request (multipart/form-data)</a></li><li class="toc-d3"><a href="#example-15">Example</a></li><li class="toc-d3"><a href="#response-15">Response</a></li><li class="toc-d2"><a href="#bulk-upsert">Bulk Upsert</a></li><li class="toc-d3"><a href="#request-multipartform-data-1">Request (multipart/form-data)</a></li><li class="toc-d3"><a href="#example-16">Example</a></li><li class="toc-d3"><a href="#response-16">Response</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

@@ -302,6 +302,28 @@ export default defineConfig(
       },
     },
   },
+  // Mojobase docs site generator (Node) and its browser script
+  {
+    files: ['docs-site/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node, ...globals.es2021 },
+    },
+    rules: {
+      // MDX/Markdown parsing matches literal runs of spaces and NUL placeholders.
+      'no-regex-spaces': 'off',
+      'no-control-regex': 'off',
+    },
+  },
+  {
+    files: ['docs-site/assets/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'script',
+      globals: { ...globals.browser },
+    },
+  },
   // Global ignores
   {
     ignores: [

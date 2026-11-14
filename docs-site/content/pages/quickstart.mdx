@@ -1,0 +1,100 @@
+---
+title: "Quickstart"
+description: "Create a Mojobase project, connect your app or coding agent, and make your first database call in a few minutes."
+---
+
+## Step 1: Create a project
+
+<Steps>
+  <Step title="Sign up">
+    Go to [mojobase.dev](https://mojobase.dev) and create a free account (verify your email if asked).
+  </Step>
+  <Step title="Create a project">
+    Click **New project**, give it a name, and wait about a minute while its backend (Postgres, auth, storage, functions, realtime) is provisioned.
+  </Step>
+  <Step title="Open Connect">
+    When the project is **ready**, click **Connect**. You'll see the **Project URL**, the **Anon key** (`anon_...`), the admin **API key** (`ik_...`) and the Postgres **connection string**.
+  </Step>
+</Steps>
+
+## Step 2: Connect your coding agent
+
+The fastest path: click the project's **AI prompt** button and paste the prompt into Claude Code, Cursor, Codex, Windsurf, Copilot or any coding agent, inside your app's folder. The prompt contains your real project URL, keys and connection string plus instructions for schema, security, auth, database, storage, functions and realtime, so the agent can wire the backend into your app without asking you for anything.
+
+To let the agent manage your backend directly (create tables, run SQL, deploy functions), also connect it over MCP:
+
+<Tabs>
+  <Tab title="Hosted MCP (all projects)">
+    Create a personal access token (`mbp_...`) at [mojobase.dev/agents](https://mojobase.dev/agents), then add the server. For Claude Code:
+
+    ```bash
+    claude mcp add --transport http mojobase https://mojobase.dev/mcp \
+      --header "Authorization: Bearer mbp_your_token"
+    ```
+
+    The agent can now list and create projects, run SQL, manage buckets and functions, and fetch connection details. See [MCP setup](/mcp-setup) for Cursor, Windsurf, VS Code and others.
+  </Tab>
+  <Tab title="Per-project MCP">
+    Install the project-scoped MCP server into your client with your project's admin API key:
+
+    ```bash
+    npx @mojobase/install --client claude-code \
+      --env API_KEY=ik_your_api_key \
+      --env API_BASE_URL=https://your-project.mojobase.dev
+    ```
+
+    Replace `claude-code` with `cursor`, `windsurf`, `vscode`, `codex` and so on. See [MCP setup](/mcp-setup).
+  </Tab>
+</Tabs>
+
+## Step 3: Or wire the SDK yourself
+
+<CodeGroup>
+```bash npm
+npm install @mojobase/sdk
+```
+
+```bash yarn
+yarn add @mojobase/sdk
+```
+
+```bash pnpm
+pnpm add @mojobase/sdk
+```
+</CodeGroup>
+
+```typescript lib/mojobase.ts
+import { createClient } from '@mojobase/sdk';
+
+export const mojobase = createClient({
+  baseUrl: 'https://your-project.mojobase.dev',
+  anonKey: 'anon_your_anon_key',
+});
+```
+
+Create a table from the dashboard's **SQL Editor** (or let your agent do it), then query it:
+
+```sql
+create table public.todos (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  done boolean not null default false,
+  user_id uuid default auth.uid() references auth.users(id) on delete cascade
+);
+alter table public.todos enable row level security;
+create policy "own todos" on public.todos
+  for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+```
+
+```typescript
+const { data, error } = await mojobase.database.from('todos').select('*');
+```
+
+Every SDK call returns `{ data, error }`. Keep the `ik_` API key and the connection string on the server: the anon key is the only one that belongs in browser code.
+
+## Next steps
+
+- [Database](/core-concepts/database/overview) and [row-level security](/core-concepts/database/overview)
+- [Authentication](/core-concepts/authentication/overview)
+- [Framework guides](/examples/overview) for Next.js, React, Vue, Nuxt and Svelte
+- [Connection string & direct Postgres](/core-concepts/database/connection-string)

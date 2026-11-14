@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swift authentication SDK reference · Mojobase Docs</title>
+<meta name="description" content="Sign up, sign in, verify email, manage sessions, and configure OAuth URL schemes for iOS, macOS, tvOS, and watchOS with the Mojobase Swift SDK.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link active" href="/docs/sdks/swift/auth" aria-current="page">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">Swift</div>
+      <h1>Swift authentication SDK reference</h1>
+      <p class="lead">Sign up, sign in, verify email, manage sessions, and configure OAuth URL schemes for iOS, macOS, tvOS, and watchOS with the Mojobase Swift SDK.</p>
+      <div class="prose">
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Mojobase is compatible with the open-source InsForge Swift SDK. Mojobase does not publish its own Swift package, so install the InsForge one as shown and point it at your Mojobase project URL (<code>https://your-project.mojobase.dev</code>) and the anon key from the project&#39;s <strong>Connect</strong> panel.</p>
+</div></div><h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true" tabindex="-1">#</a>Installation</h2>
+<p>Add Mojobase to your Swift Package Manager dependencies:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift">dependencies: [
+    .package(url: <span class="hljs-string">&quot;https://github.com/insforge/insforge-swift.git&quot;</span>, from: <span class="hljs-string">&quot;0.0.9&quot;</span>)
+]</code></pre></div><div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">import</span> InsForge
+
+<span class="hljs-keyword">let</span> mojobase <span class="hljs-operator">=</span> <span class="hljs-type">InsForgeClient</span>(
+    baseURL: <span class="hljs-type">URL</span>(string: <span class="hljs-string">&quot;https://your-project.mojobase.dev&quot;</span>)<span class="hljs-operator">!</span>,
+    anonKey: <span class="hljs-string">&quot;your-anon-key&quot;</span>
+)</code></pre></div><h3 id="enable-logging-optional"><a class="anchor" href="#enable-logging-optional" aria-hidden="true" tabindex="-1">#</a>Enable Logging (Optional)</h3>
+<p>For debugging, you can configure the SDK log level and destination:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">let</span> options <span class="hljs-operator">=</span> <span class="hljs-type">InsForgeClientOptions</span>(
+    global: .<span class="hljs-keyword">init</span>(
+        logLevel: .debug,
+        logDestination: .osLog,
+        logSubsystem: <span class="hljs-string">&quot;com.example.MyApp&quot;</span>
+    )
+)
+
+<span class="hljs-keyword">let</span> mojobase <span class="hljs-operator">=</span> <span class="hljs-type">InsForgeClient</span>(
+    baseURL: <span class="hljs-type">URL</span>(string: <span class="hljs-string">&quot;https://your-project.mojobase.dev&quot;</span>)<span class="hljs-operator">!</span>,
+    anonKey: <span class="hljs-string">&quot;your-anon-key&quot;</span>,
+    options: options
+)</code></pre></div><p><strong>Log Levels:</strong></p>
+<div class="table-wrap"><table><thead><tr><th>Level</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>.trace</code></td>
+<td>Most verbose, includes all internal details</td>
+</tr><tr><td><code>.debug</code></td>
+<td>Detailed information for debugging</td>
+</tr><tr><td><code>.info</code></td>
+<td>General operational information (default)</td>
+</tr><tr><td><code>.warning</code></td>
+<td>Warnings that don&#39;t prevent operation</td>
+</tr><tr><td><code>.error</code></td>
+<td>Errors that affect functionality</td>
+</tr><tr><td><code>.critical</code></td>
+<td>Critical failures</td>
+</tr></tbody></table></div>
+<p><strong>Log Destinations:</strong></p>
+<div class="table-wrap"><table><thead><tr><th>Destination</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>.console</code></td>
+<td>Standard output (print)</td>
+</tr><tr><td><code>.osLog</code></td>
+<td>Apple&#39;s unified logging system (recommended for iOS/macOS)</td>
+</tr><tr><td><code>.none</code></td>
+<td>Disable logging</td>
+</tr><tr><td><code>.custom</code></td>
+<td>Provide your own LogHandler factory</td>
+</tr></tbody></table></div>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Use <code>.info</code> or <code>.error</code> in production to avoid exposing sensitive data in logs.</p>
+</div></div><h2 id="signup"><a class="anchor" href="#signup" aria-hidden="true" tabindex="-1">#</a>signUp()</h2>
+<p>Create a new user account with email and password.</p>
+<h3 id="parameters"><a class="anchor" href="#parameters" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (String) - User&#39;s email address</li>
+<li><code>password</code> (String) - User&#39;s password</li>
+<li><code>name</code> (String, optional) - User&#39;s display name</li>
+</ul>
+<h3 id="returns"><a class="anchor" href="#returns" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-type">SignUpResponse</span></code></pre></div><h3 id="signupresponse"><a class="anchor" href="#signupresponse" aria-hidden="true" tabindex="-1">#</a>SignUpResponse</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">public</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">SignUpResponse</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Sendable</span> {
+    <span class="hljs-comment">/// User object (nil when email verification is required)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> user: <span class="hljs-type">User</span>?
+    <span class="hljs-comment">/// Access token (nil when email verification is required)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> accessToken: <span class="hljs-type">String</span>?
+    <span class="hljs-comment">/// Refresh token (nil when email verification is required)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> refreshToken: <span class="hljs-type">String</span>?
+    <span class="hljs-comment">/// Indicates if email verification is required before sign-in</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> requireEmailVerification: <span class="hljs-type">Bool</span>?
+
+    <span class="hljs-comment">/// Check if email verification is required</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">var</span> needsEmailVerification: <span class="hljs-type">Bool</span>
+    <span class="hljs-comment">/// Check if sign up completed with session (no verification required)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">var</span> hasSession: <span class="hljs-type">Bool</span>
+}</code></pre></div><h3 id="example-complete-flow-with-verification"><a class="anchor" href="#example-complete-flow-with-verification" aria-hidden="true" tabindex="-1">#</a>Example (complete flow with verification)</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">func</span> <span class="hljs-title function_">handleSignUp</span>(<span class="hljs-params">email</span>: <span class="hljs-type">String</span>, <span class="hljs-params">password</span>: <span class="hljs-type">String</span>, <span class="hljs-params">name</span>: <span class="hljs-type">String</span>?) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">do</span> {
+        <span class="hljs-keyword">let</span> result <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.signUp(
+            email: email,
+            password: password,
+            name: name
+        )
+
+        <span class="hljs-keyword">if</span> result.needsEmailVerification {
+            <span class="hljs-comment">// Show verification code input screen</span>
+            <span class="hljs-comment">// User will receive a 6-digit code via email</span>
+            showEmailVerificationScreen(email: email)
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.hasSession {
+            <span class="hljs-comment">// Registration complete, user is signed in</span>
+            navigateToDashboard()
+        }
+    } <span class="hljs-keyword">catch</span> {
+        showError(error.localizedDescription)
+    }
+}
+
+<span class="hljs-comment">// Called when user enters the verification code</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">handleVerifyEmail</span>(<span class="hljs-params">email</span>: <span class="hljs-type">String</span>, <span class="hljs-params">code</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">do</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.verifyEmail(email: email, code: code)
+        <span class="hljs-comment">// Verification successful, user can now sign in</span>
+        navigateToSignIn()
+    } <span class="hljs-keyword">catch</span> {
+        showError(<span class="hljs-string">&quot;Invalid verification code&quot;</span>)
+    }
+}
+
+<span class="hljs-comment">// Called when user requests a new verification email</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">handleResendCode</span>(<span class="hljs-params">email</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">do</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.resendVerificationEmail(email: email)
+        showMessage(<span class="hljs-string">&quot;Verification email sent to <span class="hljs-subst">\(email)</span>&quot;</span>)
+    } <span class="hljs-keyword">catch</span> {
+        showError(<span class="hljs-string">&quot;Failed to resend verification email&quot;</span>)
+    }
+}</code></pre></div><h3 id="email-verification"><a class="anchor" href="#email-verification" aria-hidden="true" tabindex="-1">#</a>Email verification</h3>
+<p>For users who register with email, the Mojobase backend provides three options:</p>
+<ol>
+<li><strong>No email verification</strong> - Users can sign in immediately after registration. <code>SignUpResponse</code> will have <code>hasSession = true</code>.</li>
+<li><strong>Link-based verification</strong> - Users must open their email and click the verification link before they can sign in.</li>
+<li><strong>Code-based verification</strong> - The Mojobase backend sends a 6-digit verification code to the user&#39;s email. The client app needs to display a verification screen where users can enter the code, then call <code>verifyEmail(email:code:)</code> to complete verification. Only after this can users sign in with email + password.</li>
+</ol>
+<p>When <code>requireEmailVerification</code> is <code>true</code>, the response will have:</p>
+<ul>
+<li><code>accessToken = nil</code></li>
+<li><code>user = nil</code></li>
+<li><code>needsEmailVerification = true</code></li>
+</ul>
+<p>This indicates that verification via option 2 or 3 is required before the user can sign in.</p>
+<h3 id="related-methods"><a class="anchor" href="#related-methods" aria-hidden="true" tabindex="-1">#</a>Related methods</h3>
+<div class="table-wrap"><table><thead><tr><th>Method</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>verifyEmail(email:code:)</code></td>
+<td>Verify email with 6-digit code</td>
+</tr><tr><td><code>resendVerificationEmail(email:)</code></td>
+<td>Resend verification email</td>
+</tr></tbody></table></div>
+<hr>
+<h2 id="signin"><a class="anchor" href="#signin" aria-hidden="true" tabindex="-1">#</a>signIn()</h2>
+<p>Sign in an existing user with email and password.</p>
+<h3 id="parameters-1"><a class="anchor" href="#parameters-1" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (String) - User&#39;s email address</li>
+<li><code>password</code> (String) - User&#39;s password</li>
+</ul>
+<h3 id="example"><a class="anchor" href="#example" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">let</span> result <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.signIn(
+        email: <span class="hljs-string">&quot;user@example.com&quot;</span>,
+        password: <span class="hljs-string">&quot;secure_password123&quot;</span>
+    )
+
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> user <span class="hljs-operator">=</span> result.user {
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Welcome back, <span class="hljs-subst">\(user.profile<span class="hljs-operator">?</span>.name <span class="hljs-operator">??</span> user.email)</span>&quot;</span>)
+    }
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Sign in failed: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><h3 id="email-verification-1"><a class="anchor" href="#email-verification-1" aria-hidden="true" tabindex="-1">#</a>Email verification</h3>
+<p>If the sign in response is:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;FORBIDDEN&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Email verification required&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;statusCode&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">403</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;nextActions&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Please verify your email address before logging in&quot;</span><span class="hljs-punctuation">}</span></code></pre></div><p>This indicates that verification via option 2 or 3 (link or code, see <a href="#email-verification">signUp()</a>) is required before the user can sign in.</p>
+<hr>
+<h2 id="signout"><a class="anchor" href="#signout" aria-hidden="true" tabindex="-1">#</a>signOut()</h2>
+<p>Sign out the current user.</p>
+<h3 id="example-1"><a class="anchor" href="#example-1" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.signOut()
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;User signed out&quot;</span>)
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Sign out failed: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h2 id="getcurrentuser"><a class="anchor" href="#getcurrentuser" aria-hidden="true" tabindex="-1">#</a>getCurrentUser()</h2>
+<p>Get authenticated user with profile data.</p>
+<h3 id="example-2"><a class="anchor" href="#example-2" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> user <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.getCurrentUser() {
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Email: <span class="hljs-subst">\(user.email)</span>&quot;</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Name: <span class="hljs-subst">\(user.profile<span class="hljs-operator">?</span>.name <span class="hljs-operator">??</span> <span class="hljs-string">&quot;N/A&quot;</span>)</span>&quot;</span>)
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;No user signed in&quot;</span>)
+    }
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Error: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h2 id="setprofile"><a class="anchor" href="#setprofile" aria-hidden="true" tabindex="-1">#</a>setProfile()</h2>
+<p>Update current user&#39;s profile.</p>
+<h3 id="example-3"><a class="anchor" href="#example-3" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">let</span> result <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.setProfile([
+        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;JohnDev&quot;</span>,
+        <span class="hljs-string">&quot;bio&quot;</span>: <span class="hljs-string">&quot;iOS Developer&quot;</span>,
+        <span class="hljs-string">&quot;avatar_url&quot;</span>: <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span>
+    ])
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Profile updated&quot;</span>)
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Update failed: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h2 id="password-reset"><a class="anchor" href="#password-reset" aria-hidden="true" tabindex="-1">#</a>Password reset</h2>
+<p>Mojobase supports two password reset methods, configured in the backend:</p>
+<ul>
+<li><strong>Code method</strong>: User receives a 6-digit code via email, verifies it to get a reset token, then resets password</li>
+<li><strong>Link method</strong>: User receives a magic link via email containing the reset token, then resets password directly</li>
+</ul>
+<h3 id="sendpasswordreset"><a class="anchor" href="#sendpasswordreset" aria-hidden="true" tabindex="-1">#</a>sendPasswordReset()</h3>
+<p>Send a password reset email to the user. The email will contain either a 6-digit code or a magic link depending on the backend configuration.</p>
+<h4 id="parameters-2"><a class="anchor" href="#parameters-2" aria-hidden="true" tabindex="-1">#</a>Parameters</h4>
+<ul>
+<li><code>email</code> (String) - User&#39;s email address</li>
+</ul>
+<h4 id="example-4"><a class="anchor" href="#example-4" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.sendPasswordReset(email: <span class="hljs-string">&quot;user@example.com&quot;</span>)
+    <span class="hljs-comment">// Show message to check email</span>
+    showMessage(<span class="hljs-string">&quot;If your email is registered, you will receive a password reset email.&quot;</span>)
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Failed to send reset email: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h3 id="exchangeresetpasswordtoken"><a class="anchor" href="#exchangeresetpasswordtoken" aria-hidden="true" tabindex="-1">#</a>exchangeResetPasswordToken()</h3>
+<p>Exchange a 6-digit reset code for a reset token. <strong>This method is only used with the code-based reset flow.</strong></p>
+<h4 id="parameters-3"><a class="anchor" href="#parameters-3" aria-hidden="true" tabindex="-1">#</a>Parameters</h4>
+<ul>
+<li><code>email</code> (String) - User&#39;s email address</li>
+<li><code>code</code> (String) - 6-digit numeric code received via email</li>
+</ul>
+<h4 id="returns-1"><a class="anchor" href="#returns-1" aria-hidden="true" tabindex="-1">#</a>Returns</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-type">ResetPasswordTokenResponse</span></code></pre></div><h4 id="resetpasswordtokenresponse"><a class="anchor" href="#resetpasswordtokenresponse" aria-hidden="true" tabindex="-1">#</a>ResetPasswordTokenResponse</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">public</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">ResetPasswordTokenResponse</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Sendable</span> {
+    <span class="hljs-comment">/// Reset token to use with resetPassword()</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> token: <span class="hljs-type">String</span>
+    <span class="hljs-comment">/// Token expiration timestamp</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">let</span> expiresAt: <span class="hljs-type">Date</span>?
+}</code></pre></div><h4 id="example-5"><a class="anchor" href="#example-5" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">let</span> response <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.exchangeResetPasswordToken(
+        email: <span class="hljs-string">&quot;user@example.com&quot;</span>,
+        code: <span class="hljs-string">&quot;123456&quot;</span>
+    )
+    <span class="hljs-comment">// Store the token and proceed to password reset screen</span>
+    <span class="hljs-keyword">let</span> resetToken <span class="hljs-operator">=</span> response.token
+    showPasswordResetScreen(token: resetToken)
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Invalid or expired code: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h3 id="resetpassword"><a class="anchor" href="#resetpassword" aria-hidden="true" tabindex="-1">#</a>resetPassword()</h3>
+<p>Reset the user&#39;s password using a reset token.</p>
+<h4 id="parameters-4"><a class="anchor" href="#parameters-4" aria-hidden="true" tabindex="-1">#</a>Parameters</h4>
+<ul>
+<li><code>otp</code> (String) - Reset token (from <code>exchangeResetPasswordToken()</code> for code flow, or from magic link URL for link flow)</li>
+<li><code>newPassword</code> (String) - New password meeting the configured requirements</li>
+</ul>
+<h4 id="example-6"><a class="anchor" href="#example-6" aria-hidden="true" tabindex="-1">#</a>Example</h4>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.resetPassword(
+        otp: resetToken,
+        newPassword: <span class="hljs-string">&quot;newSecurePassword123&quot;</span>
+    )
+    <span class="hljs-comment">// Password reset successful</span>
+    showMessage(<span class="hljs-string">&quot;Password reset successfully. You can now sign in.&quot;</span>)
+    navigateToSignIn()
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Password reset failed: <span class="hljs-subst">\(error)</span>&quot;</span>)
+}</code></pre></div><hr>
+<h2 id="signinwithoauthview"><a class="anchor" href="#signinwithoauthview" aria-hidden="true" tabindex="-1">#</a>signInWithOAuthView()</h2>
+<p>Sign in directly with a specific OAuth provider. This method opens the OAuth provider&#39;s authentication page directly.</p>
+<p>On iOS 12+ and macOS 10.15+, the SDK uses <code>ASWebAuthenticationSession</code> to present an in-app authentication browser with automatic callback handling.</p>
+<h3 id="supported-providers"><a class="anchor" href="#supported-providers" aria-hidden="true" tabindex="-1">#</a>Supported providers</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">OAuthProvider</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">Sendable</span> {
+    <span class="hljs-keyword">case</span> google
+    <span class="hljs-keyword">case</span> github
+    <span class="hljs-keyword">case</span> discord
+    <span class="hljs-keyword">case</span> linkedin
+    <span class="hljs-keyword">case</span> facebook
+    <span class="hljs-keyword">case</span> instagram
+    <span class="hljs-keyword">case</span> tiktok
+    <span class="hljs-keyword">case</span> apple
+    <span class="hljs-keyword">case</span> x
+    <span class="hljs-keyword">case</span> spotify
+    <span class="hljs-keyword">case</span> microsoft
+}</code></pre></div><h3 id="parameters-5"><a class="anchor" href="#parameters-5" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>provider</code> (<code>OAuthProvider</code>) - The OAuth provider to authenticate with</li>
+<li><code>redirectTo</code> (<code>String</code>) - Callback URL where Mojobase will redirect after authentication</li>
+</ul>
+<h3 id="returns-2"><a class="anchor" href="#returns-2" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-type">AuthResponse</span></code></pre></div><p>Returns <code>AuthResponse</code> containing the authenticated user and session tokens.</p>
+<h3 id="authentication-flow"><a class="anchor" href="#authentication-flow" aria-hidden="true" tabindex="-1">#</a>Authentication flow</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">text</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs">1. App calls signInWithOAuthView(provider:redirectTo:)
+2. SDK fetches the OAuth authorization URL from Mojobase
+3. SDK opens in-app authentication browser (ASWebAuthenticationSession)
+4. User authenticates with the provider (Google, GitHub, etc.)
+5. SDK automatically handles callback and creates session
+6. Method returns AuthResponse with user data</code></pre></div><h3 id="example-7"><a class="anchor" href="#example-7" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> InsForge
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">LoginView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> client: <span class="hljs-type">InsForgeClient</span>
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> currentUser: <span class="hljs-type">User</span>?
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> errorMessage: <span class="hljs-type">String</span>?
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">VStack</span>(spacing: <span class="hljs-number">16</span>) {
+            <span class="hljs-type">Text</span>(<span class="hljs-string">&quot;Sign in with&quot;</span>)
+                .font(.headline)
+
+            <span class="hljs-comment">// Google Sign In</span>
+            <span class="hljs-type">Button</span> {
+                <span class="hljs-type">Task</span> {
+                    <span class="hljs-keyword">do</span> {
+                        <span class="hljs-keyword">let</span> response <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> client.auth.signInWithOAuthView(
+                            provider: .google,
+                            redirectTo: <span class="hljs-string">&quot;yourapp://auth/callback&quot;</span>
+                        )
+                        currentUser <span class="hljs-operator">=</span> response.user
+                    } <span class="hljs-keyword">catch</span> {
+                        errorMessage <span class="hljs-operator">=</span> error.localizedDescription
+                    }
+                }
+            } label: {
+                <span class="hljs-type">HStack</span> {
+                    <span class="hljs-type">Image</span>(systemName: <span class="hljs-string">&quot;g.circle.fill&quot;</span>)
+                    <span class="hljs-type">Text</span>(<span class="hljs-string">&quot;Continue with Google&quot;</span>)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> error <span class="hljs-operator">=</span> errorMessage {
+                <span class="hljs-type">Text</span>(error)
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
+        }
+        .padding()
+    }
+}</code></pre></div><h3 id="url-scheme-configuration"><a class="anchor" href="#url-scheme-configuration" aria-hidden="true" tabindex="-1">#</a>URL scheme configuration</h3>
+<p>Register a callback URL for your app, pass that exact value to <code>redirectTo</code>, and add the same value to <code>allowedRedirectUrls</code> in Auth Settings. For example, you can use a deep link such as <code>yourapp://auth/callback</code> or a claimed HTTPS callback such as <code>https://app.example.com/auth/callback</code>. Requests fail with HTTP 400 if <code>redirectTo</code> is not allowlisted.</p>
+<hr>
+<h2 id="error-handling"><a class="anchor" href="#error-handling" aria-hidden="true" tabindex="-1">#</a>Error handling</h2>
+<div class="code-block"><div class="code-head"><span class="code-title">swift</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-swift"><span class="hljs-keyword">do</span> {
+    <span class="hljs-keyword">let</span> result <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> mojobase.auth.signIn(
+        email: email,
+        password: password
+    )
+} <span class="hljs-keyword">catch</span> <span class="hljs-keyword">let</span> error <span class="hljs-keyword">as</span> <span class="hljs-type">InsForgeAuthError</span> {
+    <span class="hljs-keyword">switch</span> error {
+    <span class="hljs-keyword">case</span> .invalidCredentials:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Invalid email or password&quot;</span>)
+    <span class="hljs-keyword">case</span> .userNotFound:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;User not found&quot;</span>)
+    <span class="hljs-keyword">case</span> .emailNotVerified:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Please verify your email&quot;</span>)
+    <span class="hljs-keyword">case</span> .networkError(<span class="hljs-keyword">let</span> underlying):
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Network error: <span class="hljs-subst">\(underlying)</span>&quot;</span>)
+    <span class="hljs-keyword">default</span>:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Auth error: <span class="hljs-subst">\(error.localizedDescription)</span>&quot;</span>)
+    }
+}</code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/swift/database"><span class="pager-dir">Previous</span><span class="pager-title">Database SDK Reference</span></a>
+        <a class="pager-link next" href="/docs/sdks/swift/storage"><span class="pager-dir">Next</span><span class="pager-title">Storage SDK Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#installation">Installation</a></li><li class="toc-d3"><a href="#enable-logging-optional">Enable Logging (Optional)</a></li><li class="toc-d2"><a href="#signup">signUp()</a></li><li class="toc-d3"><a href="#parameters">Parameters</a></li><li class="toc-d3"><a href="#returns">Returns</a></li><li class="toc-d3"><a href="#signupresponse">SignUpResponse</a></li><li class="toc-d3"><a href="#example-complete-flow-with-verification">Example (complete flow with verification)</a></li><li class="toc-d3"><a href="#email-verification">Email verification</a></li><li class="toc-d3"><a href="#related-methods">Related methods</a></li><li class="toc-d2"><a href="#signin">signIn()</a></li><li class="toc-d3"><a href="#parameters-1">Parameters</a></li><li class="toc-d3"><a href="#example">Example</a></li><li class="toc-d3"><a href="#email-verification-1">Email verification</a></li><li class="toc-d2"><a href="#signout">signOut()</a></li><li class="toc-d3"><a href="#example-1">Example</a></li><li class="toc-d2"><a href="#getcurrentuser">getCurrentUser()</a></li><li class="toc-d3"><a href="#example-2">Example</a></li><li class="toc-d2"><a href="#setprofile">setProfile()</a></li><li class="toc-d3"><a href="#example-3">Example</a></li><li class="toc-d2"><a href="#password-reset">Password reset</a></li><li class="toc-d3"><a href="#sendpasswordreset">sendPasswordReset()</a></li><li class="toc-d3"><a href="#exchangeresetpasswordtoken">exchangeResetPasswordToken()</a></li><li class="toc-d3"><a href="#resetpassword">resetPassword()</a></li><li class="toc-d2"><a href="#signinwithoauthview">signInWithOAuthView()</a></li><li class="toc-d3"><a href="#supported-providers">Supported providers</a></li><li class="toc-d3"><a href="#parameters-5">Parameters</a></li><li class="toc-d3"><a href="#returns-2">Returns</a></li><li class="toc-d3"><a href="#authentication-flow">Authentication flow</a></li><li class="toc-d3"><a href="#example-7">Example</a></li><li class="toc-d3"><a href="#url-scheme-configuration">URL scheme configuration</a></li><li class="toc-d2"><a href="#error-handling">Error handling</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

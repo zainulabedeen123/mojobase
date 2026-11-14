@@ -1,0 +1,62 @@
+---
+title: "Database migrations"
+description: "Version Postgres schema changes as ordered SQL migrations and apply them through the migrations API, your ORM, or your coding agent."
+---
+
+Migrations are versioned SQL changes applied in order. Each successful migration is recorded in `system.custom_migrations`, so you always know which changes a project has. The workflow is forward-only.
+
+## Concepts
+
+A migration has a numeric `version` (a 14-digit UTC timestamp such as `20260416170500`, or a sequential prefix like `0001`), a `name` made of lowercase letters, numbers and hyphens, and the SQL to run. Migrations run inside a transaction with `search_path` set to `public`, and history is recorded only on success. PostgREST reloads schema metadata automatically. `BEGIN`/`COMMIT`/`ROLLBACK` inside a migration are rejected.
+
+## Usage
+
+Keep migrations as files in your repo, for example `migrations/20260416170500_create-employees-table.sql`:
+
+```sql
+create table if not exists public.employees (
+  id bigint primary key generated always as identity,
+  name text not null,
+  email text,
+  created_at timestamptz default now()
+);
+```
+
+Apply it with the migrations API and your admin API key:
+
+```bash
+curl -X POST https://your-project.mojobase.dev/api/database/migrations \
+  -H "Authorization: Bearer ik_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"version":"20260416170500","name":"create-employees-table","sql":"create table if not exists public.employees (id bigint primary key generated always as identity, name text not null)"}'
+```
+
+List what has been applied with `GET /api/database/migrations`. See the [Database REST reference](/sdks/rest/database) for the full request and response shapes.
+
+You can also:
+
+- Ask your coding agent to write and apply the migration over [MCP](/mcp-setup).
+- Use your ORM's migration tool (Prisma, Drizzle, Knex) over the [connection string](/core-concepts/database/connection-string).
+- Paste one-off SQL into the dashboard's **SQL Editor**.
+
+## Specific usage cases
+
+Once a migration is applied, never edit it in place. Write a forward migration instead.
+
+Once you opt in, route all schema changes through migrations. Ad hoc dashboard edits cause drift between git and `system.custom_migrations`.
+
+## Non-transactional statements
+
+Because each migration runs inside a single transaction, a few PostgreSQL commands that **cannot run inside a transaction block** will fail with an error like `CREATE INDEX CONCURRENTLY cannot run inside a transaction block`:
+
+- `CREATE INDEX CONCURRENTLY` — use a plain `CREATE INDEX` in a migration when a brief write lock is acceptable, or run the concurrent build outside a migration.
+- `VACUUM` — routine vacuuming is handled by PostgreSQL autovacuum.
+- `REINDEX ... CONCURRENTLY`, `ALTER TYPE ... ADD VALUE` (on older PostgreSQL), and similar commands.
+
+Run these outside a migration over the [connection string](/core-concepts/database/connection-string) with `psql`, or with the unrestricted raw-SQL endpoint (`POST /api/database/advance/rawsql/unrestricted`).
+
+## More resources
+
+- [Database overview](/core-concepts/database/overview) for how PostgREST picks up schema changes.
+- [Database backups](/core-concepts/database/backups) to snapshot before a risky change.
+- [PostgreSQL DDL docs](https://www.postgresql.org/docs/15/ddl.html) for the SQL you write.

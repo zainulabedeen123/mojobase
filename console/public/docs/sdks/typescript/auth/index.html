@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentication SDK Reference · Mojobase Docs</title>
+<meta name="description" content="Sign up, sign in, manage sessions, and update user profiles from web and Node.js apps with the Mojobase TypeScript SDK auth client and JWT tokens.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link active" href="/docs/sdks/typescript/auth" aria-current="page">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/database">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">TypeScript</div>
+      <h1>Authentication SDK Reference</h1>
+      <p class="lead">Sign up, sign in, manage sessions, and update user profiles from web and Node.js apps with the Mojobase TypeScript SDK auth client and JWT tokens.</p>
+      <div class="prose">
+<h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true" tabindex="-1">#</a>Installation</h2>
+<div class="tabs code-group" data-tabs><div class="tab-list" role="tablist"><button class="tab" type="button" role="tab" id="g1-tab-0" aria-controls="g1-panel-0" aria-selected="true" tabindex="0">npm</button><button class="tab" type="button" role="tab" id="g1-tab-1" aria-controls="g1-panel-1" aria-selected="false" tabindex="-1">yarn</button><button class="tab" type="button" role="tab" id="g1-tab-2" aria-controls="g1-panel-2" aria-selected="false" tabindex="-1">pnpm</button></div><div class="tab-panel" role="tabpanel" id="g1-panel-0" aria-labelledby="g1-tab-0"><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">npm install @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-1" aria-labelledby="g1-tab-1" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">yarn add @mojobase/sdk@latest</code></pre></div></div><div class="tab-panel" role="tabpanel" id="g1-panel-2" aria-labelledby="g1-tab-2" hidden><div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash">pnpm add @mojobase/sdk@latest</code></pre></div></div></div><div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">import</span> { createClient } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@mojobase/sdk&#x27;</span>;
+
+<span class="hljs-keyword">const</span> mojobase = <span class="hljs-title function_">createClient</span>({
+  <span class="hljs-attr">baseUrl</span>: <span class="hljs-string">&#x27;https://your-project.mojobase.dev&#x27;</span>,
+  <span class="hljs-attr">anonKey</span>: <span class="hljs-string">&#x27;your-anon-key&#x27;</span>  <span class="hljs-comment">// Optional: for public/unauthenticated requests</span>
+});</code></pre></div><p>Find the project URL and anon key in your project&#39;s <strong>Connect</strong> panel in the <a href="https://mojobase.dev" rel="noopener" target="_blank">Mojobase console</a>.</p>
+<h2 id="signup"><a class="anchor" href="#signup" aria-hidden="true" tabindex="-1">#</a>signUp()</h2>
+<p>Create a new user account with email and password.</p>
+<h3 id="parameters"><a class="anchor" href="#parameters" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>password</code> (string, required) - User&#39;s password</li>
+<li><code>name</code> (string, optional) - User&#39;s display name</li>
+<li><code>redirectTo</code> (string, optional) - Used for link-based email verification. The email link always opens a Mojobase backend endpoint first; after the token is verified, Mojobase redirects the browser to this URL with the verification result. Required when <code>verifyEmailMethod</code> is set to <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s sign-in page.</li>
+</ul>
+<h3 id="returns"><a class="anchor" href="#returns" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">user</span>?: { id, email, emailVerified, providers, createdAt, updatedAt, profile, metadata },
+    <span class="hljs-attr">accessToken</span>: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>,
+    <span class="hljs-attr">requireEmailVerification</span>?: <span class="hljs-built_in">boolean</span>,
+    <span class="hljs-attr">csrfToken</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>When <code>requireEmailVerification</code> is true, <code>accessToken</code> will be null until the user verifies their email. Mojobase sends a verification email with either a link or a 6-digit code, based on your dashboard configuration (<code>verifyEmailMethod</code>). For code verification, implement a page that prompts the user to enter the code (see <a href="#verifyemail">verifyEmail()</a>). For link verification, provide a <code>redirectTo</code> URL that should receive the browser after Mojobase verifies the token. Recommended: use your sign-in page as <code>redirectTo</code>, then show a success message and ask the user to sign in with their email and password.</p>
+</div></div><h3 id="example"><a class="anchor" href="#example" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signUp</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;secure_password123&#x27;</span>,
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;John Doe&#x27;</span>,
+  <span class="hljs-attr">redirectTo</span>: <span class="hljs-string">&#x27;http://localhost:3000/sign-in&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data?.<span class="hljs-property">requireEmailVerification</span>) {
+  <span class="hljs-comment">// For code verification: redirect to page where user enters the 6-digit code</span>
+  <span class="hljs-comment">// For link verification: wait for the user to click the email link</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Please verify your email&#x27;</span>);
+} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (data?.<span class="hljs-property">accessToken</span>) {
+  <span class="hljs-comment">// User is signed in (email verification disabled)</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Welcome!&#x27;</span>, data.<span class="hljs-property">user</span>.<span class="hljs-property">email</span>);
+}</code></pre></div><h3 id="output"><a class="anchor" href="#output" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_abc123&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;metadata&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;requireEmailVerification&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="signinwithpassword"><a class="anchor" href="#signinwithpassword" aria-hidden="true" tabindex="-1">#</a>signInWithPassword()</h2>
+<p>Sign in an existing user with email and password.</p>
+<h3 id="parameters-1"><a class="anchor" href="#parameters-1" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>password</code> (string, required) - User&#39;s password</li>
+</ul>
+<h3 id="returns-1"><a class="anchor" href="#returns-1" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">user</span>: { id, email, emailVerified, providers, createdAt, updatedAt, profile, metadata },
+    <span class="hljs-attr">accessToken</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">csrfToken</span>?: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-1"><a class="anchor" href="#example-1" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signInWithPassword</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;secure_password123&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Signed in as:&#x27;</span>, data.<span class="hljs-property">user</span>.<span class="hljs-property">email</span>);
+}</code></pre></div><h3 id="output-1"><a class="anchor" href="#output-1" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_abc123&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;metadata&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;csrfToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5758d38259fb...&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="signinwithoauth"><a class="anchor" href="#signinwithoauth" aria-hidden="true" tabindex="-1">#</a>signInWithOAuth()</h2>
+<p>Start OAuth authentication flow with configured providers (built-in providers like Google/GitHub, plus any custom provider key configured from the dashboard).</p>
+<h3 id="parameters-2"><a class="anchor" href="#parameters-2" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>provider</code> (string, required) - OAuth provider key (e.g., <code>google</code>, <code>github</code>, or custom provider key like <code>okta-company</code>)</li>
+<li><code>redirectTo</code> (string, required) - URL to redirect after authentication</li>
+<li><code>additionalParams</code> (<code>Record&lt;string, string&gt;</code>, optional) - Provider-specific OAuth hints such as Google&#39;s <code>prompt=select_account</code></li>
+<li><code>skipBrowserRedirect</code> (boolean, optional) - If true, returns OAuth URL without auto-redirecting (for server-rendered or mobile flows)</li>
+</ul>
+<h3 id="returns-2"><a class="anchor" href="#returns-2" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">url</span>?: <span class="hljs-built_in">string</span>, <span class="hljs-attr">provider</span>?: <span class="hljs-built_in">string</span>, <span class="hljs-attr">codeVerifier</span>?: <span class="hljs-built_in">string</span> },
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>After OAuth redirect, SDK automatically detects the callback <code>insforge_code</code>, exchanges it for a
+session, and saves the session automatically.</p>
+</div></div><h3 id="example-2"><a class="anchor" href="#example-2" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-comment">// Default: auto-redirect</span>
+<span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signInWithOAuth</span>(<span class="hljs-string">&#x27;google&#x27;</span>, {
+  <span class="hljs-attr">redirectTo</span>: <span class="hljs-string">&#x27;http://localhost:3000/dashboard&#x27;</span>,
+  <span class="hljs-attr">additionalParams</span>: { <span class="hljs-attr">prompt</span>: <span class="hljs-string">&#x27;select_account&#x27;</span> },
+});
+<span class="hljs-comment">// Browser immediately redirects to Google</span>
+
+<span class="hljs-comment">// skipBrowserRedirect: get URL for manual handling</span>
+<span class="hljs-keyword">const</span> { data } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signInWithOAuth</span>(<span class="hljs-string">&#x27;google&#x27;</span>, {
+  <span class="hljs-attr">redirectTo</span>: <span class="hljs-string">&#x27;http://localhost:3000/dashboard&#x27;</span>,
+  <span class="hljs-attr">skipBrowserRedirect</span>: <span class="hljs-literal">true</span>,
+});
+
+<span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span> = data.<span class="hljs-property">url</span>; <span class="hljs-comment">// Redirect when ready</span></code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p><code>additionalParams</code> is for provider-specific optional hints only. Do not pass server-owned
+OAuth fields such as <code>client_id</code>, <code>redirect_uri</code>, <code>code_challenge</code>, <code>state</code>, <code>response_type</code>,
+or <code>scope</code>; Mojobase sets those values on the server and ignores colliding client-provided keys.</p>
+</div></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Custom providers must be configured first in the Mojobase dashboard under <code>Auth Methods</code> with client credentials and an OIDC discovery URL.</p>
+</div></div><h3 id="output-2"><a class="anchor" href="#output-2" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://accounts.google.com/o/oauth2/v2/auth?client_id=...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;provider&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;google&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="signout"><a class="anchor" href="#signout" aria-hidden="true" tabindex="-1">#</a>signOut()</h2>
+<p>Sign out the current user and clear session.</p>
+<h3 id="parameters-3"><a class="anchor" href="#parameters-3" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<p>None</p>
+<h3 id="returns-3"><a class="anchor" href="#returns-3" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>;
+}</code></pre></div><h3 id="example-3"><a class="anchor" href="#example-3" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signOut</span>();</code></pre></div><h3 id="output-3"><a class="anchor" href="#output-3" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="getcurrentuser"><a class="anchor" href="#getcurrentuser" aria-hidden="true" tabindex="-1">#</a>getCurrentUser()</h2>
+<p>Get the currently signed-in user.</p>
+<p>For browser apps, call <code>auth.getCurrentUser()</code> during startup. If a valid httpOnly refresh cookie is present, the SDK will refresh the session automatically before returning the user.</p>
+<p>For server mode, call <code>refreshSession({ refreshToken })</code> explicitly when you need to refresh an expired access token.</p>
+<h3 id="parameters-4"><a class="anchor" href="#parameters-4" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<p>None</p>
+<h3 id="returns-4"><a class="anchor" href="#returns-4" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">user</span>: { id, email, emailVerified, providers, createdAt, updatedAt, profile, metadata } | <span class="hljs-literal">null</span>
+  },
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-4"><a class="anchor" href="#example-4" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">getCurrentUser</span>();
+
+<span class="hljs-keyword">if</span> (data.<span class="hljs-property">user</span>) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;User:&#x27;</span>, data.<span class="hljs-property">user</span>.<span class="hljs-property">email</span>);
+}</code></pre></div><h3 id="output-4"><a class="anchor" href="#output-4" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_abc123&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;providers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;profile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;metadata&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="getprofile"><a class="anchor" href="#getprofile" aria-hidden="true" tabindex="-1">#</a>getProfile()</h2>
+<p>Get any user&#39;s public profile by ID. Returns a flat profile object with all fields at the top level.</p>
+<h3 id="parameters-5"><a class="anchor" href="#parameters-5" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>userId</code> (string, required) - User ID to fetch profile for</li>
+</ul>
+<h3 id="returns-5"><a class="anchor" href="#returns-5" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">avatar_url</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">createdAt</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">updatedAt</span>?: <span class="hljs-built_in">string</span>,
+    ...customFields
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-5"><a class="anchor" href="#example-5" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">getProfile</span>(<span class="hljs-string">&#x27;usr_xyz789&#x27;</span>);
+
+<span class="hljs-keyword">if</span> (data) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(data.<span class="hljs-property">name</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(data.<span class="hljs-property">avatar_url</span>);
+}</code></pre></div><h3 id="output-5"><a class="anchor" href="#output-5" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_xyz789&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;bio&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Full-stack developer&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="setprofile"><a class="anchor" href="#setprofile" aria-hidden="true" tabindex="-1">#</a>setProfile()</h2>
+<p>Update current user&#39;s profile in users table. Supports any dynamic fields and returns the updated profile as a flat object.</p>
+<h3 id="parameters-6"><a class="anchor" href="#parameters-6" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>profile</code> (object) - A key-value map of profile fields to update. Any fields are accepted.</li>
+</ul>
+<p><strong>Common fields:</strong></p>
+<ul>
+<li><code>name</code> (predefined, string) - User&#39;s display name</li>
+<li><code>avatar_url</code> (predefined, string) - Profile picture URL</li>
+</ul>
+<h3 id="returns-6"><a class="anchor" href="#returns-6" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">name</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">avatar_url</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">createdAt</span>?: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">updatedAt</span>?: <span class="hljs-built_in">string</span>,
+    ...customFields
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-6"><a class="anchor" href="#example-6" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">setProfile</span>({
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JohnDev&#x27;</span>,
+  <span class="hljs-attr">bio</span>: <span class="hljs-string">&#x27;Full-stack developer&#x27;</span>,
+  <span class="hljs-attr">avatar_url</span>: <span class="hljs-string">&#x27;https://example.com/avatar.jpg&#x27;</span>,
+  <span class="hljs-attr">custom_field</span>: <span class="hljs-string">&#x27;any value&#x27;</span>, <span class="hljs-comment">// Any custom fields are supported</span>
+});</code></pre></div><h3 id="output-6"><a class="anchor" href="#output-6" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_abc123&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;JohnDev&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatar_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/avatar.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;bio&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Full-stack developer&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;custom_field&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;any value&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T10:00:00Z&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;updatedAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T12:30:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="resendverificationemail"><a class="anchor" href="#resendverificationemail" aria-hidden="true" tabindex="-1">#</a>resendVerificationEmail()</h2>
+<p>Resend email verification when the previous OTP has expired or was not received. Uses the method configured in auth settings (<code>verifyEmailMethod</code>). When method is <code>code</code>, sends a 6-digit numeric code. When method is <code>link</code>, sends a browser verification link that goes through a Mojobase backend endpoint first.</p>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>This endpoint prevents user enumeration by returning success even if the email doesn&#39;t exist.</p>
+</div></div><h3 id="parameters-7"><a class="anchor" href="#parameters-7" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>redirectTo</code> (string, optional) - Used for link-based email verification. The email link always opens a Mojobase backend endpoint first; after the token is verified, Mojobase redirects the browser to this URL with the verification result. Required when <code>verifyEmailMethod</code> is set to <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s sign-in page.</li>
+</ul>
+<h3 id="returns-7"><a class="anchor" href="#returns-7" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">success</span>: <span class="hljs-built_in">boolean</span>, <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span> } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-7"><a class="anchor" href="#example-7" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">resendVerificationEmail</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">redirectTo</span>: <span class="hljs-string">&#x27;http://localhost:3000/sign-in&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data?.<span class="hljs-property">success</span>) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Verification email sent!&#x27;</span>);
+}</code></pre></div><h3 id="output-7"><a class="anchor" href="#output-7" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Verification email sent&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="verifyemail"><a class="anchor" href="#verifyemail" aria-hidden="true" tabindex="-1">#</a>verifyEmail()</h2>
+<p>Verify an email address with a 6-digit code.</p>
+<p>For link-based verification, users should click the email link, which opens <code>GET /api/auth/email/verify-link</code> in the browser.</p>
+<p>Successfully verified users who use this code endpoint will receive a session token.</p>
+<p>For link-based verification, your frontend should handle the browser redirect like this:</p>
+<ul>
+<li>Success: <code>?insforge_status=success&amp;insforge_type=verify_email</code></li>
+<li>Error: <code>?insforge_status=error&amp;insforge_type=verify_email&amp;insforge_error=...</code></li>
+<li><code>insforge_status</code>: Result of the browser link flow. For verification, values are <code>success</code> or <code>error</code>.</li>
+<li><code>insforge_type</code>: Flow identifier. For verification links this is always <code>verify_email</code>.</li>
+<li><code>insforge_error</code>: Present only when <code>insforge_status=error</code>. Human-readable error message for display or logging.</li>
+</ul>
+<p>Recommended handling: use your sign-in page as <code>redirectTo</code>. When <code>insforge_status=success</code>, show a confirmation message and ask the user to sign in with their email and password.</p>
+<h3 id="parameters-8"><a class="anchor" href="#parameters-8" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>otp</code> (string, required) - 6-digit verification code</li>
+</ul>
+<h3 id="returns-8"><a class="anchor" href="#returns-8" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">accessToken</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">user</span>: { id, email, emailVerified, ... }
+  } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-8"><a class="anchor" href="#example-8" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">verifyEmail</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">otp</span>: <span class="hljs-string">&#x27;123456&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Email verified!&#x27;</span>, data.<span class="hljs-property">accessToken</span>);
+}</code></pre></div><h3 id="output-8"><a class="anchor" href="#output-8" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;usr_abc123&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;emailVerified&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="sendresetpasswordemail"><a class="anchor" href="#sendresetpasswordemail" aria-hidden="true" tabindex="-1">#</a>sendResetPasswordEmail()</h2>
+<p>Send password reset email using the method configured in auth settings (<code>resetPasswordMethod</code>). When method is <code>code</code>, sends a 6-digit numeric code for two-step flow. When method is <code>link</code>, sends a browser reset link that goes through a Mojobase backend endpoint first.</p>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>This endpoint prevents user enumeration by returning success even if the email doesn&#39;t exist.</p>
+</div></div><h3 id="parameters-9"><a class="anchor" href="#parameters-9" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>redirectTo</code> (string, optional) - Used for link-based password reset. The email link always opens a Mojobase backend endpoint first; Mojobase then redirects the browser to this URL with the reset <code>token</code> in the query string so your app can render its own reset-password page. Required when <code>resetPasswordMethod</code> is set to <code>link</code>. This URL must be included in <code>allowedRedirectUrls</code>. Recommended: use your app&#39;s dedicated reset-password page.</li>
+</ul>
+<h3 id="returns-9"><a class="anchor" href="#returns-9" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">success</span>: <span class="hljs-built_in">boolean</span>, <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span> } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-9"><a class="anchor" href="#example-9" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">sendResetPasswordEmail</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">redirectTo</span>: <span class="hljs-string">&#x27;http://localhost:3000/reset-password&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data?.<span class="hljs-property">success</span>) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Password reset email sent!&#x27;</span>);
+}</code></pre></div><h3 id="output-9"><a class="anchor" href="#output-9" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;success&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Password reset email sent&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="exchangeresetpasswordtoken"><a class="anchor" href="#exchangeresetpasswordtoken" aria-hidden="true" tabindex="-1">#</a>exchangeResetPasswordToken()</h2>
+<p>Exchange a 6-digit reset password code for a reset token. This is step 1 of the two-step password reset flow (only used when <code>resetPasswordMethod</code> is <code>code</code>).</p>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>This endpoint is not used when <code>resetPasswordMethod</code> is <code>link</code>, because the browser reset-link flow uses the emailed link token directly.</p>
+</div></div><h3 id="parameters-10"><a class="anchor" href="#parameters-10" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>email</code> (string, required) - User&#39;s email address</li>
+<li><code>code</code> (string, required) - 6-digit code from the email</li>
+</ul>
+<h3 id="returns-10"><a class="anchor" href="#returns-10" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">token</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">expiresAt</span>: <span class="hljs-built_in">string</span> } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-10"><a class="anchor" href="#example-10" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">exchangeResetPasswordToken</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">code</span>: <span class="hljs-string">&#x27;123456&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (data) {
+  <span class="hljs-comment">// Use token to reset password</span>
+  <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">resetPassword</span>({
+    <span class="hljs-attr">newPassword</span>: <span class="hljs-string">&#x27;newSecurePassword123&#x27;</span>,
+    <span class="hljs-attr">otp</span>: data.<span class="hljs-property">token</span>,
+  });
+}</code></pre></div><h3 id="output-10"><a class="anchor" href="#output-10" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;expiresAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-01-15T11:00:00Z&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="resetpassword"><a class="anchor" href="#resetpassword" aria-hidden="true" tabindex="-1">#</a>resetPassword()</h2>
+<p>Reset user password with a token. The token can be:</p>
+<ul>
+<li><strong>Magic link token</strong>: Provided in the reset page URL from <code>sendResetPasswordEmail</code> when method is <code>link</code></li>
+<li><strong>Reset token</strong>: From <code>exchangeResetPasswordToken</code> after code verification when method is <code>code</code></li>
+</ul>
+<h3 id="parameters-11"><a class="anchor" href="#parameters-11" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>newPassword</code> (string, required) - New password for the user</li>
+<li><code>otp</code> (string, required) - Reset token or magic link token</li>
+</ul>
+<p>For link-based password reset, your frontend should handle the browser redirect like this:</p>
+<ul>
+<li>Ready to reset: <code>?token=...&amp;insforge_status=ready&amp;insforge_type=reset_password</code></li>
+<li>Error: <code>?insforge_status=error&amp;insforge_type=reset_password&amp;insforge_error=...</code></li>
+<li><code>token</code>: Present only when <code>insforge_status=ready</code>. Pass this value to <code>resetPassword({ otp })</code>.</li>
+<li><code>insforge_status</code>: Result of the browser link flow. For reset links, values are <code>ready</code> or <code>error</code>.</li>
+<li><code>insforge_type</code>: Flow identifier. For reset links this is always <code>reset_password</code>.</li>
+<li><code>insforge_error</code>: Present only when <code>insforge_status=error</code>. Human-readable error message for display or logging.</li>
+</ul>
+<p>Only render the reset-password form when <code>insforge_status=ready</code> and <code>token</code> is present.</p>
+<h3 id="returns-11"><a class="anchor" href="#returns-11" aria-hidden="true" tabindex="-1">#</a>Returns</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-typescript">{
+  <span class="hljs-attr">data</span>: { <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span> } | <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">error</span>: <span class="hljs-title class_">Error</span> | <span class="hljs-literal">null</span>
+}</code></pre></div><h3 id="example-11"><a class="anchor" href="#example-11" aria-hidden="true" tabindex="-1">#</a>Example</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-comment">// Code method flow: after exchangeResetPasswordToken</span>
+<span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">resetPassword</span>({
+  <span class="hljs-attr">newPassword</span>: <span class="hljs-string">&#x27;newSecurePassword123&#x27;</span>,
+  <span class="hljs-attr">otp</span>: resetToken, <span class="hljs-comment">// Token from exchangeResetPasswordToken</span>
+});
+
+<span class="hljs-comment">// Link method flow: token from the reset page URL</span>
+<span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">resetPassword</span>({
+  <span class="hljs-attr">newPassword</span>: <span class="hljs-string">&#x27;newSecurePassword123&#x27;</span>,
+  <span class="hljs-attr">otp</span>: <span class="hljs-string">&#x27;a1b2c3d4e5f6...&#x27;</span>, <span class="hljs-comment">// Token from the magic link URL</span>
+});
+
+<span class="hljs-keyword">if</span> (data) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Password reset successful!&#x27;</span>);
+}</code></pre></div><h3 id="output-11"><a class="anchor" href="#output-11" aria-hidden="true" tabindex="-1">#</a>Output</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">json</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Password reset successfully. Please login with your new password.&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span></code></pre></div><hr>
+<h2 id="error-handling"><a class="anchor" href="#error-handling" aria-hidden="true" tabindex="-1">#</a>Error Handling</h2>
+<p>All auth methods return structured errors:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">javascript</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> { data, error } = <span class="hljs-keyword">await</span> mojobase.<span class="hljs-property">auth</span>.<span class="hljs-title function_">signInWithPassword</span>({
+  <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;user@example.com&#x27;</span>,
+  <span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;wrong_password&#x27;</span>,
+});
+
+<span class="hljs-keyword">if</span> (error) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error.<span class="hljs-property">statusCode</span>); <span class="hljs-comment">// 401</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error.<span class="hljs-property">error</span>); <span class="hljs-comment">// &#x27;INVALID_CREDENTIALS&#x27;</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error.<span class="hljs-property">message</span>); <span class="hljs-comment">// &#x27;Invalid login credentials&#x27;</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error.<span class="hljs-property">nextActions</span>); <span class="hljs-comment">// &#x27;Check email and password&#x27;</span>
+}</code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/typescript/database"><span class="pager-dir">Previous</span><span class="pager-title">Database SDK Reference</span></a>
+        <a class="pager-link next" href="/docs/sdks/typescript/storage"><span class="pager-dir">Next</span><span class="pager-title">Storage SDK Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#installation">Installation</a></li><li class="toc-d2"><a href="#signup">signUp()</a></li><li class="toc-d3"><a href="#parameters">Parameters</a></li><li class="toc-d3"><a href="#returns">Returns</a></li><li class="toc-d3"><a href="#example">Example</a></li><li class="toc-d3"><a href="#output">Output</a></li><li class="toc-d2"><a href="#signinwithpassword">signInWithPassword()</a></li><li class="toc-d3"><a href="#parameters-1">Parameters</a></li><li class="toc-d3"><a href="#returns-1">Returns</a></li><li class="toc-d3"><a href="#example-1">Example</a></li><li class="toc-d3"><a href="#output-1">Output</a></li><li class="toc-d2"><a href="#signinwithoauth">signInWithOAuth()</a></li><li class="toc-d3"><a href="#parameters-2">Parameters</a></li><li class="toc-d3"><a href="#returns-2">Returns</a></li><li class="toc-d3"><a href="#example-2">Example</a></li><li class="toc-d3"><a href="#output-2">Output</a></li><li class="toc-d2"><a href="#signout">signOut()</a></li><li class="toc-d3"><a href="#parameters-3">Parameters</a></li><li class="toc-d3"><a href="#returns-3">Returns</a></li><li class="toc-d3"><a href="#example-3">Example</a></li><li class="toc-d3"><a href="#output-3">Output</a></li><li class="toc-d2"><a href="#getcurrentuser">getCurrentUser()</a></li><li class="toc-d3"><a href="#parameters-4">Parameters</a></li><li class="toc-d3"><a href="#returns-4">Returns</a></li><li class="toc-d3"><a href="#example-4">Example</a></li><li class="toc-d3"><a href="#output-4">Output</a></li><li class="toc-d2"><a href="#getprofile">getProfile()</a></li><li class="toc-d3"><a href="#parameters-5">Parameters</a></li><li class="toc-d3"><a href="#returns-5">Returns</a></li><li class="toc-d3"><a href="#example-5">Example</a></li><li class="toc-d3"><a href="#output-5">Output</a></li><li class="toc-d2"><a href="#setprofile">setProfile()</a></li><li class="toc-d3"><a href="#parameters-6">Parameters</a></li><li class="toc-d3"><a href="#returns-6">Returns</a></li><li class="toc-d3"><a href="#example-6">Example</a></li><li class="toc-d3"><a href="#output-6">Output</a></li><li class="toc-d2"><a href="#resendverificationemail">resendVerificationEmail()</a></li><li class="toc-d3"><a href="#parameters-7">Parameters</a></li><li class="toc-d3"><a href="#returns-7">Returns</a></li><li class="toc-d3"><a href="#example-7">Example</a></li><li class="toc-d3"><a href="#output-7">Output</a></li><li class="toc-d2"><a href="#verifyemail">verifyEmail()</a></li><li class="toc-d3"><a href="#parameters-8">Parameters</a></li><li class="toc-d3"><a href="#returns-8">Returns</a></li><li class="toc-d3"><a href="#example-8">Example</a></li><li class="toc-d3"><a href="#output-8">Output</a></li><li class="toc-d2"><a href="#sendresetpasswordemail">sendResetPasswordEmail()</a></li><li class="toc-d3"><a href="#parameters-9">Parameters</a></li><li class="toc-d3"><a href="#returns-9">Returns</a></li><li class="toc-d3"><a href="#example-9">Example</a></li><li class="toc-d3"><a href="#output-9">Output</a></li><li class="toc-d2"><a href="#exchangeresetpasswordtoken">exchangeResetPasswordToken()</a></li><li class="toc-d3"><a href="#parameters-10">Parameters</a></li><li class="toc-d3"><a href="#returns-10">Returns</a></li><li class="toc-d3"><a href="#example-10">Example</a></li><li class="toc-d3"><a href="#output-10">Output</a></li><li class="toc-d2"><a href="#resetpassword">resetPassword()</a></li><li class="toc-d3"><a href="#parameters-11">Parameters</a></li><li class="toc-d3"><a href="#returns-11">Returns</a></li><li class="toc-d3"><a href="#example-11">Example</a></li><li class="toc-d3"><a href="#output-11">Output</a></li><li class="toc-d2"><a href="#error-handling">Error Handling</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

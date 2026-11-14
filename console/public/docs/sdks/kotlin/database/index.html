@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kotlin database SDK reference · Mojobase Docs</title>
+<meta name="description" content="Type-safe insert, update, delete, select, and rpcRaw operations against Mojobase tables using the Kotlin SDK with Kotlinx Serialization data classes.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="/docs/assets/favicon.svg">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=cee0928bff">
+<script src="/docs/assets/docs.js?v=cee0928bff" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-drawer-open><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="/docs" aria-label="Mojobase Docs home">
+    <picture><source srcset="/docs/assets/logo-light.svg" media="(prefers-color-scheme: light)"><img src="/docs/assets/logo-dark.svg" alt="Mojobase" width="122" height="29"></picture>
+    <span class="brand-tag">Docs</span>
+  </a>
+  <button class="search-btn" type="button" data-search-open aria-label="Search docs"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="search-btn-label">Search docs…</span><kbd class="kbd">/</kbd></button>
+  <nav class="top-links" aria-label="Site">
+    <a class="top-link" href="https://mojobase.dev">Dashboard</a>
+    <a class="top-link gh" href="https://github.com/zainulabedeen123/mojobase" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Documentation">
+    <div class="sidebar-head"><span>Navigation</span><button class="icon-btn" type="button" aria-label="Close navigation" data-drawer-close>&times;</button></div>
+    <nav><div class="nav-tab"><div class="nav-tab-title">Docs</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g1"><span>Getting Started</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g1"><li><a class="nav-link" href="/docs">Introduction</a></li><li><a class="nav-link" href="/docs/products">Products</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g2"><span>Quickstart</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g2"><li><a class="nav-link" href="/docs/quickstart">Quickstart</a></li><li><a class="nav-link" href="/docs/mcp-setup">MCP setup</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g3"><span>Products</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g3"><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g4"><span>Database</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g4" hidden><li><a class="nav-link" href="/docs/core-concepts/database/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/database/connection-string">Connection string</a></li><li><a class="nav-link" href="/docs/core-concepts/database/migrations">Database migrations</a></li><li><a class="nav-link" href="/docs/core-concepts/database/backups">Database backups and restore</a></li><li><a class="nav-link" href="/docs/core-concepts/database/pgvector">pgvector</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g5"><span>Authentication</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g5" hidden><li><a class="nav-link" href="/docs/core-concepts/authentication/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g6"><span>Storage</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g6" hidden><li><a class="nav-link" href="/docs/core-concepts/storage/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/storage/s3-compatibility">S3-compatible gateway</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g7"><span>Realtime</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g7" hidden><li><a class="nav-link" href="/docs/core-concepts/realtime/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g8"><span>Edge Functions</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g8" hidden><li><a class="nav-link" href="/docs/core-concepts/functions/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/functions/schedules">Schedules: cron-triggered functions</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g9"><span>Model Gateway</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g9" hidden><li><a class="nav-link" href="/docs/core-concepts/ai/overview">Overview</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g10"><span>Messaging</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g10" hidden><li><a class="nav-link" href="/docs/core-concepts/messaging/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/messaging/custom-smtp">Custom SMTP</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g11"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g11" hidden><li><a class="nav-link" href="/docs/core-concepts/payments/overview">Overview</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/stripe">Stripe</a></li><li><a class="nav-link" href="/docs/core-concepts/payments/razorpay">Razorpay</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g12"><span>Custom Compute</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g12" hidden><li><a class="nav-link" href="/docs/core-concepts/compute/overview">Overview</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g13"><span>Integrations</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g13"><li><a class="nav-link" href="/docs/integrations/overview">Overview</a></li><li><a class="nav-link" href="/docs/integrations/clerk">Clerk</a></li><li><a class="nav-link" href="/docs/integrations/auth0">Auth0</a></li><li><a class="nav-link" href="/docs/integrations/workos">WorkOS</a></li><li><a class="nav-link" href="/docs/integrations/kinde">Kinde</a></li><li><a class="nav-link" href="/docs/integrations/stytch">Stytch</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g14"><span>FAQ</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g14"><li><a class="nav-link" href="/docs/faq">FAQ</a></li></ul></li></ul></div><div class="nav-tab"><div class="nav-tab-title">SDK &amp; Examples</div><ul class="nav-root"><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g15"><span>TypeScript</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g15"><li><a class="nav-link" href="/docs/sdks/typescript/overview">TypeScript and JavaScript SDK for Mojobase</a></li><li><a class="nav-link" href="/docs/sdks/typescript/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/typescript/realtime">TypeScript realtime SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/typescript/email">Email SDK Reference</a></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g16"><span>Payments</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g16" hidden><li><a class="nav-link" href="/docs/sdks/typescript/payments">Payments</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-stripe">Stripe Payments SDK</a></li><li><a class="nav-link" href="/docs/sdks/typescript/payments-razorpay">Razorpay Payments SDK</a></li></ul></li><li class="nav-group depth-1"><button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-g17"><span>Framework Guides</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g17" hidden><li><a class="nav-link" href="/docs/examples/framework-guides/nextjs">Next.js</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/react">React</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/vue">Vue</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/nuxt">Nuxt</a></li><li><a class="nav-link" href="/docs/examples/framework-guides/svelte">Svelte</a></li></ul></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g18"><span>Swift</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g18"><li><a class="nav-link" href="/docs/sdks/swift/overview">Swift SDK for iOS, macOS, tvOS, watchOS</a></li><li><a class="nav-link" href="/docs/sdks/swift/database">Database SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/auth">Swift authentication SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/swift/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/swift/realtime">Swift realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g19"><span>Kotlin</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g19"><li><a class="nav-link" href="/docs/sdks/kotlin/overview">Kotlin SDK for Android and Multiplatform</a></li><li><a class="nav-link active" href="/docs/sdks/kotlin/database" aria-current="page">Kotlin database SDK reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/auth">Authentication SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/storage">Storage SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/functions">Functions SDK Reference</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/ai">Model Gateway</a></li><li><a class="nav-link" href="/docs/sdks/kotlin/realtime">Kotlin realtime SDK reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g20"><span>REST API</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g20"><li><a class="nav-link" href="/docs/sdks/rest/overview">Mojobase REST API overview</a></li><li><a class="nav-link" href="/docs/sdks/rest/database">Database API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/auth">Authentication API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/storage">Storage API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/functions">Functions API Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/ai">AI REST Reference</a></li><li><a class="nav-link" href="/docs/sdks/rest/realtime">Realtime API Reference</a></li></ul></li><li class="nav-group depth-0"><button class="nav-group-toggle" type="button" aria-expanded="true" aria-controls="nav-g21"><span>Examples</span><svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-g21"><li><a class="nav-link" href="/docs/examples/overview">Mojobase cookbook and framework examples</a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="scrim" data-drawer-close hidden></div>
+  <main class="main" id="content">
+    <article class="doc">
+      <div class="eyebrow">Kotlin</div>
+      <h1>Kotlin database SDK reference</h1>
+      <p class="lead">Type-safe insert, update, delete, select, and rpcRaw operations against Mojobase tables using the Kotlin SDK with Kotlinx Serialization data classes.</p>
+      <div class="prose">
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Mojobase is compatible with the open-source InsForge Kotlin SDK. Mojobase does not publish its own Kotlin package, so install the InsForge one as shown and point it at your Mojobase project URL (<code>https://your-project.mojobase.dev</code>) and the anon key from the project&#39;s <strong>Connect</strong> panel.</p>
+</div></div><h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true" tabindex="-1">#</a>Installation</h2>
+<ol>
+<li>Add Mojobase dependencies to your project</li>
+</ol>
+<div class="tabs" data-tabs><div class="tab-list" role="tablist"><button class="tab" type="button" role="tab" id="t1-tab-0" aria-controls="t1-panel-0" aria-selected="true" tabindex="0">Maven Central</button><button class="tab" type="button" role="tab" id="t1-tab-1" aria-controls="t1-panel-1" aria-selected="false" tabindex="-1">GitHub Packages</button></div><div class="tab-panel" role="tabpanel" id="t1-panel-0" aria-labelledby="t1-tab-0"><p>build.gradle.kts:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">repositories {
+    mavenLocal() <span class="hljs-comment">// For local development</span>
+    mavenCentral()
+}
+
+dependencies {
+    implementation(<span class="hljs-string">&quot;dev.insforge:insforge-kotlin:0.1.6&quot;</span>)
+}</code></pre></div></div><div class="tab-panel" role="tabpanel" id="t1-panel-1" aria-labelledby="t1-tab-1" hidden><p>First, create a GitHub Personal Access Token:</p>
+<ul>
+<li>Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
+<li>Select permission: <code>read:packages</code></li>
+</ul>
+<p>Then configure your project using one of the following methods:</p>
+<div class="accordion-group"><details class="accordion"><summary>Option A: Environment Variables</summary><div class="accordion-body"><p>settings.gradle.kts (or build.gradle.kts):</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">repositories {
+    mavenCentral()
+    maven {
+        url = uri(<span class="hljs-string">&quot;https://maven.pkg.github.com/InsForge/insforge-kotlin&quot;</span>)
+        credentials {
+            username = System.getenv(<span class="hljs-string">&quot;GITHUB_USER&quot;</span>) ?: <span class="hljs-string">&quot;&quot;</span>
+            password = System.getenv(<span class="hljs-string">&quot;GITHUB_TOKEN&quot;</span>) ?: <span class="hljs-string">&quot;&quot;</span>
+        }
+    }
+}</code></pre></div><p>build.gradle.kts:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">dependencies {
+    implementation(<span class="hljs-string">&quot;dev.insforge:insforge-kotlin:0.1.6&quot;</span>)
+}</code></pre></div><p>Set environment variables before building:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-bash"><span class="hljs-built_in">export</span> GITHUB_USER=<span class="hljs-string">&quot;your-github-username&quot;</span>
+<span class="hljs-built_in">export</span> GITHUB_TOKEN=<span class="hljs-string">&quot;your-personal-access-token&quot;</span></code></pre></div></div></details><details class="accordion"><summary>Option B: gradle.properties (Local Development)</summary><div class="accordion-body"><p>Add credentials to your global Gradle properties file:</p>
+<p>~/.gradle/gradle.properties:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">properties</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-properties"><span class="hljs-attr">gpr.user</span>=<span class="hljs-string">your-github-username</span>
+<span class="hljs-attr">gpr.token</span>=<span class="hljs-string">ghp_xxxxxxxxxxxx</span></code></pre></div><p>settings.gradle.kts:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">repositories {
+    mavenCentral()
+    maven {
+        url = uri(<span class="hljs-string">&quot;https://maven.pkg.github.com/InsForge/insforge-kotlin&quot;</span>)
+        credentials {
+            username = providers.gradleProperty(<span class="hljs-string">&quot;gpr.user&quot;</span>).orNull ?: <span class="hljs-string">&quot;&quot;</span>
+            password = providers.gradleProperty(<span class="hljs-string">&quot;gpr.token&quot;</span>).orNull ?: <span class="hljs-string">&quot;&quot;</span>
+        }
+    }
+}</code></pre></div><p>build.gradle.kts:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">dependencies {
+    implementation(<span class="hljs-string">&quot;dev.insforge:insforge-kotlin:0.1.6&quot;</span>)
+}</code></pre></div><div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>The <code>~/.gradle/gradle.properties</code> file is stored outside your project, so credentials won&#39;t be accidentally committed to version control.</p>
+</div></div></div></details></div></div></div><ol start="2">
+<li>Initialize Mojobase SDK</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> dev.insforge.createInsforgeClient
+<span class="hljs-keyword">import</span> dev.insforge.auth.Auth
+<span class="hljs-keyword">import</span> dev.insforge.database.Database
+<span class="hljs-keyword">import</span> dev.insforge.storage.Storage
+<span class="hljs-keyword">import</span> dev.insforge.functions.Functions
+<span class="hljs-keyword">import</span> dev.insforge.realtime.Realtime
+<span class="hljs-keyword">import</span> dev.insforge.ai.AI
+
+<span class="hljs-keyword">val</span> client = createInsforgeClient(
+    baseUrl = <span class="hljs-string">&quot;https://your-project.mojobase.dev&quot;</span>,
+    anonKey = <span class="hljs-string">&quot;your-api-key&quot;</span>
+) {
+    install(Auth)
+    install(Database)
+    install(Storage)
+    install(Functions)
+    install(Realtime) {
+        autoReconnect = <span class="hljs-literal">true</span>
+        reconnectDelay = <span class="hljs-number">5000</span>
+    }
+    install(AI)
+}</code></pre></div><ol start="3">
+<li>Enable Logging (Optional)</li>
+</ol>
+<p>For debugging, you can configure the SDK log level:</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> dev.insforge.InsforgeLogLevel
+
+<span class="hljs-keyword">val</span> client = createInsforgeClient(
+    baseUrl = <span class="hljs-string">&quot;https://your-project.mojobase.dev&quot;</span>,
+    anonKey = <span class="hljs-string">&quot;your-api-key&quot;</span>
+) {
+    <span class="hljs-comment">// DE<span class="hljs-doctag">BUG:</span> logs request method/URL and response status</span>
+    <span class="hljs-comment">// VERBOSE: logs full headers and request/response bodies</span>
+    logLevel = InsforgeLogLevel.DEBUG
+
+    install(Auth)
+    install(Database)
+    <span class="hljs-comment">// ... other modules</span>
+}</code></pre></div><div class="table-wrap"><table><thead><tr><th>Log Level</th>
+<th>Description</th>
+</tr></thead><tbody><tr><td><code>NONE</code></td>
+<td>No logging (default, recommended for production)</td>
+</tr><tr><td><code>ERROR</code></td>
+<td>Only errors</td>
+</tr><tr><td><code>WARN</code></td>
+<td>Warnings and errors</td>
+</tr><tr><td><code>INFO</code></td>
+<td>Informational messages</td>
+</tr><tr><td><code>DEBUG</code></td>
+<td>Debug info (request method, URL, response status)</td>
+</tr><tr><td><code>VERBOSE</code></td>
+<td>Full details (headers, request/response bodies)</td>
+</tr></tbody></table></div>
+<div class="callout callout-note"><span class="callout-icon" aria-hidden="true">i</span><div class="callout-body"><p>Use <code>NONE</code> or <code>ERROR</code> in production to avoid exposing sensitive data in logs.</p>
+</div></div><h3 id="android-initialization"><a class="anchor" href="#android-initialization" aria-hidden="true" tabindex="-1">#</a>Android Initialization</h3>
+<ol>
+<li>Add Chrome Custom Tabs dependency to your <code>build.gradle.kts</code>:</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin">dependencies {
+    implementation(<span class="hljs-string">&quot;androidx.browser:browser:1.9.0&quot;</span>)
+}</code></pre></div><ol start="2">
+<li>Initialize Mojobase SDK (With Chrome Custom Tabs and Session Storage)</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> android.app.Activity
+<span class="hljs-keyword">import</span> android.content.Context
+<span class="hljs-keyword">import</span> android.content.Intent
+<span class="hljs-keyword">import</span> android.net.Uri
+<span class="hljs-keyword">import</span> androidx.browser.customtabs.CustomTabsIntent
+<span class="hljs-keyword">import</span> dev.insforge.createInsforgeClient
+<span class="hljs-keyword">import</span> dev.insforge.ai.AI
+<span class="hljs-keyword">import</span> dev.insforge.auth.Auth
+<span class="hljs-keyword">import</span> dev.insforge.auth.BrowserLauncher
+<span class="hljs-keyword">import</span> dev.insforge.auth.ClientType
+<span class="hljs-keyword">import</span> dev.insforge.auth.SessionStorage
+<span class="hljs-keyword">import</span> dev.insforge.database.Database
+<span class="hljs-keyword">import</span> dev.insforge.functions.Functions
+<span class="hljs-keyword">import</span> dev.insforge.realtime.Realtime
+<span class="hljs-keyword">import</span> dev.insforge.storage.Storage
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">MojobaseManager</span>(<span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> context: Context) {
+
+    <span class="hljs-keyword">val</span> client = createInsforgeClient(
+        baseUrl = <span class="hljs-string">&quot;https://your-project.mojobase.dev&quot;</span>,
+        anonKey = <span class="hljs-string">&quot;your-anon-key&quot;</span>
+    ) {
+        install(Auth) {
+            <span class="hljs-comment">// 1. Chrome Custom Tabs - opens in-app, similar to iOS ASWebAuthenticationSession</span>
+            browserLauncher = BrowserLauncher { url -&gt;
+                <span class="hljs-keyword">val</span> customTabsIntent = CustomTabsIntent.Builder()
+                    .setShowTitle(<span class="hljs-literal">true</span>)
+                    .build()
+                <span class="hljs-comment">// Handle non-Activity context safely</span>
+                <span class="hljs-keyword">if</span> (context <span class="hljs-keyword">is</span> Activity) {
+                    customTabsIntent.launchUrl(context, Uri.parse(url))
+                } <span class="hljs-keyword">else</span> {
+                    customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    customTabsIntent.launchUrl(context, Uri.parse(url))
+                }
+            }
+
+            <span class="hljs-comment">// 2. enable session persistence</span>
+            persistSession = <span class="hljs-literal">true</span>
+
+            <span class="hljs-comment">// 3. config SessionStorage (use SharedPreferences)</span>
+            sessionStorage = <span class="hljs-keyword">object</span> : SessionStorage {
+                <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> prefs = context.getSharedPreferences(
+                    <span class="hljs-string">&quot;mojobase_auth&quot;</span>,
+                    Context.MODE_PRIVATE
+                )
+
+                <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">save</span><span class="hljs-params">(key: <span class="hljs-type">String</span>, value: <span class="hljs-type">String</span>)</span></span> {
+                    prefs.edit().putString(key, value).apply()
+                }
+
+                <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">get</span><span class="hljs-params">(key: <span class="hljs-type">String</span>)</span></span>: String? {
+                    <span class="hljs-keyword">return</span> prefs.getString(key, <span class="hljs-literal">null</span>)
+                }
+
+                <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">remove</span><span class="hljs-params">(key: <span class="hljs-type">String</span>)</span></span> {
+                    prefs.edit().remove(key).apply()
+                }
+            }
+
+            <span class="hljs-comment">// 4. set client type for mobile</span>
+            clientType = ClientType.MOBILE
+        }
+        <span class="hljs-comment">// Install Database module</span>
+        install(Database)
+
+        <span class="hljs-comment">// Install Realtime module for real-time subscriptions</span>
+        install(Realtime) {
+            debug = <span class="hljs-literal">true</span>
+        }
+        <span class="hljs-comment">// Install other modules</span>
+        install(Storage)
+        install(Functions)
+        install(AI)
+    }
+}</code></pre></div><ol start="3">
+<li>Use Jetpack DataStore for Session Storage (Optional)</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> androidx.datastore.core.DataStore
+<span class="hljs-keyword">import</span> androidx.datastore.preferences.core.Preferences
+<span class="hljs-keyword">import</span> androidx.datastore.preferences.core.edit
+<span class="hljs-keyword">import</span> androidx.datastore.preferences.core.stringPreferencesKey
+<span class="hljs-keyword">import</span> androidx.datastore.preferences.preferencesDataStore
+<span class="hljs-keyword">import</span> kotlinx.coroutines.flow.first
+<span class="hljs-keyword">import</span> kotlinx.coroutines.flow.map
+
+<span class="hljs-keyword">val</span> Context.authDataStore: DataStore&lt;Preferences&gt; <span class="hljs-keyword">by</span> preferencesDataStore(name = <span class="hljs-string">&quot;mojobase_auth&quot;</span>)
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">DataStoreSessionStorage</span>(<span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> context: Context) : SessionStorage {
+    
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">save</span><span class="hljs-params">(key: <span class="hljs-type">String</span>, value: <span class="hljs-type">String</span>)</span></span> {
+        context.authDataStore.edit { prefs -&gt;
+            prefs[stringPreferencesKey(key)] = value
+        }
+    }
+    
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">get</span><span class="hljs-params">(key: <span class="hljs-type">String</span>)</span></span>: String? {
+        <span class="hljs-keyword">return</span> context.authDataStore.<span class="hljs-keyword">data</span>.map { prefs -&gt;
+            prefs[stringPreferencesKey(key)]
+        }.first()
+    }
+    
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">remove</span><span class="hljs-params">(key: <span class="hljs-type">String</span>)</span></span> {
+        context.authDataStore.edit { prefs -&gt;
+            prefs.remove(stringPreferencesKey(key))
+        }
+    }
+}
+
+<span class="hljs-comment">// Then use it in your Mojobase client</span>
+install(Auth) {
+    browserLauncher = ...
+    persistSession = <span class="hljs-literal">true</span>
+    sessionStorage = DataStoreSessionStorage(context)
+}</code></pre></div><h2 id="insert"><a class="anchor" href="#insert" aria-hidden="true" tabindex="-1">#</a>insert()</h2>
+<p>Insert new records into a table.</p>
+<h3 id="examples"><a class="anchor" href="#examples" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Define your data class</span>
+<span class="hljs-meta">@Serializable</span>
+<span class="hljs-keyword">data</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Post</span>(
+    <span class="hljs-keyword">val</span> id: String? = <span class="hljs-literal">null</span>,
+    <span class="hljs-keyword">val</span> title: String,
+    <span class="hljs-keyword">val</span> content: String,
+    <span class="hljs-meta">@SerialName(<span class="hljs-string">&quot;created_at&quot;</span>)</span>
+    <span class="hljs-keyword">val</span> createdAt: String? = <span class="hljs-literal">null</span>
+)
+
+<span class="hljs-comment">// Single insert (must wrap in list)</span>
+<span class="hljs-keyword">val</span> post = Post(title = <span class="hljs-string">&quot;Hello World&quot;</span>, content = <span class="hljs-string">&quot;My first post!&quot;</span>)
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .insertTyped(listOf(post))
+    .returning()
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span>
+
+<span class="hljs-comment">// Bulk insert</span>
+<span class="hljs-keyword">val</span> posts = listOf(
+    Post(title = <span class="hljs-string">&quot;First Post&quot;</span>, content = <span class="hljs-string">&quot;Hello everyone!&quot;</span>),
+    Post(title = <span class="hljs-string">&quot;Second Post&quot;</span>, content = <span class="hljs-string">&quot;Another update.&quot;</span>)
+)
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .insertTyped(posts)
+    .returning()
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span></code></pre></div><hr>
+<h2 id="update"><a class="anchor" href="#update" aria-hidden="true" tabindex="-1">#</a>update()</h2>
+<p>Update existing records in a table.</p>
+<h3 id="examples-1"><a class="anchor" href="#examples-1" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> kotlinx.serialization.json.JsonPrimitive
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.buildJsonObject
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.put
+
+<span class="hljs-comment">// Update by ID (using JsonPrimitive)</span>
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .update(mapOf(<span class="hljs-string">&quot;title&quot;</span> to JsonPrimitive(<span class="hljs-string">&quot;Updated Title&quot;</span>)))
+    .eq(<span class="hljs-string">&quot;id&quot;</span>, postId)
+    .returning()
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span>
+
+<span class="hljs-comment">// Update by ID (using buildJsonObject)</span>
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .update(buildJsonObject { put(<span class="hljs-string">&quot;title&quot;</span>, <span class="hljs-string">&quot;Updated Title&quot;</span>) })
+    .eq(<span class="hljs-string">&quot;id&quot;</span>, postId)
+    .returning()
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span>
+
+<span class="hljs-comment">// Update multiple</span>
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;tasks&quot;</span>)
+    .update(buildJsonObject { put(<span class="hljs-string">&quot;status&quot;</span>, <span class="hljs-string">&quot;completed&quot;</span>) })
+    .`<span class="hljs-keyword">in</span>`(<span class="hljs-string">&quot;id&quot;</span>, listOf(<span class="hljs-string">&quot;task-1&quot;</span>, <span class="hljs-string">&quot;task-2&quot;</span>))
+    .returning()
+    .execute&lt;Task&gt;()  <span class="hljs-comment">// Returns List&lt;Task&gt;</span></code></pre></div><hr>
+<h2 id="delete"><a class="anchor" href="#delete" aria-hidden="true" tabindex="-1">#</a>delete()</h2>
+<p>Delete records from a table.</p>
+<h3 id="examples-2"><a class="anchor" href="#examples-2" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Delete by ID</span>
+mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .delete()
+    .eq(<span class="hljs-string">&quot;id&quot;</span>, postId)
+    .execute()
+
+<span class="hljs-comment">// Delete with filter</span>
+mojobase.database
+    .from(<span class="hljs-string">&quot;sessions&quot;</span>)
+    .delete()
+    .lt(<span class="hljs-string">&quot;expires_at&quot;</span>, Date())
+    .execute()</code></pre></div><hr>
+<h2 id="select"><a class="anchor" href="#select" aria-hidden="true" tabindex="-1">#</a>select()</h2>
+<p>Query records from a table.</p>
+<h3 id="examples-3"><a class="anchor" href="#examples-3" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Get all posts</span>
+<span class="hljs-keyword">val</span> posts = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .select()
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span>
+
+<span class="hljs-comment">// Specific columns</span>
+<span class="hljs-keyword">val</span> posts = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .select(<span class="hljs-string">&quot;id, title, content&quot;</span>)
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span>
+
+<span class="hljs-comment">// With relationships (typed)</span>
+<span class="hljs-meta">@Serializable</span>
+<span class="hljs-keyword">data</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PostWithComments</span>(
+    <span class="hljs-keyword">val</span> id: String,
+    <span class="hljs-keyword">val</span> title: String,
+    <span class="hljs-keyword">val</span> content: String,
+    <span class="hljs-keyword">val</span> comments: List&lt;Comment&gt;
+)
+
+<span class="hljs-keyword">val</span> posts = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .select(<span class="hljs-string">&quot;*, comments(id, content)&quot;</span>)
+    .execute&lt;PostWithComments&gt;()  <span class="hljs-comment">// Returns List&lt;PostWithComments&gt;</span></code></pre></div><hr>
+<h2 id="executeraw"><a class="anchor" href="#executeraw" aria-hidden="true" tabindex="-1">#</a>executeRaw()</h2>
+<p>Execute SELECT query and return raw JSON array. Use this method when you need to work with dynamic/untyped data, such as queries with joins that return nested objects.</p>
+<h3 id="examples-4"><a class="anchor" href="#examples-4" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonArray
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonObject
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonPrimitive
+
+<span class="hljs-comment">// Query with relationships - raw JSON access</span>
+<span class="hljs-keyword">val</span> result = mojobase.database
+    .from(<span class="hljs-string">&quot;tweets&quot;</span>)
+    .select(<span class="hljs-string">&quot;id, content, profiles!tweets_user_id_fkey(username)&quot;</span>)
+    .executeRaw()  <span class="hljs-comment">// Returns JsonArray</span>
+
+result.forEach { element -&gt;
+    <span class="hljs-keyword">val</span> obj = element.jsonObject
+    <span class="hljs-keyword">val</span> id = obj[<span class="hljs-string">&quot;id&quot;</span>]?.jsonPrimitive?.content
+    <span class="hljs-keyword">val</span> content = obj[<span class="hljs-string">&quot;content&quot;</span>]?.jsonPrimitive?.content
+    <span class="hljs-keyword">val</span> profile = obj[<span class="hljs-string">&quot;profiles&quot;</span>]?.jsonObject
+    <span class="hljs-keyword">val</span> username = profile?.<span class="hljs-keyword">get</span>(<span class="hljs-string">&quot;username&quot;</span>)?.jsonPrimitive?.content
+
+    println(<span class="hljs-string">&quot;Tweet by <span class="hljs-variable">$username</span>: <span class="hljs-variable">$content</span>&quot;</span>)
+}
+
+<span class="hljs-comment">// Dynamic queries where structure is unknown</span>
+<span class="hljs-keyword">val</span> rawData = mojobase.database
+    .from(<span class="hljs-string">&quot;dynamic_table&quot;</span>)
+    .select()
+    .executeRaw()
+
+<span class="hljs-comment">// Process raw JSON as needed</span>
+rawData.forEach { element -&gt;
+    <span class="hljs-keyword">val</span> obj = element.jsonObject
+    obj.keys.forEach { key -&gt;
+        println(<span class="hljs-string">&quot;<span class="hljs-variable">$key</span>: <span class="hljs-subst">${obj[key]}</span>&quot;</span>)
+    }
+}</code></pre></div><hr>
+<h2 id="rpc"><a class="anchor" href="#rpc" aria-hidden="true" tabindex="-1">#</a>rpc()</h2>
+<p>Call PostgreSQL stored functions (RPC - Remote Procedure Call). This method allows you to directly invoke SQL functions defined in your database.</p>
+<h3 id="signature"><a class="anchor" href="#signature" aria-hidden="true" tabindex="-1">#</a>Signature</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Typed RPC call - deserializes response to specified type</span>
+<span class="hljs-keyword">suspend</span> <span class="hljs-keyword">inline</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-type">&lt;<span class="hljs-keyword">reified</span> T&gt;</span> <span class="hljs-title">rpc</span><span class="hljs-params">(
+    functionName: <span class="hljs-type">String</span>,
+    args: <span class="hljs-type">Map</span>&lt;<span class="hljs-type">String</span>, Any?&gt;? = <span class="hljs-literal">null</span>
+)</span></span>: T
+
+<span class="hljs-comment">// Raw RPC call - returns JsonElement for dynamic processing</span>
+<span class="hljs-keyword">suspend</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">rpcRaw</span><span class="hljs-params">(
+    functionName: <span class="hljs-type">String</span>,
+    args: <span class="hljs-type">Map</span>&lt;<span class="hljs-type">String</span>, Any?&gt;? = <span class="hljs-literal">null</span>
+)</span></span>: JsonElement</code></pre></div><h3 id="parameters"><a class="anchor" href="#parameters" aria-hidden="true" tabindex="-1">#</a>Parameters</h3>
+<ul>
+<li><code>functionName</code> (String) - Name of the PostgreSQL function to call</li>
+<li><code>args</code> (<code>Map\&lt;String, Any?\&gt;?</code>, optional) - Arguments to pass to the function</li>
+</ul>
+<h3 id="implementation-details"><a class="anchor" href="#implementation-details" aria-hidden="true" tabindex="-1">#</a>Implementation details</h3>
+<ul>
+<li><strong>No arguments</strong>: Uses GET request to <code>/api/database/rpc/{functionName}</code></li>
+<li><strong>With arguments</strong>: Uses POST request with JSON body to <code>/api/database/rpc/{functionName}</code></li>
+</ul>
+<h3 id="examples-5"><a class="anchor" href="#examples-5" aria-hidden="true" tabindex="-1">#</a>Examples</h3>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Define response data classes</span>
+<span class="hljs-meta">@Serializable</span>
+<span class="hljs-keyword">data</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserStats</span>(
+    <span class="hljs-keyword">val</span> totalPosts: <span class="hljs-built_in">Int</span>,
+    <span class="hljs-keyword">val</span> totalLikes: <span class="hljs-built_in">Int</span>,
+    <span class="hljs-keyword">val</span> joinedAt: String
+)
+
+<span class="hljs-meta">@Serializable</span>
+<span class="hljs-keyword">data</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span>(
+    <span class="hljs-keyword">val</span> id: String,
+    <span class="hljs-keyword">val</span> name: String,
+    <span class="hljs-keyword">val</span> email: String
+)
+
+<span class="hljs-comment">// Call function with parameters</span>
+<span class="hljs-keyword">val</span> stats = mojobase.database.rpc&lt;UserStats&gt;(
+    <span class="hljs-string">&quot;get_user_stats&quot;</span>,
+    mapOf(<span class="hljs-string">&quot;user_id&quot;</span> to <span class="hljs-number">123</span>)
+)
+println(<span class="hljs-string">&quot;Total posts: <span class="hljs-subst">${stats.totalPosts}</span>&quot;</span>)
+
+<span class="hljs-comment">// Call function without parameters</span>
+<span class="hljs-keyword">val</span> users = mojobase.database.rpc&lt;List&lt;User&gt;&gt;(<span class="hljs-string">&quot;get_all_active_users&quot;</span>)
+users.forEach { user -&gt;
+    println(<span class="hljs-string">&quot;User: <span class="hljs-subst">${user.name}</span>&quot;</span>)
+}
+
+<span class="hljs-comment">// Call function returning a single value</span>
+<span class="hljs-keyword">val</span> count = mojobase.database.rpc&lt;<span class="hljs-built_in">Int</span>&gt;(<span class="hljs-string">&quot;count_active_posts&quot;</span>)
+println(<span class="hljs-string">&quot;Active posts: <span class="hljs-variable">$count</span>&quot;</span>)
+
+<span class="hljs-comment">// Call function with multiple parameters</span>
+<span class="hljs-keyword">val</span> result = mojobase.database.rpc&lt;List&lt;Post&gt;&gt;(
+    <span class="hljs-string">&quot;search_posts&quot;</span>,
+    mapOf(
+        <span class="hljs-string">&quot;search_term&quot;</span> to <span class="hljs-string">&quot;kotlin&quot;</span>,
+        <span class="hljs-string">&quot;limit&quot;</span> to <span class="hljs-number">10</span>,
+        <span class="hljs-string">&quot;offset&quot;</span> to <span class="hljs-number">0</span>
+    )
+)</code></pre></div><h3 id="rpcraw-examples"><a class="anchor" href="#rpcraw-examples" aria-hidden="true" tabindex="-1">#</a>rpcRaw() examples</h3>
+<p>Use <code>rpcRaw()</code> when the return type is dynamic or unknown at compile time.</p>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonArray
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonObject
+<span class="hljs-keyword">import</span> kotlinx.serialization.json.jsonPrimitive
+
+<span class="hljs-comment">// Get raw JSON response</span>
+<span class="hljs-keyword">val</span> result = mojobase.database.rpcRaw(
+    <span class="hljs-string">&quot;some_dynamic_function&quot;</span>,
+    mapOf(<span class="hljs-string">&quot;param&quot;</span> to <span class="hljs-string">&quot;value&quot;</span>)
+)
+
+<span class="hljs-comment">// Process based on actual response structure</span>
+<span class="hljs-keyword">when</span> (result) {
+    <span class="hljs-keyword">is</span> JsonArray -&gt; {
+        result.forEach { element -&gt;
+            <span class="hljs-keyword">val</span> obj = element.jsonObject
+            println(<span class="hljs-string">&quot;Item: <span class="hljs-subst">${obj[<span class="hljs-string">&quot;name&quot;</span>]?.jsonPrimitive?.content}</span>&quot;</span>)
+        }
+    }
+    <span class="hljs-keyword">is</span> JsonObject -&gt; {
+        println(<span class="hljs-string">&quot;Single result: <span class="hljs-subst">${result[<span class="hljs-string">&quot;data&quot;</span>]}</span>&quot;</span>)
+    }
+    <span class="hljs-keyword">is</span> JsonPrimitive -&gt; {
+        println(<span class="hljs-string">&quot;Value: <span class="hljs-subst">${result.content}</span>&quot;</span>)
+    }
+}
+
+<span class="hljs-comment">// Handle complex nested structures</span>
+<span class="hljs-keyword">val</span> complexResult = mojobase.database.rpcRaw(<span class="hljs-string">&quot;get_dashboard_data&quot;</span>)
+<span class="hljs-keyword">val</span> dashboard = complexResult.jsonObject
+<span class="hljs-keyword">val</span> userCount = dashboard[<span class="hljs-string">&quot;user_count&quot;</span>]?.jsonPrimitive?.int
+<span class="hljs-keyword">val</span> recentPosts = dashboard[<span class="hljs-string">&quot;recent_posts&quot;</span>]?.jsonArray</code></pre></div><hr>
+<h2 id="filters"><a class="anchor" href="#filters" aria-hidden="true" tabindex="-1">#</a>Filters</h2>
+<div class="table-wrap"><table><thead><tr><th>Filter</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead><tbody><tr><td><code>.eq(column, value)</code></td>
+<td>Equals</td>
+<td><code>.eq(&quot;status&quot;, &quot;active&quot;)</code></td>
+</tr><tr><td><code>.neq(column, value)</code></td>
+<td>Not equals</td>
+<td><code>.neq(&quot;status&quot;, &quot;banned&quot;)</code></td>
+</tr><tr><td><code>.gt(column, value)</code></td>
+<td>Greater than</td>
+<td><code>.gt(&quot;age&quot;, 18)</code></td>
+</tr><tr><td><code>.gte(column, value)</code></td>
+<td>Greater than or equal</td>
+<td><code>.gte(&quot;price&quot;, 100)</code></td>
+</tr><tr><td><code>.lt(column, value)</code></td>
+<td>Less than</td>
+<td><code>.lt(&quot;stock&quot;, 10)</code></td>
+</tr><tr><td><code>.lte(column, value)</code></td>
+<td>Less than or equal</td>
+<td><code>.lte(&quot;priority&quot;, 3)</code></td>
+</tr><tr><td><code>.like(column, pattern)</code></td>
+<td>Case-sensitive pattern</td>
+<td><code>.like(&quot;name&quot;, &quot;%Widget%&quot;)</code></td>
+</tr><tr><td><code>.ilike(column, pattern)</code></td>
+<td>Case-insensitive pattern</td>
+<td><code>.ilike(&quot;email&quot;, &quot;%@gmail.com&quot;)</code></td>
+</tr><tr><td><code>.in(column, list)</code></td>
+<td>Value in list</td>
+<td><code>.in(&quot;status&quot;, listOf(&quot;pending&quot;, &quot;active&quot;))</code></td>
+</tr><tr><td><code>.isNull(column)</code></td>
+<td>Is null</td>
+<td><code>.isNull(&quot;deleted_at&quot;)</code></td>
+</tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Chain multiple filters</span>
+<span class="hljs-keyword">val</span> products = mojobase.database
+    .from(<span class="hljs-string">&quot;products&quot;</span>)
+    .select()
+    .eq(<span class="hljs-string">&quot;category&quot;</span>, <span class="hljs-string">&quot;electronics&quot;</span>)
+    .gte(<span class="hljs-string">&quot;price&quot;</span>, <span class="hljs-number">50</span>)
+    .lte(<span class="hljs-string">&quot;price&quot;</span>, <span class="hljs-number">500</span>)
+    .execute&lt;Product&gt;()  <span class="hljs-comment">// Returns List&lt;Product&gt;</span></code></pre></div><hr>
+<h2 id="modifiers"><a class="anchor" href="#modifiers" aria-hidden="true" tabindex="-1">#</a>Modifiers</h2>
+<div class="table-wrap"><table><thead><tr><th>Modifier</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead><tbody><tr><td><code>.order(column, ascending)</code></td>
+<td>Sort results</td>
+<td><code>.order(&quot;created_at&quot;, ascending = false)</code></td>
+</tr><tr><td><code>.limit(count)</code></td>
+<td>Limit rows</td>
+<td><code>.limit(10)</code></td>
+</tr><tr><td><code>.range(from, to)</code></td>
+<td>Pagination</td>
+<td><code>.range(0, 9)</code></td>
+</tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-title">kotlin</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="hljs language-kotlin"><span class="hljs-comment">// Pagination with sorting</span>
+<span class="hljs-keyword">val</span> posts = mojobase.database
+    .from(<span class="hljs-string">&quot;posts&quot;</span>)
+    .select()
+    .order(<span class="hljs-string">&quot;created_at&quot;</span>, ascending = <span class="hljs-literal">false</span>)
+    .range(<span class="hljs-number">0</span>, <span class="hljs-number">9</span>)
+    .limit(<span class="hljs-number">10</span>)
+    .execute&lt;Post&gt;()  <span class="hljs-comment">// Returns List&lt;Post&gt;</span></code></pre></div>
+      </div>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-link prev" href="/docs/sdks/kotlin/overview"><span class="pager-dir">Previous</span><span class="pager-title">Kotlin SDK for Android and Multiplatform</span></a>
+        <a class="pager-link next" href="/docs/sdks/kotlin/auth"><span class="pager-dir">Next</span><span class="pager-title">Authentication SDK Reference</span></a>
+      </nav>
+      <footer class="site-footer">
+        <p>Mojobase is built on the open-source InsForge project (Apache-2.0).</p>
+        <p><a href="https://mojobase.dev">mojobase.dev</a> · <a href="https://github.com/zainulabedeen123/mojobase" rel="noopener">GitHub</a></p>
+      </footer>
+    </article>
+    <nav class="toc" aria-label="On this page"><div class="toc-title">On this page</div><ul><li class="toc-d2"><a href="#installation">Installation</a></li><li class="toc-d3"><a href="#android-initialization">Android Initialization</a></li><li class="toc-d2"><a href="#insert">insert()</a></li><li class="toc-d3"><a href="#examples">Examples</a></li><li class="toc-d2"><a href="#update">update()</a></li><li class="toc-d3"><a href="#examples-1">Examples</a></li><li class="toc-d2"><a href="#delete">delete()</a></li><li class="toc-d3"><a href="#examples-2">Examples</a></li><li class="toc-d2"><a href="#select">select()</a></li><li class="toc-d3"><a href="#examples-3">Examples</a></li><li class="toc-d2"><a href="#executeraw">executeRaw()</a></li><li class="toc-d3"><a href="#examples-4">Examples</a></li><li class="toc-d2"><a href="#rpc">rpc()</a></li><li class="toc-d3"><a href="#signature">Signature</a></li><li class="toc-d3"><a href="#parameters">Parameters</a></li><li class="toc-d3"><a href="#implementation-details">Implementation details</a></li><li class="toc-d3"><a href="#examples-5">Examples</a></li><li class="toc-d3"><a href="#rpcraw-examples">rpcRaw() examples</a></li><li class="toc-d2"><a href="#filters">Filters</a></li><li class="toc-d2"><a href="#modifiers">Modifiers</a></li></ul></nav>
+  </main>
+</div>
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-scrim" data-search-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="search-input-row"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search-input" type="search" placeholder="Search Mojobase docs" aria-label="Search" autocomplete="off" spellcheck="false"><kbd class="kbd">Esc</kbd></div>
+    <ul class="search-results" role="listbox" aria-label="Results"></ul>
+    <div class="search-foot"><span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">Ctrl</kbd>/<kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd> toggle</span></div>
+  </div>
+</div>
+</body>
+</html>

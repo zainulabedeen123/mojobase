@@ -1,0 +1,89 @@
+---
+title: "Connection string & direct Postgres"
+sidebarTitle: "Connection string"
+description: "Connect to your Mojobase project's Postgres database directly over TLS with psql, Prisma, Drizzle, or any Postgres client."
+---
+
+Every Mojobase project has a direct Postgres connection string, for `psql`, database GUIs, ORMs (Prisma, Drizzle, Knex), migration tools and external services that need their own database connection. Find it in the project's **Connect** panel in the [Mojobase console](https://mojobase.dev). Your agent can also fetch it with the hosted MCP `get_project` tool.
+
+```text
+postgresql://mojobase:<password>@db.mojobase.dev:<port>/insforge?sslmode=require
+```
+
+| Part | Value |
+|---|---|
+| Host | `db.mojobase.dev` |
+| Port | Unique per project (shown in **Connect**) |
+| Database name | The path segment after the port in the connection string |
+| User | `mojobase` |
+| TLS | Required (`sslmode=require`). Plain-text connections are rejected. |
+
+## The `mojobase` role
+
+The connection string logs in as the `mojobase` role. It acts as your project's `project_admin`: it owns everything in the `public` schema and can create tables, indexes, functions, policies and extensions there, but it is **not** a Postgres superuser.
+
+<Warning>
+  This role is not limited by row-level security, and the string embeds its password. Treat it like the `ik_` API key: keep it in server-side environment variables (for example `DATABASE_URL`), never in browser code or a committed `.env` file.
+</Warning>
+
+Tables you create directly in `public` are reachable through the REST API and SDK only after you grant access to the `anon` / `authenticated` roles and add RLS policies. See [Database](/core-concepts/database/overview).
+
+## psql
+
+```bash
+psql "postgresql://mojobase:<password>@db.mojobase.dev:<port>/insforge?sslmode=require"
+```
+
+## Prisma
+
+```bash .env
+DATABASE_URL="postgresql://mojobase:<password>@db.mojobase.dev:<port>/insforge?sslmode=require"
+```
+
+```prisma schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+Run `npx prisma migrate deploy` (or `prisma db push` while prototyping) to apply your schema. Prisma's shadow database needs `CREATE DATABASE`, which the `mojobase` role does not have, so use `migrate deploy` against the project and run `migrate dev` against a local Postgres.
+
+## Drizzle
+
+```typescript db.ts
+import { drizzle } from 'drizzle-orm/node-postgres';
+
+// DATABASE_URL already contains sslmode=require
+export const db = drizzle(process.env.DATABASE_URL!);
+```
+
+```typescript drizzle.config.ts
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  dialect: 'postgresql',
+  schema: './src/schema.ts',
+  dbCredentials: { url: process.env.DATABASE_URL! },
+});
+```
+
+Then `npx drizzle-kit migrate` (or `drizzle-kit push`).
+
+## Importing an existing database
+
+Standard PostgreSQL tools work over the connection string, so an import is a dump and restore:
+
+```bash
+# dump your existing database (custom format)
+pg_dump -Fc your_local_db > local.dump
+
+# restore into Mojobase
+pg_restore --no-owner --no-privileges --single-transaction \
+  -d "postgresql://mojobase:<password>@db.mojobase.dev:<port>/insforge?sslmode=require" local.dump
+```
+
+- Pass `--no-owner` so restored objects are owned by the `mojobase` role rather than roles that only exist in your source database.
+- `--single-transaction` rolls the whole import back if any statement fails.
+- Take a [backup](/core-concepts/database/backups) first: a restore writes into your live database.
+- Imported tables do not get the `anon` / `authenticated` grants or RLS policies automatically. Add them before using the tables from the SDK.

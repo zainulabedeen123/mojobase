@@ -444,3 +444,18 @@ test('the app shell revalidates on every load so deploys reach browsers at once'
   assert.match(html, /src="\/app\.js\?v=[0-9a-f]{12}"/);
   assert.match(html, /href="\/styles\.css\?v=[0-9a-f]{12}"/);
 });
+
+test('documentation site is served under /docs', async () => {
+  const home = await fetch(BASE + '/docs');
+  assert.equal(home.status, 200);
+  assert.match(await home.text(), /Mojobase/);
+  const page = await fetch(BASE + '/docs/quickstart');
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /Quickstart/);
+  assert.equal((await fetch(BASE + '/docs/quickstart/')).status, 200);
+  assert.equal((await fetch(BASE + '/docs/assets/docs.css')).status, 200);
+  assert.equal((await fetch(BASE + '/docs/search-index.json')).status, 200);
+  // Unknown pages fall through to the app shell; nothing outside public/docs is reachable.
+  const traversal = await fetch(BASE + '/docs/..%2f..%2fsrc%2fserver.js');
+  assert.doesNotMatch(await traversal.text(), /express/);
+});

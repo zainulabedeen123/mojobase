@@ -191,7 +191,7 @@ export function StorageSettingsMenuDialog({ open, onOpenChange }: StorageSetting
                     })}
                   </p>
                   <a
-                    href="https://docs.insforge.dev/deployment/self-host-storage"
+                    href="https://mojobase.dev/docs/core-concepts/storage/s3-compatibility"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"

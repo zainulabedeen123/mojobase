@@ -1,0 +1,74 @@
+---
+title: "Mojobase documentation"
+sidebarTitle: "Introduction"
+description: "Mojobase is a hosted backend for apps built with AI coding agents: Postgres, auth, storage, edge functions, realtime, a model gateway, and payments in one project."
+---
+
+Every Mojobase project is a complete backend with its own URL (`https://your-project.mojobase.dev`): a Postgres database with an instant REST API, authentication, file storage, edge functions, realtime channels, a model gateway, email and payments. Build against it from your app with the SDK, or let your coding agent drive it over MCP.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Create a project in the console, then hand your agent the **AI prompt** or wire the SDK yourself.
+  </Card>
+  <Card title="Connect your agent (MCP)" icon="plug" href="/mcp-setup">
+    Let Claude Code, Cursor, Windsurf, VS Code or Codex create projects, run SQL and deploy functions.
+  </Card>
+  <Card title="TypeScript SDK" icon="js" href="/sdks/typescript/overview">
+    `npm install @mojobase/sdk` and call `createClient({ baseUrl, anonKey })`.
+  </Card>
+  <Card title="Direct Postgres" icon="database" href="/core-concepts/database/connection-string">
+    Use the TLS connection string with psql, Prisma or Drizzle.
+  </Card>
+</CardGroup>
+
+## Pick a framework
+
+<CardGroup cols={3}>
+  <Card title="Next.js" icon="react" href="/examples/framework-guides/nextjs" />
+  <Card title="React" icon="react" href="/examples/framework-guides/react" />
+  <Card title="Vue" icon="vuejs" href="/examples/framework-guides/vue" />
+  <Card title="Nuxt" icon="n" href="/examples/framework-guides/nuxt" />
+  <Card title="Svelte" icon="bolt" href="/examples/framework-guides/svelte" />
+</CardGroup>
+
+## Core products
+
+<CardGroup cols={2}>
+  <Card title="Database" icon="database" href="/core-concepts/database/overview">
+    Postgres, migrations, backups, pgvector.
+  </Card>
+  <Card title="Authentication" icon="shield" href="/core-concepts/authentication/overview">
+    Users, sessions, OAuth, JWT and row-level security.
+  </Card>
+  <Card title="Storage" icon="folder" href="/core-concepts/storage/overview">
+    Buckets for files, images and uploads.
+  </Card>
+  <Card title="Edge Functions" icon="bolt" href="/core-concepts/functions/overview">
+    Serverless TypeScript on Deno, with schedules.
+  </Card>
+  <Card title="Realtime" icon="tower-broadcast" href="/core-concepts/realtime/overview">
+    Database changes, broadcast and presence.
+  </Card>
+  <Card title="Model Gateway" icon="sparkles" href="/core-concepts/ai/overview">
+    OpenAI-compatible access to hundreds of models.
+  </Card>
+  <Card title="Messaging" icon="envelope" href="/core-concepts/messaging/overview">
+    Transactional email through your SMTP provider.
+  </Card>
+  <Card title="Payments" icon="credit-card" href="/core-concepts/payments/overview">
+    Stripe and Razorpay checkout and subscriptions.
+  </Card>
+</CardGroup>
+
+## Keys at a glance
+
+| Value | Looks like | Where to use it |
+|---|---|---|
+| Project URL | `https://your-project.mojobase.dev` | Everywhere |
+| Anon key | `anon_...` | Browsers and mobile apps. Row-level security decides what each user can do. |
+| API key (admin) | `ik_...` | Server-side code and admin scripts only. Bypasses row-level security. |
+| Connection string | `postgresql://mojobase:<password>@db.mojobase.dev:<port>/insforge?sslmode=require` | Server-side tools, ORMs and migrations only. |
+
+All of them are in your project's **Connect** panel in the [Mojobase console](https://mojobase.dev).

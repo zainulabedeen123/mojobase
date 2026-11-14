@@ -172,7 +172,7 @@ export const dashboardDTestInstallMenuItem: DashboardPrimaryMenuItem = {
 export const dashboardDTestDocMenuItem: DashboardPrimaryMenuItem = {
   id: 'dtest-doc',
   label: 'Doc',
-  href: 'https://docs.insforge.dev/introduction',
+  href: 'https://mojobase.dev/docs',
   icon: BookOpen,
   external: true,
 };
