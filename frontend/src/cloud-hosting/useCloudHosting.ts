@@ -1012,6 +1012,10 @@ export function useCloudHosting() {
     void postMessageToParent({ type: 'OPEN_WHATS_NEW' });
   }, [postMessageToParent]);
 
+  const openAgentPrompt = useCallback(() => {
+    void postMessageToParent({ type: 'OPEN_AGENT_PROMPT' });
+  }, [postMessageToParent]);
+
   const reportRouteChange = useCallback(
     (path: string) => {
       void postMessageToParent({ type: 'APP_ROUTE_CHANGE', path });
@@ -1145,6 +1149,7 @@ export function useCloudHosting() {
     updateVersion,
     showUpgradeDialog,
     openWhatsNew,
+    openAgentPrompt,
     requestUserInfo,
     updatePreferredLocale,
     requestUserApiKey,

@@ -14,6 +14,7 @@ import {
   Scan,
   User,
   Plug,
+  Sparkles,
 } from 'lucide-react';
 import {
   Edge,
@@ -30,7 +31,11 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useApiKey, useMetadata } from '#lib/hooks/useMetadata';
-import { useDashboardProject, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import {
+  useDashboardHost,
+  useDashboardProject,
+  useIsCloudHostingMode,
+} from '#lib/config/DashboardHostContext';
 import { useCloudProjectInfo } from '#lib/hooks/useCloudProjectInfo';
 import { useMcpUsage } from '#features/logs/hooks/useMcpUsage';
 import { getBackendUrl, isInsForgeCloudProject } from '#lib/utils/utils';
@@ -371,6 +376,7 @@ function DashboardLoadingState() {
 }
 
 export default function DashboardPage() {
+  const { onOpenAgentPrompt } = useDashboardHost();
   const navigate = useNavigate();
   const openConnectDialog = useOpenConnectDialog();
   const isCloudHostingMode = useIsCloudHostingMode();
@@ -588,6 +594,30 @@ export default function DashboardPage() {
                 />
               </div>
             </div>
+
+            {onOpenAgentPrompt && (
+              <div className="flex flex-col gap-3 rounded-lg border border-[var(--alpha-12)] bg-[var(--alpha-4)] p-4">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium leading-5 text-foreground">
+                      {t('overview.agentPromptTitle', {
+                        defaultValue: 'Integrate with your AI coding agent',
+                      })}
+                    </p>
+                    <p className="text-sm leading-5 text-muted-foreground">
+                      {t('overview.agentPromptDescription', {
+                        defaultValue:
+                          'One ready-to-paste prompt with your project URL, keys, connection string and every setup step.',
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <Button type="button" className="h-8 self-start px-3" onClick={onOpenAgentPrompt}>
+                  {t('overview.agentPromptButton', { defaultValue: 'Get AI prompt' })}
+                </Button>
+              </div>
+            )}
 
             {agentConnected ? (
               <div className="grid grid-cols-2 gap-3">

@@ -9,6 +9,7 @@ export function CloudHostingDashboard() {
     reportRouteChange,
     showUpgradeDialog,
     openWhatsNew,
+    openAgentPrompt,
     renameProject,
     deleteProject,
     requestBackupInfo,
@@ -45,6 +46,7 @@ export function CloudHostingDashboard() {
       onRouteChange={reportRouteChange}
       onShowUpgradeDialog={showUpgradeDialog}
       onOpenWhatsNew={openWhatsNew}
+      onOpenAgentPrompt={cloudIntegrations ? undefined : openAgentPrompt}
       onRenameProject={renameProject}
       onDeleteProject={deleteProject}
       onRequestBackupInfo={requestBackupInfo}

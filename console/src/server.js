@@ -416,8 +416,21 @@ app.use((err, _req, res, _next) => {
 
 // ------------------------------------------------------------------ web app
 const pub = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
-app.use(express.static(pub, { index: 'index.html', maxAge: '1h' }));
-app.get('*', (_req, res) => res.sendFile(path.join(pub, 'index.html')));
+// The page, script and styles revalidate on every load (cheap 304s via ETag), so
+// a deploy reaches everyone immediately instead of after a stale hour in cache.
+const revalidate = /\.(html|js|css)$/;
+app.use(
+  express.static(pub, {
+    index: 'index.html',
+    maxAge: '1h',
+    setHeaders: (res, file) => {
+      if (revalidate.test(file)) res.setHeader('Cache-Control', 'no-cache');
+    },
+  })
+);
+app.get('*', (_req, res) =>
+  res.sendFile(path.join(pub, 'index.html'), { headers: { 'Cache-Control': 'no-cache' } })
+);
 
 app.listen(config.port, () =>
   console.log(JSON.stringify({ level: 'info', msg: `console listening on ${config.port}` }))

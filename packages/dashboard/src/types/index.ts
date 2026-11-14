@@ -204,6 +204,8 @@ export interface DashboardProps {
   onRouteChange?: (path: string) => void;
   onShowUpgradeDialog?: () => void;
   onOpenWhatsNew?: () => void;
+  /** Opens the host's ready-to-paste AI integration prompt (Mojobase console). */
+  onOpenAgentPrompt?: () => void;
   onRenameProject?: (name: string) => Promise<void>;
   onDeleteProject?: () => Promise<void>;
   onRequestBackupInfo?: () => Promise<DashboardBackupInfo>;

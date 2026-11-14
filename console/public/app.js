@@ -706,6 +706,7 @@ window.addEventListener('message', (e) => {
     case 'APP_ROUTE_CHANGE':
       if (typeof msg.path === 'string' && /^\/dashboard[\w\-/]*$/.test(msg.path)) history.replaceState({}, '', `/projects/${ref}${msg.path === '/dashboard' ? '' : msg.path}`);
       return;
+    case 'OPEN_AGENT_PROMPT': return void openAgentPrompt(ref);
     case 'OPEN_WHATS_NEW': return void window.open('https://github.com/zainulabedeen123/mojobase/commits/main', '_blank', 'noopener');
     case 'SHOW_UPGRADE_DIALOG': return toast('Paid plans are not available yet — everything on Mojobase is free for now.');
     default:

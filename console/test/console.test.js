@@ -435,3 +435,8 @@ test('MCP server: token auth, tools, ownership, revocation', async () => {
   await assert.rejects(client.callTool({ name: 'list_projects', arguments: {} }));
   await client.close().catch(() => {});
 });
+
+test('the app shell revalidates on every load so deploys reach browsers at once', async () => {
+  for (const p of ['/', '/app.js', '/styles.css', '/projects/abc'])
+    assert.equal((await fetch(BASE + p)).headers.get('cache-control'), 'no-cache', p);
+});

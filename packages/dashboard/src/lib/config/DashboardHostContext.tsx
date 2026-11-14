@@ -27,6 +27,7 @@ interface DashboardHostContextValue {
   onRouteChange?: (path: string) => void;
   onShowUpgradeDialog?: () => void;
   onOpenWhatsNew?: () => void;
+  onOpenAgentPrompt?: () => void;
   onRenameProject?: (name: string) => Promise<void>;
   onDeleteProject?: () => Promise<void>;
   onRequestBackupInfo?: () => Promise<DashboardBackupInfo>;
