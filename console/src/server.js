@@ -16,7 +16,15 @@ import {
   rateLimit,
 } from './auth.js';
 import { projectHost } from './project-stack.js';
-import { projectView, createProject, ServiceError } from './projects-service.js';
+import {
+  projectView,
+  createProject,
+  renameProject,
+  setPaused,
+  projectUsage,
+  ServiceError,
+} from './projects-service.js';
+import { jwks, signProjectAuthorization } from './signing.js';
 import { handleMcp } from './mcp.js';
 import {
   provision,
@@ -28,6 +36,10 @@ import {
   listBackups,
   backupPath,
   scheduleBackups,
+  deleteBackup,
+  renameBackup,
+  restoreBackup,
+  reconcileProjects,
 } from './provisioner.js';
 
 const app = express();
@@ -52,9 +64,9 @@ app.use((_req, res, next) => {
   res.set({
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
-    'Referrer-Policy': 'same-origin',
-    'Content-Security-Policy':
-      "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'",
+    // Lets embedded project dashboards see the console's origin (and nothing more).
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Content-Security-Policy': `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src https://*.${config.baseDomain}; frame-ancestors 'none'`,
   });
   next();
 });
@@ -199,12 +211,16 @@ function ownProject(req, res) {
   return p;
 }
 
-app.get('/api/projects', requireUser, (req, res) => {
-  res.json({
-    projects: projects
-      .forOwner(req.user.id)
-      .map((p) => ({ ...p, apiUrl: `https://${projectHost(p.ref)}` })),
-  });
+app.get('/api/projects', requireUser, async (req, res) => {
+  const list = projects.forOwner(req.user.id);
+  const withUsage = await Promise.all(
+    list.map(async (row) => ({
+      ...row,
+      apiUrl: `https://${projectHost(row.ref)}`,
+      usage: await projectUsage(projects.get(row.ref)),
+    }))
+  );
+  res.json({ projects: withUsage });
 });
 
 app.post('/api/projects', requireUser, rateLimit({ windowMs: 60_000, max: 5 }), (req, res) => {
@@ -240,6 +256,58 @@ app.get('/api/projects/:ref', requireUser, (req, res) => {
   const p = ownProject(req, res);
   if (p) res.json({ project: view(p, { withSecrets: p.status === 'ready' }) });
 });
+
+// Helper for routes that call the shared project service.
+const service = (fn) => async (req, res) => {
+  try {
+    await fn(req, res);
+  } catch (e) {
+    if (e instanceof ServiceError) return res.status(e.status).json({ error: e.message });
+    console.error(JSON.stringify({ level: 'error', msg: e.message }));
+    res.status(500).json({ error: e.message || 'Something went wrong' });
+  }
+};
+
+// A short-lived signed code the embedded project dashboard exchanges for an
+// admin session on that project (same protocol InsForge Cloud uses).
+app.post(
+  '/api/projects/:ref/authorization-code',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  (req, res) => {
+    const p = ownProject(req, res);
+    if (!p) return;
+    if (p.status !== 'ready') return res.status(409).json({ error: `Project is ${p.status}` });
+    res.json({ code: signProjectAuthorization({ userId: req.user.id, projectRef: p.ref }) });
+  }
+);
+
+app.patch(
+  '/api/projects/:ref',
+  requireUser,
+  service(async (req, res) => {
+    const p = renameProject(req.user, req.params.ref, req.body?.name);
+    res.json({ project: view(p, { withSecrets: false }) });
+  })
+);
+app.post(
+  '/api/projects/:ref/pause',
+  requireUser,
+  service(async (req, res) => {
+    res.json({
+      project: view(await setPaused(req.user, req.params.ref, true), { withSecrets: false }),
+    });
+  })
+);
+app.post(
+  '/api/projects/:ref/resume',
+  requireUser,
+  service(async (req, res) => {
+    res.status(202).json({
+      project: view(await setPaused(req.user, req.params.ref, false), { withSecrets: false }),
+    });
+  })
+);
 
 app.post('/api/projects/:ref/retry', requireUser, (req, res) => {
   const p = ownProject(req, res);
@@ -277,7 +345,10 @@ app.post(
     if (!p) return;
     if (p.status !== 'ready') return res.status(409).json({ error: 'Project is not ready' });
     try {
-      res.status(201).json({ file: await backupProject(p.ref) });
+      const name = req.body?.name ? String(req.body.name).slice(0, 80) : null;
+      res
+        .status(201)
+        .json({ file: await backupProject(p.ref, { name, createdBy: req.user.email }) });
     } catch (e) {
       res.status(500).json({ error: `Backup failed: ${e.message}` });
     }
@@ -290,6 +361,40 @@ app.get('/api/projects/:ref/backups/:file', requireUser, (req, res) => {
   if (!file) return res.status(404).json({ error: 'Backup not found' });
   res.download(file, req.params.file);
 });
+
+app.delete('/api/projects/:ref/backups/:file', requireUser, (req, res) => {
+  const p = ownProject(req, res);
+  if (!p) return;
+  if (!deleteBackup(p.ref, req.params.file))
+    return res.status(404).json({ error: 'Backup not found' });
+  res.json({ ok: true });
+});
+app.patch('/api/projects/:ref/backups/:file', requireUser, (req, res) => {
+  const p = ownProject(req, res);
+  if (!p) return;
+  const name = String(req.body?.name || '')
+    .trim()
+    .slice(0, 80);
+  if (!name) return res.status(400).json({ error: 'Name is required' });
+  if (!renameBackup(p.ref, req.params.file, name))
+    return res.status(404).json({ error: 'Backup not found' });
+  res.json({ ok: true });
+});
+app.post(
+  '/api/projects/:ref/backups/:file/restore',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 2 }),
+  async (req, res) => {
+    const p = ownProject(req, res);
+    if (!p) return;
+    try {
+      await restoreBackup(p.ref, req.params.file);
+      res.json({ ok: true });
+    } catch (e) {
+      res.status(500).json({ error: `Restore failed: ${e.message}` });
+    }
+  }
+);
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Express needs 4 args to treat this as the error handler
@@ -316,10 +421,13 @@ internal.get('/tls-ask', (req, res) => {
   const ref = domain.endsWith(suffix) ? domain.slice(0, -suffix.length) : '';
   res.sendStatus(/^[a-z][a-z0-9]{15}$/.test(ref) && projects.exists(ref) ? 200 : 404);
 });
+// Public keys for the project-authorization codes (projects use this as their CLOUD_API_HOST JWKS).
+internal.get('/.well-known/jwks.json', (_req, res) => res.json(jwks));
 internal.get('/healthz', (_req, res) => res.json({ ok: true, dbCert: dbCertReady() }));
 internal.listen(config.internalPort);
 
 resumePending();
+reconcileProjects();
 scheduleBackups();
 setInterval(() => tokens.purgeExpired(), 3600_000).unref();
 refreshDbCerts();

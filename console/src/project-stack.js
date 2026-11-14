@@ -162,6 +162,11 @@ export function composeFile(ref, port, secrets) {
           COMPUTE_DEFAULT_INGRESS: 'none',
           COMPUTE_BIND_ADDRESS: '127.0.0.1',
           INSFORGE_TELEMETRY_DISABLED: '1',
+          // The console acts as this project's "cloud": its dashboard, embedded at
+          // mojobase.dev, signs in with tokens the console signs (verified against
+          // the console's JWKS). Outbound cloud features stay off (no AWS env).
+          PROJECT_ID: ref,
+          CLOUD_API_HOST: config.consoleInternalUrl,
           INSFORGE_DEPLOYMENT_METHOD: 'mojobase-console',
         },
         volumes: ['storage:/insforge-storage', 'logs:/insforge-logs'],

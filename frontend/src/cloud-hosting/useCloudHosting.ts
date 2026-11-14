@@ -88,6 +88,8 @@ const DEFAULT_TIMEOUT_MS = 15000;
 const INSTANCE_CHANGE_TIMEOUT_MS = 5 * 60 * 1000;
 const INSFORGE_ROOT_ORIGIN = 'https://insforge.dev';
 const INSFORGE_SUBDOMAIN_SUFFIX = '.insforge.dev';
+// The Mojobase console hosts project dashboards the same way InsForge Cloud does.
+const MOJOBASE_CONSOLE_ORIGIN = 'https://mojobase.dev';
 
 function normalizeUrl(url: string) {
   return url.replace(/\/$/, '');
@@ -107,6 +109,7 @@ function isInsForgeOrigin(origin: string): boolean {
     return (
       url.protocol === 'https:' &&
       (url.origin === INSFORGE_ROOT_ORIGIN ||
+        url.origin === MOJOBASE_CONSOLE_ORIGIN ||
         (url.port === '' && url.hostname.endsWith(INSFORGE_SUBDOMAIN_SUFFIX)))
     );
   } catch {

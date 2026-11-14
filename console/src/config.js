@@ -24,6 +24,8 @@ export const config = {
   // Public naming
   baseDomain: process.env.BASE_DOMAIN || 'mojobase.dev', // projects live at <ref>.<baseDomain>
   consoleOrigin: process.env.CONSOLE_ORIGIN || 'https://mojobase.dev',
+  // How project stacks reach the console's internal port (JWKS for dashboard sign-in).
+  consoleInternalUrl: process.env.CONSOLE_INTERNAL_URL || 'http://console:3001',
   dbHost: process.env.DB_HOST || 'db.mojobase.dev',
 
   // Images each project stack runs (published by .github/workflows/mojobase-image.yml)

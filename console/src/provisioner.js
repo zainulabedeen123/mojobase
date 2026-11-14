@@ -28,6 +28,31 @@ async function compose(ref, args, timeout = 15 * 60_000) {
   });
 }
 
+function psqlDb(container, db, sql) {
+  return new Promise((resolve, reject) => {
+    const p = spawn('docker', [
+      'exec',
+      '-i',
+      container,
+      'psql',
+      '-U',
+      'postgres',
+      '-d',
+      db,
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-q',
+    ]);
+    let err = '';
+    p.stderr.on('data', (d) => (err += d));
+    p.on('error', reject);
+    p.on('close', (code) =>
+      code === 0 ? resolve() : reject(new Error(`psql exited ${code}: ${err.trim()}`))
+    );
+    p.stdin.end(sql);
+  });
+}
+
 function psql(container, sql) {
   return new Promise((resolve, reject) => {
     const p = spawn('docker', [
@@ -156,7 +181,18 @@ async function configureProjectEmail(ref, p) {
 const BACKUP_FILE = /^[a-z0-9]{16}-\d{8}T\d{6}Z\.dump$/;
 let backupChain = Promise.resolve();
 
-export function backupProject(ref) {
+// Backup metadata (name, manual/scheduled) lives in a JSON file next to each dump.
+const metaPath = (ref, file) => path.join(backupsDir(ref), `${file}.json`);
+function readMeta(ref, file) {
+  try {
+    return JSON.parse(fs.readFileSync(metaPath(ref, file), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+const MAX_MANUAL_BACKUPS = 10;
+
+export function backupProject(ref, { name = null, trigger = 'manual', createdBy = null } = {}) {
   const job = async () => {
     const p = projects.get(ref);
     if (!p || p.status !== 'ready') throw new Error('Project is not ready');
@@ -194,10 +230,18 @@ export function backupProject(ref) {
       );
     });
     fs.renameSync(tmp, file);
-    // Keep the newest N backups.
+    fs.writeFileSync(
+      metaPath(ref, path.basename(file)),
+      JSON.stringify({ name, trigger, createdBy }),
+      { mode: 0o600 }
+    );
+    // Keep the newest N scheduled and MAX_MANUAL_BACKUPS manual backups.
     const all = listBackups(ref);
-    for (const old of all.slice(config.backupKeep))
-      fs.rmSync(path.join(backupsDir(ref), old.file), { force: true });
+    const prune = [
+      ...all.filter((b) => b.trigger === 'scheduled').slice(config.backupKeep),
+      ...all.filter((b) => b.trigger !== 'scheduled').slice(MAX_MANUAL_BACKUPS),
+    ];
+    for (const old of prune) deleteBackup(ref, old.file);
     log(ref, 'backup created', { file: path.basename(file) });
     return path.basename(file);
   };
@@ -213,7 +257,15 @@ export function listBackups(ref) {
     .filter((f) => BACKUP_FILE.test(f))
     .map((f) => {
       const st = fs.statSync(path.join(backupsDir(ref), f));
-      return { file: f, size: st.size, createdAt: st.mtime.toISOString() };
+      const meta = readMeta(ref, f);
+      return {
+        file: f,
+        size: st.size,
+        createdAt: st.mtime.toISOString(),
+        name: meta.name ?? null,
+        trigger: meta.trigger === 'scheduled' ? 'scheduled' : 'manual',
+        createdBy: meta.createdBy ?? null,
+      };
     })
     .sort((a, b) => b.file.localeCompare(a.file));
 }
@@ -225,6 +277,125 @@ export function backupPath(ref, file) {
   return fs.existsSync(full) ? full : null;
 }
 
+export function deleteBackup(ref, file) {
+  const full = backupPath(ref, file);
+  if (!full) return false;
+  fs.rmSync(full, { force: true });
+  fs.rmSync(metaPath(ref, file), { force: true });
+  return true;
+}
+
+export function renameBackup(ref, file, name) {
+  if (!backupPath(ref, file)) return false;
+  fs.writeFileSync(metaPath(ref, file), JSON.stringify({ ...readMeta(ref, file), name }), {
+    mode: 0o600,
+  });
+  return true;
+}
+
+// Replace the project database with a backup. A safety backup of the current
+// state is taken first. The database is recreated from the dump (pg_restore
+// --create), then the stack restarts so every service reconnects.
+export function restoreBackup(ref, file) {
+  const job = async () => {
+    const full = backupPath(ref, file);
+    if (!full) throw new Error('Backup not found');
+    const p = projects.get(ref);
+    if (!p || p.status !== 'ready') throw new Error('Project is not ready');
+    await backupProject(ref, { name: `Before restoring ${file}`, trigger: 'manual' });
+    projects.setStatus(ref, 'restoring');
+    try {
+      await compose(ref, ['stop', 'app', 'postgrest', 'deno']);
+      await psqlDb(postgresContainer(ref), 'postgres', `DROP DATABASE ${DB_NAME} WITH (FORCE);`);
+      await new Promise((resolve, reject) => {
+        const restore = spawn('docker', [
+          'exec',
+          '-i',
+          postgresContainer(ref),
+          'pg_restore',
+          '-U',
+          'postgres',
+          '-d',
+          'postgres',
+          '--create',
+          '--exit-on-error',
+        ]);
+        let err = '';
+        restore.stderr.on('data', (d) => (err += d));
+        restore.on('error', reject);
+        restore.on('close', (code) =>
+          code === 0
+            ? resolve()
+            : reject(new Error(`pg_restore exited ${code}: ${err.trim().slice(-400)}`))
+        );
+        fs.createReadStream(full).pipe(restore.stdin);
+      });
+      // Restart Postgres (pg_cron reattaches to the new database), then the rest.
+      await compose(ref, ['restart', 'postgres']);
+      await compose(ref, ['up', '-d']);
+      await waitForApp(ref);
+      projects.setStatus(ref, 'ready');
+      log(ref, 'backup restored', { file });
+    } catch (e) {
+      projects.setStatus(ref, 'ready');
+      // Bring services back even if the restore failed half-way.
+      await compose(ref, ['up', '-d']).catch(() => {});
+      throw e;
+    }
+  };
+  return enqueue(job);
+}
+
+// ------------------------------------------------------------------ pause / resume
+export function pauseProject(ref) {
+  return enqueue(async () => {
+    await compose(ref, ['stop']);
+    projects.setStatus(ref, 'paused');
+    log(ref, 'project paused');
+  });
+}
+
+export function resumeProject(ref) {
+  return enqueue(async () => {
+    projects.setStatus(ref, 'resuming');
+    try {
+      await compose(ref, ['up', '-d']);
+      await waitForApp(ref);
+      projects.setStatus(ref, 'ready');
+      log(ref, 'project resumed');
+    } catch (e) {
+      projects.setStatus(ref, 'paused', `Resume failed: ${e.message}`.slice(0, 600));
+      throw e;
+    }
+  });
+}
+
+// Bring existing projects up to date with the current stack definition (new
+// image versions, new settings). Only touches projects whose file changed.
+export function reconcileProjects() {
+  for (const p of projects.all()) {
+    if (!['ready', 'paused'].includes(p.status)) continue;
+    enqueue(async () => {
+      const current = projects.get(p.ref);
+      if (!current || !['ready', 'paused'].includes(current.status)) return;
+      const next = composeFile(p.ref, current.db_port, current.secrets);
+      const prev = fs.existsSync(composePath(p.ref))
+        ? fs.readFileSync(composePath(p.ref), 'utf8')
+        : '';
+      if (prev === next) return;
+      fs.mkdirSync(path.dirname(composePath(p.ref)), { recursive: true, mode: 0o700 });
+      fs.writeFileSync(composePath(p.ref), next, { mode: 0o600 });
+      if (current.status === 'ready') {
+        log(p.ref, 'updating project stack');
+        await compose(p.ref, ['up', '-d', '--quiet-pull', '--remove-orphans']);
+        await waitForApp(p.ref).catch((e) =>
+          log(p.ref, 'update: app not healthy yet', { error: e.message })
+        );
+      }
+    }).catch((e) => log(p.ref, 'update failed', { error: e.message }));
+  }
+}
+
 // Nightly: back up every ready project once a day at BACKUP_HOUR_UTC.
 let lastBackupDay = '';
 export function scheduleBackups() {
@@ -234,7 +405,7 @@ export function scheduleBackups() {
     if (now.getUTCHours() !== config.backupHourUtc || lastBackupDay === day) return;
     lastBackupDay = day;
     for (const p of projects.all().filter((x) => x.status === 'ready')) {
-      await backupProject(p.ref).catch((e) =>
+      await backupProject(p.ref, { trigger: 'scheduled' }).catch((e) =>
         log(p.ref, 'nightly backup failed', { error: e.message })
       );
     }

@@ -11,7 +11,7 @@ import {
   DB_USER,
   DB_NAME,
 } from './project-stack.js';
-import { provision, destroy, dbCertReady } from './provisioner.js';
+import { provision, destroy, dbCertReady, pauseProject, resumeProject } from './provisioner.js';
 
 export class ServiceError extends Error {
   constructor(status, message) {
@@ -136,4 +136,59 @@ export async function projectApi(p, method, path, body, { timeoutMs = 60_000 } =
     throw new ServiceError(res.status, `Project API ${res.status}: ${String(msg).slice(0, 500)}`);
   }
   return data;
+}
+
+// ------------------------------------------------------------------ rename / pause / resume
+export function renameProject(user, ref, rawName) {
+  const p = ownedProject(user, ref);
+  const name = String(rawName || '').trim();
+  if (!NAME.test(name))
+    throw new ServiceError(
+      400,
+      'Name must be 1–40 letters, numbers, spaces, dots, dashes or underscores'
+    );
+  projects.rename(p.ref, name);
+  return projects.get(p.ref);
+}
+
+export async function setPaused(user, ref, paused) {
+  const p = ownedProject(user, ref);
+  if (paused) {
+    if (p.status !== 'ready')
+      throw new ServiceError(409, `Can't pause a project that is ${p.status}`);
+    await pauseProject(p.ref);
+  } else {
+    if (p.status !== 'paused') throw new ServiceError(409, `Project is ${p.status}, not paused`);
+    if (projects.countByStatus('ready') >= config.maxProjects)
+      throw new ServiceError(503, 'Mojobase is at capacity right now. Please try again later.');
+    resumeProject(p.ref).catch(() => {});
+  }
+  return projects.get(p.ref);
+}
+
+// ------------------------------------------------------------------ usage
+// Database and storage size per project, refreshed at most every 5 minutes.
+const usageCache = new Map();
+export async function projectUsage(p) {
+  const cached = usageCache.get(p.ref);
+  if (cached && Date.now() - cached.at < 5 * 60_000) return cached.value;
+  if (p.status !== 'ready') return cached?.value ?? null;
+  try {
+    const res = await projectApi(
+      p,
+      'POST',
+      '/api/database/advance/rawsql',
+      {
+        query:
+          'SELECT pg_database_size(current_database())::bigint AS db, (SELECT COALESCE(SUM(size), 0) FROM storage.objects)::bigint AS storage',
+      },
+      { timeoutMs: 8000 }
+    );
+    const row = res?.rows?.[0] ?? {};
+    const value = { databaseBytes: Number(row.db) || 0, storageBytes: Number(row.storage) || 0 };
+    usageCache.set(p.ref, { at: Date.now(), value });
+    return value;
+  } catch {
+    return cached?.value ?? null;
+  }
 }

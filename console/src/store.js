@@ -135,6 +135,9 @@ export const projects = {
     db.prepare('UPDATE projects SET status = ?, error = ? WHERE ref = ?').run(status, error, ref);
   },
   remove: (ref) => db.prepare('DELETE FROM projects WHERE ref = ?').run(ref),
+  rename: (ref, name) => db.prepare('UPDATE projects SET name = ? WHERE ref = ?').run(name, ref),
+  countByStatus: (status) =>
+    db.prepare('SELECT COUNT(*) AS n FROM projects WHERE status = ?').get(status).n,
   get: (ref) => row(db.prepare('SELECT * FROM projects WHERE ref = ?').get(ref)),
   forOwner: (ownerId) =>
     db
