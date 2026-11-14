@@ -690,7 +690,7 @@ window.addEventListener('message', (e) => {
         .then(() => { sendToFrame({ type: 'DELETE_PROJECT_RESULT', success: true }); toast('Deleting project…'); setTimeout(() => go('/'), 400); },
           (err) => sendToFrame({ type: 'DELETE_PROJECT_RESULT', success: false, error: err.message }));
     case 'REQUEST_INSTANCE_INFO':
-      return sendToFrame({ type: 'INSTANCE_INFO', currentInstanceType: 'nano', planName: 'free', isPartnerOrg: false, computeCredits: 0, currentOrgComputeCost: 0, instanceTypes: [NANO],
+      return sendToFrame({ type: 'INSTANCE_INFO', currentInstanceType: 'nano', planName: 'free preview', isPartnerOrg: false, computeCredits: 0, currentOrgComputeCost: 0, instanceTypes: [NANO],
         projects: projectsCache.map((p) => ({ id: p.ref, name: p.name, instanceType: 'nano', status: p.status === 'ready' ? 'active' : p.status })) });
     case 'REQUEST_INSTANCE_TYPE_CHANGE': return sendToFrame({ type: 'INSTANCE_TYPE_CHANGE_RESULT', success: false, error: 'Mojobase runs every project on the Nano instance for now.' });
     case 'UPDATE_PROJECT_VERSION': return sendToFrame({ type: 'VERSION_UPDATE_RESULT', success: false, error: 'Mojobase updates projects automatically.' });

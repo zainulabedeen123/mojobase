@@ -4,7 +4,7 @@ import { Outlet, useOutletContext } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, useToast } from '@insforge/ui';
 import { ErrorState, LoadingState } from '#components';
-import { useDashboardHost, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useDashboardHost, useUsesCloudWebscraper } from '#lib/config/DashboardHostContext';
 import { useProjectId } from '#lib/hooks/useMetadata';
 import { webscraperQueryKeys, useApifyConnection } from '#features/webscraper/hooks/useWebscraper';
 import type { ApifyConnection } from '#features/webscraper/services/webscraper.service';
@@ -36,7 +36,7 @@ export default function WebscraperLayout() {
   // The host tells us its mode outright, so read that rather than inferring it
   // from a callback that merely happens to be cloud-only today. Two signals for
   // one fact is how the earlier misclassification bug got in.
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudWebscraper();
 
   // OAuth completes in the parent cloud shell, which posts the result back here.
   useEffect(() => {

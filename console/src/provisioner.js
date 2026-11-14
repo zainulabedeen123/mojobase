@@ -190,12 +190,26 @@ function readMeta(ref, file) {
     return {};
   }
 }
-const MAX_MANUAL_BACKUPS = 10;
+// Matches what the project dashboard tells users ("up to 5 backups manually").
+export const MAX_MANUAL_BACKUPS = 5;
 
-export function backupProject(ref, { name = null, trigger = 'manual', createdBy = null } = {}) {
+export function backupProject(
+  ref,
+  { name = null, trigger = 'manual', createdBy = null, safety = false } = {}
+) {
   const job = async () => {
     const p = projects.get(ref);
     if (!p || p.status !== 'ready') throw new Error('Project is not ready');
+    // People choose which manual backups to keep; only the automatic safety
+    // backup taken before a restore may push out the oldest one.
+    if (
+      trigger === 'manual' &&
+      !safety &&
+      listBackups(ref).filter((b) => b.trigger !== 'scheduled').length >= MAX_MANUAL_BACKUPS
+    )
+      throw new Error(
+        `You can keep up to ${MAX_MANUAL_BACKUPS} manual backups. Delete one to make room.`
+      );
     fs.mkdirSync(backupsDir(ref), { recursive: true, mode: 0o700 });
     const stamp = new Date()
       .toISOString()
@@ -302,7 +316,7 @@ export function restoreBackup(ref, file) {
     if (!full) throw new Error('Backup not found');
     const p = projects.get(ref);
     if (!p || p.status !== 'ready') throw new Error('Project is not ready');
-    await backupProject(ref, { name: `Before restoring ${file}`, trigger: 'manual' });
+    await backupProject(ref, { name: `Before restoring ${file}`, trigger: 'manual', safety: true });
     projects.setStatus(ref, 'restoring');
     try {
       await compose(ref, ['stop', 'app', 'postgrest', 'deno']);

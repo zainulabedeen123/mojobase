@@ -22,6 +22,8 @@ const hostValue: { mode: 'self-hosting' | 'cloud-hosting' } = { mode: 'self-host
 vi.mock('#lib/config/DashboardHostContext', () => ({
   useDashboardHost: () => hostValue,
   useIsCloudHostingMode: () => hostValue.mode === 'cloud-hosting',
+  // "cloud-hosting" here stands for a cloud host that runs the Apify OAuth handoff.
+  useUsesCloudWebscraper: () => hostValue.mode === 'cloud-hosting',
 }));
 
 // A revoked token is the only state that reaches these messages: the tabs are

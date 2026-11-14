@@ -350,7 +350,11 @@ app.post(
         .status(201)
         .json({ file: await backupProject(p.ref, { name, createdBy: req.user.email }) });
     } catch (e) {
-      res.status(500).json({ error: `Backup failed: ${e.message}` });
+      res
+        .status(/up to \d+ manual/.test(e.message) ? 409 : 500)
+        .json({
+          error: /up to \d+ manual/.test(e.message) ? e.message : `Backup failed: ${e.message}`,
+        });
     }
   }
 );

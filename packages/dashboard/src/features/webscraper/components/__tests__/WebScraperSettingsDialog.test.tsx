@@ -35,6 +35,9 @@ const hostValue: {
 vi.mock('#lib/config/DashboardHostContext', () => ({
   useDashboardHost: () => hostValue,
   useIsCloudHostingMode: () => hostValue.mode === 'cloud-hosting',
+  useUsesCloudWebscraper: () =>
+    hostValue.mode === 'cloud-hosting' &&
+    Boolean((hostValue as { onConnectApify?: unknown }).onConnectApify),
 }));
 
 const connection = {

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button, CopyButton } from '@insforge/ui';
-import { useDashboardHost, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useDashboardHost, useUsesCloudAnalytics } from '#lib/config/DashboardHostContext';
 import {
   ANALYTICS_SETUP_PROMPT,
   ANALYTICS_SETUP_PROMPT_SELF_HOSTED,
@@ -14,7 +14,7 @@ export function EmptyConnectPanel({ projectId }: { projectId: string }) {
   const { onConnectPosthog } = useDashboardHost();
   // Host mode, not handler presence: a cloud deployment that hasn't wired
   // onConnectPosthog would otherwise get the key form, whose PUT 400s there.
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudAnalytics();
   const setupPrompt = isSelfHosted ? ANALYTICS_SETUP_PROMPT_SELF_HOSTED : ANALYTICS_SETUP_PROMPT;
 
   return (

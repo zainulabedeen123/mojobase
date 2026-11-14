@@ -7,7 +7,7 @@ import {
   type FeatureSidebarListItem,
 } from '#components';
 import type { ApifyConnection } from '#features/webscraper/services/webscraper.service';
-import { useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useUsesCloudWebscraper } from '#lib/config/DashboardHostContext';
 import { WebScraperSettingsDialog } from './WebScraperSettingsDialog';
 
 interface WebscraperSidebarProps {
@@ -24,7 +24,7 @@ export function WebscraperSidebar({ connection, projectId }: WebscraperSidebarPr
   const [settingsOpen, setSettingsOpen] = useState(false);
   const connected = !!connection;
   // The host's own mode, not "the OAuth callback happens to be missing".
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudWebscraper();
 
   const items: FeatureSidebarListItem[] = [
     {

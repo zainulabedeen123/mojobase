@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ErrorState, LoadingState } from '#components';
-import { useDashboardHost, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useDashboardHost, useUsesCloudAnalytics } from '#lib/config/DashboardHostContext';
 import { useProjectId } from '#lib/hooks/useMetadata';
 import { useToast } from '@insforge/ui';
 import { TimeRangeProvider } from '#features/analytics/context/TimeRangeContext';
@@ -16,7 +16,7 @@ export default function AnalyticsLayout() {
   // Cloud only: the OAuth handoff needs the InsForge project id. Self-hosted
   // deployments have none by design (/metadata/project-id answers null), so
   // querying and gating on it there would error out the whole feature.
-  const isCloudHosting = useIsCloudHostingMode();
+  const isCloudHosting = useUsesCloudAnalytics();
   const {
     projectId,
     isLoading: projectIdLoading,

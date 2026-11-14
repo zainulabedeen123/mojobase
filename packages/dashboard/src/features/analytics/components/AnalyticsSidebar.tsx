@@ -7,7 +7,7 @@ import {
   type FeatureSidebarHeaderButton,
   type FeatureSidebarListItem,
 } from '#components';
-import { useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useUsesCloudAnalytics } from '#lib/config/DashboardHostContext';
 import { AnalyticsConfigDialog } from './AnalyticsConfigDialog';
 
 interface AnalyticsSidebarProps {
@@ -17,7 +17,7 @@ interface AnalyticsSidebarProps {
 
 export function AnalyticsSidebar({ connection, projectId }: AnalyticsSidebarProps) {
   const { t } = useTranslation('chrome');
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudAnalytics();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const items: FeatureSidebarListItem[] = [

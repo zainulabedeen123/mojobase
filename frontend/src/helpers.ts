@@ -11,7 +11,11 @@ export function isCloudHosting(): boolean {
   // (https://mojobase.dev) runs in cloud-hosting mode so the console can sign
   // the user in and supply project info. Opened directly, it stays self-hosted
   // with its own admin login.
-  return window.location.hostname.endsWith('.mojobase.dev') && isInIframe();
+  return isMojobaseHost() && isInIframe();
+}
+
+export function isMojobaseHost(): boolean {
+  return typeof window !== 'undefined' && window.location.hostname.endsWith('.mojobase.dev');
 }
 
 export function isInIframe(): boolean {

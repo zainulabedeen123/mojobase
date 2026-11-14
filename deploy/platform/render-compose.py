@@ -41,9 +41,9 @@ services:
   console:
     image: {image('mojobase-console')}
     restart: unless-stopped
+    # Secrets (CONSOLE_SECRET, RESEND_API_KEY) live on the server only, so deploys never carry them.
+    env_file: /opt/mojobase/platform.env
     environment:
-      CONSOLE_SECRET: ${{CONSOLE_SECRET:?set CONSOLE_SECRET}}
-      RESEND_API_KEY: ${{RESEND_API_KEY:-}}
       EMAIL_FROM: Mojobase <no-reply@mojobase.dev>
       CONSOLE_ORIGIN: https://mojobase.dev
       BASE_DOMAIN: mojobase.dev

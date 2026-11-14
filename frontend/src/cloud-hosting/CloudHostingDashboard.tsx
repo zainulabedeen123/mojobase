@@ -1,5 +1,5 @@
 import { InsForgeDashboard } from '@insforge/dashboard';
-import { isInIframe } from '../helpers';
+import { isInIframe, isMojobaseHost } from '../helpers';
 import { useCloudHosting } from './useCloudHosting';
 
 export function CloudHostingDashboard() {
@@ -31,6 +31,10 @@ export function CloudHostingDashboard() {
     subscribeApifyConnectionStatus,
   } = useCloudHosting();
 
+  // The Mojobase console does not run InsForge Cloud's PostHog / Apify OAuth, so
+  // projects there connect those integrations with their own keys instead.
+  const cloudIntegrations = !isMojobaseHost();
+
   return (
     <InsForgeDashboard
       mode="cloud-hosting"
@@ -56,11 +60,15 @@ export function CloudHostingDashboard() {
       onRequestUserApiKey={requestUserApiKey}
       onRequestModelCredits={requestModelCredits}
       onRequestProjectMetrics={requestProjectMetrics}
-      onConnectPosthog={connectPosthog}
-      onOpenPosthog={openPosthog}
-      subscribePosthogConnectionStatus={subscribePosthogConnectionStatus}
-      onConnectApify={connectApify}
-      subscribeApifyConnectionStatus={subscribeApifyConnectionStatus}
+      onConnectPosthog={cloudIntegrations ? connectPosthog : undefined}
+      onOpenPosthog={cloudIntegrations ? openPosthog : undefined}
+      subscribePosthogConnectionStatus={
+        cloudIntegrations ? subscribePosthogConnectionStatus : undefined
+      }
+      onConnectApify={cloudIntegrations ? connectApify : undefined}
+      subscribeApifyConnectionStatus={
+        cloudIntegrations ? subscribeApifyConnectionStatus : undefined
+      }
     />
   );
 }

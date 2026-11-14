@@ -20,7 +20,7 @@ import {
   MenuDialogTitle,
 } from '@insforge/ui';
 import type { ApifyConnection } from '#features/webscraper/services/webscraper.service';
-import { useDashboardHost, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useDashboardHost, useUsesCloudWebscraper } from '#lib/config/DashboardHostContext';
 import { ApifyTokenForm } from './ApifyTokenForm';
 import { APIFY_CONSOLE_URL, SCRAPE_PROMPT } from './shared';
 import { WebScraperDisconnectDialog } from './WebScraperDisconnectDialog';
@@ -47,7 +47,7 @@ export function WebScraperSettingsDialog({
   const [disconnecting, setDisconnecting] = useState(false);
   const { onConnectApify } = useDashboardHost();
   // The host's own mode, not "the OAuth callback happens to be missing".
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudWebscraper();
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {

@@ -84,3 +84,16 @@ export function useDashboardProject() {
 export function useIsCloudHostingMode() {
   return useDashboardHost().mode === 'cloud-hosting';
 }
+
+// PostHog / Apify connect through the cloud's OAuth handoff only when the host
+// provides it. Hosts without it (self-hosting, or a cloud host such as the
+// Mojobase console that does not run those integrations) use the
+// bring-your-own-key flow, which the project backend serves itself.
+export function useUsesCloudAnalytics() {
+  const host = useDashboardHost();
+  return host.mode === 'cloud-hosting' && Boolean(host.onConnectPosthog);
+}
+export function useUsesCloudWebscraper() {
+  const host = useDashboardHost();
+  return host.mode === 'cloud-hosting' && Boolean(host.onConnectApify);
+}

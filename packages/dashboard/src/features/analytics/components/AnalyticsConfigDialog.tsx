@@ -22,7 +22,7 @@ import {
   useToast,
 } from '@insforge/ui';
 import type { PosthogConnection } from '@insforge/shared-schemas';
-import { useDashboardHost, useIsCloudHostingMode } from '#lib/config/DashboardHostContext';
+import { useDashboardHost, useUsesCloudAnalytics } from '#lib/config/DashboardHostContext';
 import { PosthogKeyForm } from './posthog/PosthogKeyForm';
 import {
   ANALYTICS_SETUP_PROMPT,
@@ -53,7 +53,7 @@ export function AnalyticsConfigDialog({
   const { onOpenPosthog, onConnectPosthog } = useDashboardHost();
   // Self-hosted deployments paste their own PostHog key here; cloud projects
   // hand off to the host's OAuth flow. Mirrors WebScraperSettingsDialog.
-  const isSelfHosted = !useIsCloudHostingMode();
+  const isSelfHosted = !useUsesCloudAnalytics();
   const setupPrompt = isSelfHosted ? ANALYTICS_SETUP_PROMPT_SELF_HOSTED : ANALYTICS_SETUP_PROMPT;
   const { showToast } = useToast();
 

@@ -23,8 +23,9 @@ create projects, each with its own backend and Postgres connection string.
 
 ```bash
 export MOJOBASE_TAG=<image tag from the "Publish Mojobase images" workflow, e.g. a short sha>
-export CONSOLE_SECRET=$(openssl rand -hex 32)   # keep it: it encrypts project secrets
-export RESEND_API_KEY=re_...                     # optional: enables all email (see below)
+# On the server: secrets go in /opt/mojobase/platform.env (chmod 600), never in the compose file
+#   CONSOLE_SECRET=<openssl rand -hex 32>   keep it: it encrypts project secrets
+#   RESEND_API_KEY=re_...                   optional: enables all email (see below)
 docker compose -f deploy/platform/docker-compose.yml up -d
 ```
 
