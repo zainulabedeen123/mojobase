@@ -155,7 +155,8 @@ is this project's internal API URL. Call it from the app:
 const { data, error } = await mojobase.functions.invoke('hello', { body: { name: 'Ada' } });
 \`\`\`
 
-It is also served at ${v.apiUrl}/functions/hello.
+It is also served over plain HTTP at ${v.apiUrl}/functions/hello (send JSON bodies with
+\`Content-Type: application/json\`; the SDK does this for you).
 
 ## 8. Realtime (optional)
 
