@@ -6,7 +6,7 @@ export interface MCPAgent {
   logo?: ReactElement;
 }
 
-export const MCP_SETUP_BASE_URL = 'https://docs.insforge.dev/mcp-setup';
+export const MCP_SETUP_BASE_URL = 'https://mojobase.dev/docs/mcp-setup';
 export const EXTENSION_DOCS_URL = 'https://docs.insforge.dev/vscode-extension';
 
 import TraeLogo from '#assets/logos/trae.svg?react';
@@ -28,7 +28,7 @@ import { getBackendUrl } from '#lib/utils/utils';
 export type PlatformType = 'macos-linux' | 'windows';
 
 export const GenerateInstallCommand = (agent: MCPAgent, apiKey: string) => {
-  return `npx @insforge/install --client ${agent.id} --env API_KEY=${apiKey} --env API_BASE_URL=${getBackendUrl()}`;
+  return `npx @mojobase/install --client ${agent.id} --env API_KEY=${apiKey} --env API_BASE_URL=${getBackendUrl()}`;
 };
 
 export const MCP_AGENTS: MCPAgent[] = [
@@ -131,13 +131,13 @@ export const createMCPServerConfig = (
   if (platform === 'windows') {
     return {
       command: 'cmd',
-      args: ['/c', 'npx', '-y', '@insforge/mcp@latest'],
+      args: ['/c', 'npx', '-y', '@mojobase/mcp@latest'],
       env,
     };
   } else {
     return {
       command: 'npx',
-      args: ['-y', '@insforge/mcp@latest'],
+      args: ['-y', '@mojobase/mcp@latest'],
       env,
     };
   }
@@ -147,7 +147,7 @@ export const createMCPServerConfig = (
 export const createMCPConfig = (apiKey: string, platform: PlatformType, apiBaseUrl?: string) => {
   return {
     mcpServers: {
-      insforge: createMCPServerConfig(apiKey, platform, apiBaseUrl),
+      mojobase: createMCPServerConfig(apiKey, platform, apiBaseUrl),
     },
   };
 };

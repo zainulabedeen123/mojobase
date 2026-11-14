@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { successResponse } from '@/utils/response.js';
 import { AppError } from '@/utils/errors.js';
+import { rebrandDocs } from '@/utils/mojobase-brand.js';
 import {
   ERROR_CODES,
   DocTypeSchema,
@@ -186,7 +187,7 @@ router.get('/:docType', async (req: Request, res: Response, next: NextFunction) 
     const rawContent = await readFile(filePath, 'utf-8');
 
     // Process snippet imports and replace component tags with actual content
-    const content = await processSnippets(rawContent, DOCS_ROOT);
+    const content = rebrandDocs(await processSnippets(rawContent, DOCS_ROOT));
 
     // Traditional REST: return documentation directly
     return successResponse(res, {
@@ -243,7 +244,12 @@ router.get('/:docFeature/:docLanguage', async (req: Request, res: Response, next
     const rawContent = await readFile(filePath, 'utf-8');
 
     // Process snippet imports and replace component tags with actual content
-    const content = await processSnippets(rawContent, DOCS_ROOT);
+    const processed = await processSnippets(rawContent, DOCS_ROOT);
+    // Native SDK docs keep their real (InsForge) package names.
+    const content =
+      parsedLanguage.data === 'typescript' || parsedLanguage.data === 'rest-api'
+        ? rebrandDocs(processed)
+        : processed;
 
     // Traditional REST: return documentation directly
     return successResponse(res, {

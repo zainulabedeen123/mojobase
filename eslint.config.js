@@ -305,6 +305,8 @@ export default defineConfig(
   // Global ignores
   {
     ignores: [
+      // Published npm packages (@mojobase/*) carry their own lint setup.
+      'npm/**',
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',

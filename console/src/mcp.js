@@ -20,7 +20,7 @@ import { agentPrompt } from './agent-prompt.js';
 
 const VERSION = '0.1.0';
 
-const INSTRUCTIONS = `Mojobase is an open-source backend platform (Postgres database, auth, storage, edge functions, realtime). Each project is an isolated backend with its own URL, API keys and Postgres connection string. Mojobase is InsForge-compatible: apps use the @insforge/sdk package.
+const INSTRUCTIONS = `Mojobase is an open-source backend platform (Postgres database, auth, storage, edge functions, realtime). Each project is an isolated backend with its own URL, API keys and Postgres connection string. Apps use the @mojobase/sdk package.
 
 Typical workflow:
 1. list_projects, or create_project to get a new backend (takes about a minute; it waits for you).
@@ -65,9 +65,9 @@ NEXT_PUBLIC_MOJOBASE_ANON_KEY=${v.anonKey}
 # Server-side only (never expose to the browser)
 MOJOBASE_API_KEY=${v.apiKey}
 DATABASE_URL=${v.database.connectionString}`;
-  const sdk = `npm install @insforge/sdk
+  const sdk = `npm install @mojobase/sdk
 
-import { createClient } from '@insforge/sdk';
+import { createClient } from '@mojobase/sdk';
 
 export const mojobase = createClient({
   baseUrl: process.env.NEXT_PUBLIC_MOJOBASE_URL,

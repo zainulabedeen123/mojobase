@@ -1,0 +1,8 @@
+@mojobase/sdk
+Copyright 2026 Mojobase
+
+This product is derived from the InsForge JavaScript SDK
+(https://github.com/InsForge/insforge-sdk-js), Copyright InsForge,
+licensed under the Apache License, Version 2.0 (see LICENSE).
+Modifications: package name and branding, Mojobase environment variable
+names, and Mojobase-named exports.

@@ -1,0 +1,101 @@
+{
+  "name": "@mojobase/mcp",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) server for Mojobase: lets AI coding agents manage a project's database, storage, functions and more",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp": "./dist/index.js",
+    "mojobase-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/http-server.js --host 0.0.0.0",
+    "dev:stdio": "tsx watch src/stdio/index.ts",
+    "dev:http": "tsx watch src/http/server.ts",
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration:real": "vitest run src/integration/real-project.test.ts",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "verify:deploy": "node scripts/verify-deploy.mjs",
+    "verify:paths": "node scripts/verify-platform-paths.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mojobase",
+    "backend-as-a-service",
+    "postgres"
+  ],
+  "author": "Mojobase",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zainulabedeen123/mojobase.git",
+    "directory": "npm/mcp"
+  },
+  "homepage": "https://mojobase.dev/docs",
+  "bugs": {
+    "url": "https://github.com/zainulabedeen123/mojobase/issues"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "archiver": "^7.0.1",
+    "commander": "^14.0.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.1.0",
+    "form-data": "^4.0.6",
+    "mixpanel": "^0.18.1",
+    "node-fetch": "^3.3.2",
+    "zod": "^4.6.6"
+  },
+  "overrides": {
+    "@humanfs/node": "^0.16.8",
+    "brace-expansion": "^5.0.12",
+    "fast-uri": "^3.1.9",
+    "glob": {
+      ".": "^14.0.2",
+      "minimatch": "^11.0.4"
+    },
+    "ip-address": "^10.7.1",
+    "minimatch": "^9.0.7",
+    "@hono/node-server": "^2.1.3",
+    "hono": "^4.13.5",
+    "lodash": "^4.18.0",
+    "postcss": "^8.5.26",
+    "qs": "^6.17.1",
+    "rollup": "^4.59.0",
+    "esbuild": "^0.28.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/archiver": "^7.0.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^4.1.12",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.5.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.57.1",
+    "vite": "^8.1.6",
+    "vitest": "^4.1.12"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

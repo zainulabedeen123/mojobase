@@ -12,9 +12,7 @@ export function agentPrompt(p) {
   return `# Integrate the Mojobase backend "${v.name}" into this app
 
 You are connecting this codebase to a Mojobase project: a hosted backend with Postgres,
-authentication, file storage, edge functions and realtime. Mojobase is InsForge-compatible,
-so the client library is the InsForge SDK (\`@insforge/sdk\`) and InsForge docs apply
-(https://docs.insforge.dev). Everything below is real and ready to use: do not ask me for keys.
+authentication, file storage, edge functions and realtime. Its client library is \`@mojobase/sdk\`. Full docs: ${config.consoleOrigin}/docs. Everything below is real and ready to use: do not ask me for keys.
 
 ## 1. Credentials
 
@@ -44,12 +42,12 @@ everything in the \`public\` schema but is not a superuser.
 ## 2. Install and create one shared client
 
 \`\`\`bash
-npm install @insforge/sdk
+npm install @mojobase/sdk
 \`\`\`
 
 \`\`\`ts
 // lib/mojobase.ts
-import { createClient } from '@insforge/sdk';
+import { createClient } from '@mojobase/sdk';
 
 export const mojobase = createClient({
   baseUrl: process.env.MOJOBASE_URL!,     // use the framework's public env name in browser code

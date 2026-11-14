@@ -243,9 +243,9 @@ function copyField(label, value, { secret = false, display } = {}) {
 function snippets(p) {
   const db = p.database;
   const tabs = {
-    'JavaScript SDK': `npm install @insforge/sdk
+    'JavaScript SDK': `npm install @mojobase/sdk
 
-import { createClient } from '@insforge/sdk';
+import { createClient } from '@mojobase/sdk';
 
 const mojobase = createClient({
   baseUrl: '${p.apiUrl}',

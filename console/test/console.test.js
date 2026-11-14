@@ -390,7 +390,7 @@ test('MCP server: token auth, tools, ownership, revocation', async () => {
 
   const client = await connect(created.body.token);
   assert.equal(client.getServerVersion().name, 'mojobase');
-  assert.match(client.getInstructions(), /InsForge-compatible/);
+  assert.match(client.getInstructions(), /@mojobase\/sdk/);
   const { tools } = await client.listTools();
   const names = tools.map((t) => t.name).sort();
   for (const n of [

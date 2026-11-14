@@ -1,0 +1,615 @@
+import { ERROR_CODES } from '@insforge/shared-schemas';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { HttpClient } from '../../../lib/http-client';
+import { InsForgeError } from '../../../types';
+import { AuthChangeEvent, TokenManager } from '../../../lib/token-manager';
+import * as tokenManagerModule from '../../../lib/token-manager';
+import { Auth } from '../auth';
+
+vi.mock('../helpers', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../helpers')>();
+  return {
+    ...actual,
+    generateCodeVerifier: vi.fn(() => 'a'.repeat(43)),
+    generateCodeChallenge: vi.fn(() => Promise.resolve('b'.repeat(43))),
+    storePkceVerifier: vi.fn(),
+  };
+});
+
+function createJsonResponse(status: number, body: any): Response {
+  const response = {
+    ok: status >= 200 && status < 300,
+    status,
+    statusText: 'OK',
+    headers: new Headers({ 'content-type': 'application/json' }),
+    json: () => Promise.resolve(body),
+    text: () => Promise.resolve(JSON.stringify(body)),
+  } as Response;
+
+  (response as any).clone = () => createJsonResponse(status, body);
+
+  return response;
+}
+
+describe('Auth', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+  describe('signInWithOAuth()', () => {
+    it('sends provider-specific additionalParams during OAuth init', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        })
+      );
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { data, error } = await auth.signInWithOAuth('google', {
+        redirectTo: 'http://localhost:3000/dashboard',
+        additionalParams: {
+          prompt: 'select_account',
+          login_hint: 'person@example.com',
+        },
+        skipBrowserRedirect: true,
+      });
+
+      expect(error).toBeNull();
+      expect(data.url).toBe('https://accounts.google.com/o/oauth2/v2/auth');
+
+      const requestUrl = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(requestUrl.pathname).toBe('/api/auth/oauth/google');
+      expect(requestUrl.searchParams.get('redirect_uri')).toBe('http://localhost:3000/dashboard');
+      expect(requestUrl.searchParams.get('code_challenge')).toHaveLength(43);
+      expect(requestUrl.searchParams.get('prompt')).toBe('select_account');
+      expect(requestUrl.searchParams.get('login_hint')).toBe('person@example.com');
+    });
+
+    it('supports the deprecated object wrapper signature', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        })
+      );
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { error } = await auth.signInWithOAuth({
+        provider: 'google',
+        redirectTo: 'http://localhost:3000/dashboard',
+        additionalParams: { prompt: 'select_account' },
+        skipBrowserRedirect: true,
+      });
+
+      expect(error).toBeNull();
+
+      const requestUrl = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(requestUrl.searchParams.get('redirect_uri')).toBe('http://localhost:3000/dashboard');
+      expect(requestUrl.searchParams.get('prompt')).toBe('select_account');
+    });
+
+    it('does not let additionalParams override OAuth init fields', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        })
+      );
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { error } = await auth.signInWithOAuth('google', {
+        redirectTo: 'http://localhost:3000/dashboard',
+        additionalParams: {
+          redirect_uri: 'https://evil.example/callback',
+          code_challenge: 'evil',
+          prompt: 'select_account',
+        },
+        skipBrowserRedirect: true,
+      });
+
+      expect(error).toBeNull();
+
+      const requestUrl = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(requestUrl.searchParams.get('redirect_uri')).toBe('http://localhost:3000/dashboard');
+      expect(requestUrl.searchParams.get('code_challenge')).toHaveLength(43);
+      expect(requestUrl.searchParams.get('code_challenge')).not.toBe('evil');
+      expect(requestUrl.searchParams.get('prompt')).toBe('select_account');
+      expect(requestUrl.searchParams.has('additionalParams[redirect_uri]')).toBe(false);
+      expect(requestUrl.searchParams.has('additionalParams[code_challenge]')).toBe(false);
+    });
+
+    it('returns INVALID_INPUT when called without an options object', async () => {
+      const fetchMock = vi.fn();
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { error } = await (auth.signInWithOAuth as any)('google');
+
+      expect(error).not.toBeNull();
+      expect(error?.statusCode).toBe(400);
+      expect(error?.error).toBe('INVALID_INPUT');
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns INVALID_INPUT when redirectTo is missing at runtime', async () => {
+      const fetchMock = vi.fn();
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { error } = await (auth.signInWithOAuth as any)({
+        provider: 'google',
+        additionalParams: { prompt: 'select_account' },
+        skipBrowserRedirect: true,
+      });
+
+      expect(error).not.toBeNull();
+      expect(error?.message).toBe('Redirect URI is required');
+      expect(error?.statusCode).toBe(400);
+      expect(error?.error).toBe('INVALID_INPUT');
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('signOut()', () => {
+    it('sends X-CSRF-Token header during browser logout when CSRF token is present', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, { success: true }));
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: false });
+
+      vi.spyOn(tokenManagerModule, 'getCsrfToken').mockReturnValue('test-csrf-token-abc');
+
+      const { error } = await auth.signOut();
+
+      expect(error).toBeNull();
+      expect(fetchMock).toHaveBeenCalled();
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+
+      expect(requestUrl).toContain('/api/auth/logout');
+
+      const headers = new Headers(requestInit.headers);
+      expect(headers.get('X-CSRF-Token')).toBe('test-csrf-token-abc');
+    });
+
+    it('does not send X-CSRF-Token header in server mode', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, { success: true }));
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      vi.spyOn(tokenManagerModule, 'getCsrfToken').mockReturnValue('test-csrf-token-abc');
+
+      const { error } = await auth.signOut();
+
+      expect(error).toBeNull();
+      expect(fetchMock).toHaveBeenCalled();
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+
+      expect(requestUrl).toContain('/api/auth/logout');
+
+      const headers = new Headers(requestInit.headers);
+      expect(headers.has('X-CSRF-Token')).toBe(false);
+    });
+
+    it('does not send X-CSRF-Token header in browser mode when CSRF token is null', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, { success: true }));
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as any,
+          retryCount: 0,
+          timeout: 0,
+        },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: false });
+
+      vi.spyOn(tokenManagerModule, 'getCsrfToken').mockReturnValue(null);
+
+      const { error } = await auth.signOut();
+
+      expect(error).toBeNull();
+      expect(fetchMock).toHaveBeenCalled();
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+
+      expect(requestUrl).toContain('/api/auth/logout');
+
+      const headers = new Headers(requestInit.headers);
+      expect(headers.has('X-CSRF-Token')).toBe(false);
+    });
+  });
+
+  describe('signUp()', () => {
+    it('does not persist a session when sign-up requires email verification', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          user: { id: 'u1', email: 'user@example.com', emailVerified: false },
+          accessToken: null,
+          requireEmailVerification: true,
+        })
+      );
+      const tokenManager = new TokenManager();
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        tokenManager
+      );
+      const saveSessionSpy = vi.spyOn(tokenManager, 'saveSession');
+      const setAuthTokenSpy = vi.spyOn(http, 'setAuthToken');
+      const auth = new Auth(http, tokenManager, { isServerMode: false });
+
+      const { data, error } = await auth.signUp({
+        email: 'user@example.com',
+        password: 'password123',
+      });
+
+      expect(error).toBeNull();
+      expect(data?.requireEmailVerification).toBe(true);
+      // No access token came back, so nothing may be persisted.
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(setAuthTokenSpy).not.toHaveBeenCalled();
+      expect(tokenManager.getAccessToken()).toBeNull();
+    });
+
+    it('does not persist a session when the response has an access token but no user', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          accessToken: 'token-without-user',
+        })
+      );
+      const tokenManager = new TokenManager();
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        tokenManager
+      );
+      const saveSessionSpy = vi.spyOn(tokenManager, 'saveSession');
+      const setAuthTokenSpy = vi.spyOn(http, 'setAuthToken');
+      const auth = new Auth(http, tokenManager, { isServerMode: false });
+
+      const { data, error } = await auth.signUp({
+        email: 'user@example.com',
+        password: 'password123',
+      });
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('token-without-user');
+      // A session needs both a token and a user; without the user nothing may be persisted.
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(setAuthTokenSpy).not.toHaveBeenCalled();
+      expect(tokenManager.getAccessToken()).toBeNull();
+    });
+
+    it('persists the session in browser mode when the response has an access token and a user', async () => {
+      const user = { id: 'u1', email: 'user@example.com', emailVerified: true };
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(200, {
+          user,
+          accessToken: 'signed-up-token',
+        })
+      );
+      const tokenManager = new TokenManager();
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        tokenManager
+      );
+      const saveSessionSpy = vi.spyOn(tokenManager, 'saveSession');
+      const setAuthTokenSpy = vi.spyOn(http, 'setAuthToken');
+      const auth = new Auth(http, tokenManager, { isServerMode: false });
+
+      const { data, error } = await auth.signUp({
+        email: 'user@example.com',
+        password: 'password123',
+      });
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('signed-up-token');
+      // Token and user both present: the session must be persisted and the HTTP auth header set.
+      expect(saveSessionSpy).toHaveBeenCalledTimes(1);
+      expect(saveSessionSpy).toHaveBeenCalledWith(
+        { accessToken: 'signed-up-token', user },
+        AuthChangeEvent.SIGNED_IN
+      );
+      expect(setAuthTokenSpy).toHaveBeenCalledWith('signed-up-token');
+      expect(tokenManager.getAccessToken()).toBe('signed-up-token');
+      expect(tokenManager.getUser()).toEqual(user);
+    });
+  });
+
+  describe('refreshSession()', () => {
+    function createRefreshFixture(
+      body: Record<string, unknown>,
+      { isServerMode = false }: { isServerMode?: boolean } = {}
+    ) {
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, body));
+      const tokenManager = new TokenManager();
+      const http = new HttpClient(
+        {
+          baseUrl: 'http://localhost:7130',
+          fetch: fetchMock as unknown as typeof fetch,
+          retryCount: 0,
+          timeout: 0,
+        },
+        tokenManager
+      );
+      const saveSessionSpy = vi.spyOn(tokenManager, 'saveSession');
+      const setAuthTokenSpy = vi.spyOn(http, 'setAuthToken');
+      const setRefreshTokenSpy = vi.spyOn(http, 'setRefreshToken');
+      const auth = new Auth(http, tokenManager, { isServerMode });
+      return { fetchMock, tokenManager, auth, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy };
+    }
+
+    it('persists the refreshed session as TOKEN_REFRESHED when the response has a token and a user', async () => {
+      const user = { id: 'u1', email: 'user@example.com', emailVerified: true };
+      const { fetchMock, tokenManager, auth, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy } =
+        createRefreshFixture({ accessToken: 'refreshed-token', user });
+
+      const { data, error } = await auth.refreshSession();
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('refreshed-token');
+      expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:7130/api/auth/refresh');
+      expect(saveSessionSpy).toHaveBeenCalledTimes(1);
+      expect(saveSessionSpy).toHaveBeenCalledWith(
+        { accessToken: 'refreshed-token', user },
+        AuthChangeEvent.TOKEN_REFRESHED
+      );
+      expect(setAuthTokenSpy).toHaveBeenCalledWith('refreshed-token');
+      expect(setRefreshTokenSpy).toHaveBeenCalledWith(null);
+      expect(tokenManager.getAccessToken()).toBe('refreshed-token');
+      expect(tokenManager.getUser()).toEqual(user);
+    });
+
+    it('does not persist anything when the response has no access token', async () => {
+      const { auth, tokenManager, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy } =
+        createRefreshFixture({
+          user: { id: 'u1', email: 'user@example.com', emailVerified: true },
+          accessToken: null,
+        });
+
+      const { data, error } = await auth.refreshSession();
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBeNull();
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(setAuthTokenSpy).not.toHaveBeenCalled();
+      expect(setRefreshTokenSpy).not.toHaveBeenCalled();
+      expect(tokenManager.getAccessToken()).toBeNull();
+    });
+
+    it('does not persist anything when the response has a token but no user', async () => {
+      const { auth, tokenManager, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy } =
+        createRefreshFixture({ accessToken: 'token-without-user' });
+
+      const { data, error } = await auth.refreshSession();
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('token-without-user');
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(setAuthTokenSpy).not.toHaveBeenCalled();
+      expect(setRefreshTokenSpy).not.toHaveBeenCalled();
+      expect(tokenManager.getAccessToken()).toBeNull();
+    });
+
+    it('in server mode posts the refresh token to the mobile endpoint and only updates HTTP tokens', async () => {
+      const user = { id: 'u1', email: 'user@example.com', emailVerified: true };
+      const { fetchMock, tokenManager, auth, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy } =
+        createRefreshFixture(
+          { accessToken: 'refreshed-token', refreshToken: 'rotated-refresh-token', user },
+          { isServerMode: true }
+        );
+      // Without this stub getCsrfToken() returns null in the node test environment regardless of
+      // mode, which would make the X-CSRF-Token assertion below pass even if server mode sent it.
+      vi.spyOn(tokenManagerModule, 'getCsrfToken').mockReturnValue('test-csrf-token-abc');
+
+      const { data, error } = await auth.refreshSession({ refreshToken: 'current-refresh-token' });
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('refreshed-token');
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+      const url = new URL(requestUrl);
+      expect(url.pathname).toBe('/api/auth/refresh');
+      expect(url.searchParams.get('client_type')).toBe('mobile');
+      expect(JSON.parse(requestInit.body as string)).toEqual({
+        refresh_token: 'current-refresh-token',
+      });
+      expect(new Headers(requestInit.headers).has('X-CSRF-Token')).toBe(false);
+
+      // Server mode never persists to the TokenManager; only the HTTP client tokens change.
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(tokenManager.getAccessToken()).toBeNull();
+      expect(setAuthTokenSpy).toHaveBeenCalledWith('refreshed-token');
+      expect(setRefreshTokenSpy).toHaveBeenCalledWith('rotated-refresh-token');
+    });
+
+    it('in server mode returns a 400 AUTH_UNAUTHORIZED error without a request when refreshToken is missing', async () => {
+      const { fetchMock, auth, saveSessionSpy, setAuthTokenSpy, setRefreshTokenSpy } =
+        createRefreshFixture({ accessToken: 'should-not-be-used' }, { isServerMode: true });
+
+      const { data, error } = await auth.refreshSession();
+
+      expect(data).toBeNull();
+      expect(error).toBeInstanceOf(InsForgeError);
+      expect(error?.statusCode).toBe(400);
+      expect(error?.error).toBe(ERROR_CODES.AUTH_UNAUTHORIZED);
+      expect(error?.message).toBe(
+        'refreshToken is required when refreshing session in server mode'
+      );
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+      expect(setAuthTokenSpy).not.toHaveBeenCalled();
+      expect(setRefreshTokenSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not re-enter the HTTP client token refresh when the refresh endpoint itself returns 401', async () => {
+      const { fetchMock, auth, saveSessionSpy } = createRefreshFixture({});
+      fetchMock.mockResolvedValue(
+        createJsonResponse(
+          401,
+          { error: ERROR_CODES.AUTH_UNAUTHORIZED, message: 'Refresh expired', statusCode: 401 },
+          'Unauthorized'
+        )
+      );
+      // A user token must be set, otherwise the client would never attempt a refresh anyway.
+      auth['http'].setAuthToken('expired-token');
+
+      const { data, error } = await auth.refreshSession();
+
+      expect(data).toBeNull();
+      expect(error).toBeInstanceOf(InsForgeError);
+      expect(error?.statusCode).toBe(401);
+      // skipAuthRefresh: without it a 401 here would trigger refreshAccessToken() and a second
+      // POST to /api/auth/refresh from inside the refresh itself.
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(saveSessionSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('signInWithOtp()', () => {
+    it('posts the email to the send-otp endpoint and returns the generic success payload', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(
+        createJsonResponse(202, {
+          success: true,
+          message: 'If sign-in is available for this email, we have sent a verification code.',
+        })
+      );
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        new TokenManager()
+      );
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { data, error } = await auth.signInWithOtp({ email: 'user@example.com' });
+
+      expect(error).toBeNull();
+      expect(data?.success).toBe(true);
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(new URL(requestUrl).pathname).toBe('/api/auth/email/send-otp');
+      expect(JSON.parse(requestInit.body as string)).toEqual({ email: 'user@example.com' });
+    });
+  });
+
+  describe('verifyOtp()', () => {
+    it('verifies the code via the sessions endpoint with method "otp" and returns a session', async () => {
+      const session = {
+        user: { id: 'u1', email: 'user@example.com', emailVerified: true },
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      };
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, session));
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        new TokenManager()
+      );
+      const setAuthTokenSpy = vi.spyOn(http, 'setAuthToken');
+      const setRefreshTokenSpy = vi.spyOn(http, 'setRefreshToken');
+      const auth = new Auth(http, new TokenManager(), { isServerMode: true });
+
+      const { data, error } = await auth.verifyOtp({
+        email: 'user@example.com',
+        otp: '123456',
+        name: 'Ada Lovelace',
+      });
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('access-token');
+      // The session must be persisted — this is what distinguishes verifyOtp from signInWithOtp.
+      expect(setAuthTokenSpy).toHaveBeenCalledWith('access-token');
+      expect(setRefreshTokenSpy).toHaveBeenCalledWith('refresh-token');
+
+      const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+      const url = new URL(requestUrl);
+      expect(url.pathname).toBe('/api/auth/sessions');
+      expect(url.searchParams.get('client_type')).toBe('mobile');
+      expect(JSON.parse(requestInit.body as string)).toEqual({
+        method: 'otp',
+        email: 'user@example.com',
+        otp: '123456',
+        name: 'Ada Lovelace',
+      });
+    });
+
+    it('signs in through the browser sessions endpoint (no client_type) and stores the session', async () => {
+      const session = {
+        user: { id: 'u1', email: 'user@example.com', emailVerified: true },
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      };
+      const fetchMock = vi.fn().mockResolvedValue(createJsonResponse(200, session));
+      const tokenManager = new TokenManager();
+      const http = new HttpClient(
+        { baseUrl: 'http://localhost:7130', fetch: fetchMock as any, retryCount: 0, timeout: 0 },
+        tokenManager
+      );
+      const auth = new Auth(http, tokenManager, { isServerMode: false });
+
+      const { data, error } = await auth.verifyOtp({ email: 'user@example.com', otp: '123456' });
+
+      expect(error).toBeNull();
+      expect(data?.accessToken).toBe('access-token');
+      // Browser mode persists the session to the token manager.
+      expect(tokenManager.getAccessToken()).toBe('access-token');
+
+      const url = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(url.pathname).toBe('/api/auth/sessions');
+      expect(url.searchParams.get('client_type')).toBeNull();
+    });
+  });
+});

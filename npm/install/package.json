@@ -1,0 +1,42 @@
+{
+  "name": "@mojobase/install",
+  "version": "1.0.0",
+  "description": "Install the Mojobase MCP server into AI coding agents (Claude Code, Cursor, Windsurf, VS Code, Codex and more)",
+  "type": "module",
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "lib/index.js",
+  "bin": {
+    "mojobase-install": "lib/index.js"
+  },
+  "scripts": {
+    "start": "node lib/index.js"
+  },
+  "dependencies": {
+    "@inquirer/select": "^4.4.2",
+    "consola": "^3.2.3",
+    "node-fetch": "^3.3.2",
+    "picocolors": "^1.0.0",
+    "yargs": "^17.7.2"
+  },
+  "keywords": [
+    "mojobase",
+    "mcp",
+    "model-context-protocol",
+    "installer"
+  ],
+  "author": "Mojobase",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://mojobase.dev/docs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zainulabedeen123/mojobase.git",
+    "directory": "npm/install"
+  }
+}

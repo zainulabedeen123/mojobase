@@ -63,3 +63,5 @@ Thumbs.db
 docs/
 examples/
 openapi/
+# Published npm packages (@mojobase/*) carry their own formatting setup
+npm/

@@ -1,0 +1,9 @@
+@mojobase/mcp
+Copyright 2026 Mojobase
+
+This product is derived from the InsForge MCP server
+(https://github.com/InsForge/insforge-mcp), Copyright InsForge,
+licensed under the Apache License, Version 2.0 (see LICENSE).
+Modifications: package name and branding, tool descriptions, removal of
+usage reporting to third-party platforms, and the hosted HTTP server is not
+included in the published package.
