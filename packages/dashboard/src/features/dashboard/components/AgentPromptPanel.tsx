@@ -19,6 +19,7 @@ export function AgentPromptPanel({ requestPrompt, onOpenFullView }: AgentPromptP
   const [prompt, setPrompt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const load = useCallback(() => {
     setError(null);
@@ -29,20 +30,38 @@ export function AgentPromptPanel({ requestPrompt, onOpenFullView }: AgentPromptP
 
   useEffect(load, [load]);
 
+  // Embedded dashboards run in a cross-origin frame, where the async clipboard
+  // API can be refused; fall back to copying a selected textarea.
+  const copyWithSelection = (text: string) => {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.append(area);
+    area.select();
+    const ok = document.execCommand('copy');
+    area.remove();
+    return ok;
+  };
+
   const copy = async () => {
     if (!prompt) {
       return;
     }
+    setCopyFailed(false);
+    let ok = false;
     try {
       await navigator.clipboard.writeText(prompt);
+      ok = true;
+    } catch {
+      ok = copyWithSelection(prompt);
+    }
+    if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setError(
-        t('overview.agentPromptCopyFailed', {
-          defaultValue: 'Copy failed. Select the text below and copy it manually.',
-        })
-      );
+    } else {
+      setCopyFailed(true);
     }
   };
 
@@ -122,6 +141,14 @@ export function AgentPromptPanel({ requestPrompt, onOpenFullView }: AgentPromptP
             'Contains your secret API key and database password. Paste it only into tools you trust, and never commit it.',
         })}
       </p>
+
+      {copyFailed && (
+        <p className="text-xs leading-5 text-destructive">
+          {t('overview.agentPromptCopyFailed', {
+            defaultValue: 'Copy failed. Select the text below and copy it manually.',
+          })}
+        </p>
+      )}
 
       {error ? (
         <div className="flex flex-col items-start gap-2 text-sm text-destructive">
