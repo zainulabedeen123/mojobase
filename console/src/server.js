@@ -3,7 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { config } from './config.js';
-import { users, projects } from './store.js';
+import { users, projects, tokens } from './store.js';
+import { emails } from './mailer.js';
 import {
   hashPassword,
   verifyPassword,
@@ -22,7 +23,17 @@ import {
   DB_USER,
   DB_NAME,
 } from './project-stack.js';
-import { provision, destroy, refreshDbCerts, resumePending, dbCertReady } from './provisioner.js';
+import {
+  provision,
+  destroy,
+  refreshDbCerts,
+  resumePending,
+  dbCertReady,
+  backupProject,
+  listBackups,
+  backupPath,
+  scheduleBackups,
+} from './provisioner.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -42,7 +53,7 @@ app.use('/api', sameOrigin);
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const NAME = /^[\p{L}\p{N} _.-]{1,40}$/u;
-const authLimit = rateLimit({ windowMs: 60_000, max: 10 });
+const authLimit = rateLimit({ windowMs: 60_000, max: config.authRateLimit });
 
 // ------------------------------------------------------------------ account
 app.post('/api/signup', authLimit, (req, res) => {
@@ -59,8 +70,87 @@ app.post('/api/signup', authLimit, (req, res) => {
     return res.status(409).json({ error: 'An account with this email already exists' });
   const id = crypto.randomUUID();
   users.create(id, email, hashPassword(password));
-  setSession(res, id);
-  res.status(201).json({ user: { id, email } });
+  setSession(res, users.withHash(id));
+  sendVerification(id, email);
+  res.status(201).json({ user: { id, email, emailVerified: false } });
+});
+
+const VERIFY_TTL = 24 * 3600_000;
+const RESET_TTL = 3600_000;
+function sendVerification(userId, email) {
+  const token = tokens.issue(userId, 'verify', VERIFY_TTL);
+  emails
+    .verify(email, `${config.consoleOrigin}/verify?token=${token}`)
+    .catch((e) =>
+      console.error(
+        JSON.stringify({ level: 'error', msg: 'verify email failed', error: e.message })
+      )
+    );
+}
+
+app.post('/api/verify', authLimit, (req, res) => {
+  const userId = tokens.consume(req.body?.token, 'verify');
+  if (!userId) return res.status(400).json({ error: 'This link is invalid or has expired' });
+  users.setVerified(userId);
+  res.json({ ok: true });
+});
+
+app.post(
+  '/api/resend-verification',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 2 }),
+  (req, res) => {
+    if (!req.user.emailVerified) sendVerification(req.user.id, req.user.email);
+    res.json({ ok: true });
+  }
+);
+
+// Always answers the same way so it can't be used to discover which emails have accounts.
+app.post('/api/forgot-password', authLimit, async (req, res) => {
+  const email = String(req.body?.email || '')
+    .trim()
+    .toLowerCase();
+  const user = EMAIL.test(email) ? users.byEmail(email) : null;
+  if (user) {
+    const token = tokens.issue(user.id, 'reset', RESET_TTL);
+    await emails
+      .reset(user.email, `${config.consoleOrigin}/reset-password?token=${token}`)
+      .catch((e) =>
+        console.error(
+          JSON.stringify({ level: 'error', msg: 'reset email failed', error: e.message })
+        )
+      );
+  }
+  res.json({ ok: true });
+});
+
+app.post('/api/reset-password', authLimit, (req, res) => {
+  const password = String(req.body?.password || '');
+  if (password.length < 10 || password.length > 200)
+    return res.status(400).json({ error: 'Password must be at least 10 characters' });
+  const userId = tokens.consume(req.body?.token, 'reset');
+  if (!userId) return res.status(400).json({ error: 'This link is invalid or has expired' });
+  users.setPassword(userId, hashPassword(password)); // also signs out every other session
+  users.setVerified(userId); // the link proved they own the address
+  setSession(res, users.withHash(userId));
+  res.json({ ok: true });
+});
+
+// Deletes every project (stacks, data, backups) and then the account itself.
+app.post('/api/account/delete', requireUser, authLimit, async (req, res) => {
+  const user = users.withHash(req.user.id);
+  if (!verifyPassword(String(req.body?.password || ''), user.password_hash))
+    return res.status(401).json({ error: 'Incorrect password' });
+  const refs = projects.refsForOwner(user.id);
+  for (const ref of refs) projects.setStatus(ref, 'deleting');
+  await Promise.all(refs.map((ref) => destroy(ref)));
+  if (projects.refsForOwner(user.id).length)
+    return res
+      .status(500)
+      .json({ error: 'Some projects could not be deleted. Try again in a minute.' });
+  users.remove(user.id);
+  clearSession(res);
+  res.json({ ok: true });
 });
 
 app.post('/api/login', authLimit, (req, res) => {
@@ -71,8 +161,8 @@ app.post('/api/login', authLimit, (req, res) => {
   if (!user || !verifyPassword(String(req.body?.password || ''), user.password_hash)) {
     return res.status(401).json({ error: 'Incorrect email or password' });
   }
-  setSession(res, user.id);
-  res.json({ user: { id: user.id, email: user.email } });
+  setSession(res, user);
+  res.json({ user: { id: user.id, email: user.email, emailVerified: !!user.email_verified } });
 });
 
 app.post('/api/logout', (_req, res) => {
@@ -84,6 +174,7 @@ app.get('/api/me', (req, res) => {
   res.json({
     user,
     limits: { perUser: config.maxProjectsPerUser },
+    requireVerifiedEmail: config.requireVerifiedEmail,
     signupOpen: config.allowSignup,
   });
 });
@@ -135,6 +226,8 @@ app.get('/api/projects', requireUser, (req, res) => {
 });
 
 app.post('/api/projects', requireUser, rateLimit({ windowMs: 60_000, max: 5 }), (req, res) => {
+  if (config.requireVerifiedEmail && !req.user.emailVerified)
+    return res.status(403).json({ error: 'Confirm your email address before creating a project' });
   const name = String(req.body?.name || '').trim();
   if (!NAME.test(name))
     return res
@@ -195,6 +288,38 @@ app.delete('/api/projects/:ref', requireUser, (req, res) => {
   res.status(202).json({ ok: true });
 });
 
+app.get('/api/projects/:ref/backups', requireUser, (req, res) => {
+  const p = ownProject(req, res);
+  if (p)
+    res.json({
+      backups: listBackups(p.ref),
+      keep: config.backupKeep,
+      hourUtc: config.backupHourUtc,
+    });
+});
+app.post(
+  '/api/projects/:ref/backups',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 2 }),
+  async (req, res) => {
+    const p = ownProject(req, res);
+    if (!p) return;
+    if (p.status !== 'ready') return res.status(409).json({ error: 'Project is not ready' });
+    try {
+      res.status(201).json({ file: await backupProject(p.ref) });
+    } catch (e) {
+      res.status(500).json({ error: `Backup failed: ${e.message}` });
+    }
+  }
+);
+app.get('/api/projects/:ref/backups/:file', requireUser, (req, res) => {
+  const p = ownProject(req, res);
+  if (!p) return;
+  const file = backupPath(p.ref, req.params.file);
+  if (!file) return res.status(404).json({ error: 'Backup not found' });
+  res.download(file, req.params.file);
+});
+
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Express needs 4 args to treat this as the error handler
 app.use((err, _req, res, _next) => {
@@ -224,5 +349,7 @@ internal.get('/healthz', (_req, res) => res.json({ ok: true, dbCert: dbCertReady
 internal.listen(config.internalPort);
 
 resumePending();
+scheduleBackups();
+setInterval(() => tokens.purgeExpired(), 3600_000).unref();
 refreshDbCerts();
 setInterval(refreshDbCerts, 12 * 3600_000).unref();

@@ -24,8 +24,34 @@ create projects, each with its own backend and Postgres connection string.
 ```bash
 export MOJOBASE_TAG=<image tag from the "Publish Mojobase images" workflow, e.g. a short sha>
 export CONSOLE_SECRET=$(openssl rand -hex 32)   # keep it: it encrypts project secrets
+export RESEND_API_KEY=re_...                     # optional: enables all email (see below)
 docker compose -f deploy/platform/docker-compose.yml up -d
 ```
+
+`docker-compose.yml` is generated: edit `Caddyfile` or `render-compose.py`, then run
+`python3 deploy/platform/render-compose.py > deploy/platform/docker-compose.yml`.
+
+## Email
+
+With `RESEND_API_KEY` set (and the sending domain verified in Resend):
+
+- the console sends email verification and password-reset links from `no-reply@<domain>`,
+  and new accounts must confirm their email before creating projects;
+- every new project is configured to send its own auth emails (verification, password
+  reset, magic links) through Resend SMTP; owners can change it in the project dashboard.
+
+## Backups
+
+Every ready project's database is dumped nightly (`BACKUP_HOUR_UTC`, default 03:00) with
+`pg_dump -Fc` into the console's data volume; the newest `BACKUP_KEEP` (default 7) are kept.
+Owners can also back up on demand and download dumps from the project page. Restore with
+`pg_restore`. Uploaded storage files are not included yet.
+
+## hPanel / Docker Manager
+
+Project compose files are written to the host's `/docker/mb-<ref>/docker-compose.yml`, so
+they appear in hPanel's Docker Manager. Manage projects from the console; stopping or
+deleting one in hPanel bypasses the console's records.
 
 ## How a project works
 

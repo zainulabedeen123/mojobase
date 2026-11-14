@@ -28,9 +28,11 @@ export function verifyPassword(password, stored) {
 }
 
 const sign = (payload) => crypto.createHmac('sha256', sigKey).update(payload).digest('base64url');
-export function setSession(res, userId) {
+// Cookie: <userId>.<sessionVersion>.<expiry>.<hmac>. Bumping a user's
+// session_version (password reset, account deletion) invalidates every cookie.
+export function setSession(res, user) {
   const exp = Date.now() + SESSION_DAYS * 86400_000;
-  const payload = `${userId}.${exp}`;
+  const payload = `${user.id}.${user.session_version ?? 1}.${exp}`;
   res.cookie(COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
     secure: true,
@@ -54,16 +56,23 @@ export function currentUser(req) {
   const raw = readCookie(req);
   if (!raw) return null;
   const parts = raw.split('.');
-  if (parts.length !== 3) return null;
-  const [id, exp, sig] = parts;
-  const expected = sign(`${id}.${exp}`);
+  if (parts.length !== 4) return null;
+  const [id, version, exp, sig] = parts;
+  const expected = sign(`${id}.${version}.${exp}`);
   if (
     sig.length !== expected.length ||
     !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))
   )
     return null;
   if (Number(exp) < Date.now()) return null;
-  return users.byId(id) || null;
+  const user = users.byId(id);
+  if (!user || String(user.session_version) !== version) return null;
+  return {
+    id: user.id,
+    email: user.email,
+    emailVerified: !!user.email_verified,
+    createdAt: user.created_at,
+  };
 }
 export function requireUser(req, res, next) {
   const user = currentUser(req);

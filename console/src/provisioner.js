@@ -15,8 +15,10 @@ import {
 } from './project-stack.js';
 
 const run = promisify(execFile);
-const projectsDir = path.join(config.dataDir, 'projects');
-const composePath = (ref) => path.join(projectsDir, ref, 'compose.yaml');
+// /docker/mb-<ref>/docker-compose.yml on the host: where hPanel's Docker Manager lists projects.
+const projectDir = (ref) => path.join(config.composeRoot, composeProject(ref));
+const composePath = (ref) => path.join(projectDir(ref), 'docker-compose.yml');
+const backupsDir = (ref) => path.join(config.dataDir, 'backups', ref);
 const log = (ref, msg, extra) => console.log(JSON.stringify({ level: 'info', ref, msg, ...extra }));
 
 async function compose(ref, args, timeout = 15 * 60_000) {
@@ -93,6 +95,7 @@ export function provision(ref) {
       await compose(ref, ['up', '-d', '--quiet-pull', '--remove-orphans']);
       await waitForApp(ref);
       await psql(postgresContainer(ref), connectionRoleSql(p.secrets));
+      await configureProjectEmail(ref, p);
       projects.setStatus(ref, 'ready');
       log(ref, 'project ready');
     } catch (e) {
@@ -108,7 +111,8 @@ export function destroy(ref) {
     try {
       if (fs.existsSync(composePath(ref)))
         await compose(ref, ['down', '--volumes', '--remove-orphans'], 5 * 60_000);
-      fs.rmSync(path.join(projectsDir, ref), { recursive: true, force: true });
+      fs.rmSync(projectDir(ref), { recursive: true, force: true });
+      fs.rmSync(backupsDir(ref), { recursive: true, force: true });
       projects.remove(ref);
       log(ref, 'project deleted');
     } catch (e) {
@@ -119,6 +123,123 @@ export function destroy(ref) {
       );
     }
   });
+}
+
+// Point the project's own auth emails (verification, password reset, magic
+// links) at the platform's email provider. Users can change it later in the
+// project dashboard. Skipped when no provider is configured.
+async function configureProjectEmail(ref, p) {
+  const smtp = config.projectSmtp;
+  if (!smtp.password) return;
+  const res = await fetch(`http://${appContainer(ref)}:7130/api/auth/smtp-config`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${p.secrets.apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      enabled: true,
+      host: smtp.host,
+      port: smtp.port,
+      username: smtp.username,
+      password: smtp.password,
+      senderEmail: smtp.senderEmail,
+      senderName: p.name,
+      minIntervalSeconds: 60,
+    }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok)
+    throw new Error(`Email setup failed: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+}
+
+// ------------------------------------------------------------------ backups
+// pg_dump (custom format) of the whole project database, taken inside the
+// project's Postgres container and streamed into the console's data volume.
+const BACKUP_FILE = /^[a-z0-9]{16}-\d{8}T\d{6}Z\.dump$/;
+let backupChain = Promise.resolve();
+
+export function backupProject(ref) {
+  const job = async () => {
+    const p = projects.get(ref);
+    if (!p || p.status !== 'ready') throw new Error('Project is not ready');
+    fs.mkdirSync(backupsDir(ref), { recursive: true, mode: 0o700 });
+    const stamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d+Z$/, 'Z');
+    const file = path.join(backupsDir(ref), `${ref}-${stamp}.dump`);
+    const tmp = `${file}.partial`;
+    await new Promise((resolve, reject) => {
+      const out = fs.createWriteStream(tmp, { mode: 0o600 });
+      const dump = spawn('docker', [
+        'exec',
+        postgresContainer(ref),
+        'pg_dump',
+        '-U',
+        'postgres',
+        '-d',
+        DB_NAME,
+        '-Fc',
+        '-Z',
+        '6',
+      ]);
+      let err = '';
+      dump.stdout.pipe(out);
+      dump.stderr.on('data', (d) => (err += d));
+      dump.on('error', reject);
+      dump.on('close', (code) =>
+        out.end(() =>
+          code === 0
+            ? resolve()
+            : reject(new Error(`pg_dump exited ${code}: ${err.trim().slice(0, 300)}`))
+        )
+      );
+    });
+    fs.renameSync(tmp, file);
+    // Keep the newest N backups.
+    const all = listBackups(ref);
+    for (const old of all.slice(config.backupKeep))
+      fs.rmSync(path.join(backupsDir(ref), old.file), { force: true });
+    log(ref, 'backup created', { file: path.basename(file) });
+    return path.basename(file);
+  };
+  const run = backupChain.then(job, job);
+  backupChain = run.catch(() => {});
+  return run;
+}
+
+export function listBackups(ref) {
+  if (!fs.existsSync(backupsDir(ref))) return [];
+  return fs
+    .readdirSync(backupsDir(ref))
+    .filter((f) => BACKUP_FILE.test(f))
+    .map((f) => {
+      const st = fs.statSync(path.join(backupsDir(ref), f));
+      return { file: f, size: st.size, createdAt: st.mtime.toISOString() };
+    })
+    .sort((a, b) => b.file.localeCompare(a.file));
+}
+
+// Absolute path of a backup file, or null if the name is not one of this project's backups.
+export function backupPath(ref, file) {
+  if (!BACKUP_FILE.test(file) || !file.startsWith(`${ref}-`)) return null;
+  const full = path.join(backupsDir(ref), file);
+  return fs.existsSync(full) ? full : null;
+}
+
+// Nightly: back up every ready project once a day at BACKUP_HOUR_UTC.
+let lastBackupDay = '';
+export function scheduleBackups() {
+  const tick = async () => {
+    const now = new Date();
+    const day = now.toISOString().slice(0, 10);
+    if (now.getUTCHours() !== config.backupHourUtc || lastBackupDay === day) return;
+    lastBackupDay = day;
+    for (const p of projects.all().filter((x) => x.status === 'ready')) {
+      await backupProject(p.ref).catch((e) =>
+        log(p.ref, 'nightly backup failed', { error: e.message })
+      );
+    }
+  };
+  setInterval(tick, 5 * 60_000).unref();
 }
 
 // Caddy renews the db.<domain> certificate; copy the fresh one into every

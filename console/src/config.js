@@ -47,6 +47,34 @@ export const config = {
   maxProjects: int('MAX_PROJECTS', 8),
   maxProjectsPerUser: int('MAX_PROJECTS_PER_USER', 2),
   allowSignup: (process.env.ALLOW_SIGNUP ?? 'true') !== 'false',
+  // Sign-in / sign-up / reset attempts per IP per minute.
+  authRateLimit: int('AUTH_RATE_LIMIT', 10),
+
+  // Email (Resend). The console sends account emails through the HTTP API; projects
+  // get the same provider as their SMTP server for their own auth emails.
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  emailFrom: process.env.EMAIL_FROM || 'Mojobase <no-reply@mojobase.dev>',
+  // New accounts must confirm their email before creating projects (default: on
+  // whenever an email provider is configured).
+  requireVerifiedEmail:
+    (process.env.REQUIRE_VERIFIED_EMAIL ?? (process.env.RESEND_API_KEY ? 'true' : 'false')) ===
+    'true',
+  projectSmtp: {
+    host: process.env.PROJECT_SMTP_HOST || 'smtp.resend.com',
+    port: int('PROJECT_SMTP_PORT', 465),
+    username: process.env.PROJECT_SMTP_USER || 'resend',
+    password: process.env.PROJECT_SMTP_PASSWORD || process.env.RESEND_API_KEY || '',
+    senderEmail: process.env.PROJECT_SMTP_SENDER || 'no-reply@mojobase.dev',
+  },
+
+  // Compose files for project stacks live here. On the server this is the host's
+  // /docker directory (bind-mounted at the same path), which is where hPanel's
+  // Docker Manager looks for projects, so console-created stacks show up there too.
+  composeRoot: process.env.COMPOSE_ROOT || '/docker',
+
+  // Nightly database backups: hour (UTC) and how many to keep per project.
+  backupHourUtc: int('BACKUP_HOUR_UTC', 3),
+  backupKeep: int('BACKUP_KEEP', 7),
 
   // Per-project memory limits
   mem: {

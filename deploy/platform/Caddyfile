@@ -1,6 +1,6 @@
 # Mojobase edge router.
 #   mojobase.dev            -> console (sign up, create projects)
-#   api.mojobase.dev        -> the original single instance
+#   api.mojobase.dev        -> retired single instance; redirects to the console
 #   db.mojobase.dev         -> holds the TLS certificate every project's Postgres uses
 #   <ref>.mojobase.dev      -> that project's backend (certificate issued on demand,
 #                              only for projects the console confirms exist)
@@ -16,8 +16,7 @@ mojobase.dev, www.mojobase.dev {
 }
 
 api.mojobase.dev {
-	encode zstd gzip
-	reverse_proxy insforge-insforge-1:7130
+	redir https://mojobase.dev 302
 }
 
 db.mojobase.dev {
@@ -30,4 +29,21 @@ https:// {
 	}
 	encode zstd gzip
 	reverse_proxy mb-{http.request.host.labels.2}-app:7130
+
+	# The project was deleted, never existed, or is still starting.
+	handle_errors {
+		@unavailable expression `{err.status_code} in [502, 503, 504]`
+		header @unavailable Content-Type "text/html; charset=utf-8"
+		header @unavailable Cache-Control "no-store"
+		respond @unavailable <<HTML
+			<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+			<title>Project not available · Mojobase</title>
+			<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0b0f;color:#f4f4f6;font:16px/1.6 Inter,system-ui,sans-serif;padding:16px}
+			main{max-width:440px;text-align:center}h1{font-size:24px;margin:16px 0 8px}p{color:#a1a1ad}a{color:#a78bfa}
+			.mark{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#c026d3 55%,#f43f5e);display:inline-grid;place-items:center;font-weight:800;font-size:28px;color:#fff}</style></head>
+			<body><main><div class="mark">M</div><h1>This project isn't available</h1>
+			<p>There's no running Mojobase project at this address. It may have been deleted, or it's still starting up — try again in a minute.</p>
+			<p><a href="https://mojobase.dev">Go to Mojobase</a></p></main></body></html>
+			HTML 404
+	}
 }

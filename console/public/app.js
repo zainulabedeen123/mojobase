@@ -42,7 +42,7 @@ document.addEventListener('click', (e) => {
 function renderNav() {
   $nav.replaceChildren(
     ...(me
-      ? [h('span', { class: 'muted' }, me.email), h('button', { class: 'btn small', onclick: logout }, 'Sign out')]
+      ? [h('a', { href: '/account', 'data-link': true, class: 'muted', style: 'text-decoration:none' }, me.email), h('button', { class: 'btn small', onclick: logout }, 'Sign out')]
       : [])
   );
 }
@@ -60,13 +60,14 @@ function authPage(mode) {
       e.preventDefault(); err.textContent = ''; submit.disabled = true;
       try {
         const { user } = await api(isSignup ? '/signup' : '/login', { method: 'POST', body: { email: email.value, password: pw.value } });
-        me = user; go('/');
+        void user; me = null; go('/');
       } catch (ex) { err.textContent = ex.message; } finally { submit.disabled = false; }
     },
   },
     h('label', { for: 'email' }, 'Email'), email,
     h('label', { for: 'pw' }, 'Password'), pw,
     isSignup && h('div', { class: 'muted', style: 'font-size:13px;margin-top:6px' }, 'At least 10 characters.'),
+    !isSignup && h('div', { style: 'text-align:right;margin-top:8px;font-size:13px' }, h('a', { href: '/forgot-password', 'data-link': true }, 'Forgot password?')),
     submit, err,
   );
   return h('div', { class: 'auth' },
@@ -87,10 +88,12 @@ async function projectsPage() {
   const limit = me.limits?.perUser ?? 2;
   const dlg = newProjectDialog();
   const atLimit = projects.length >= limit;
+  const needsVerify = me.requireVerifiedEmail && !me.emailVerified;
   return h('div', {},
+    needsVerify && verifyBanner(),
     h('div', { class: 'row spread', style: 'margin-bottom:20px' },
       h('div', {}, h('h1', {}, 'Projects'), h('p', { class: 'sub', style: 'margin:0' }, `${projects.length} of ${limit} projects`)),
-      h('button', { class: 'btn primary', disabled: atLimit, title: atLimit ? `You can have up to ${limit} projects` : undefined, onclick: () => dlg.showModal() }, '+ New project'),
+      h('button', { class: 'btn primary', disabled: atLimit || needsVerify, title: atLimit ? `You can have up to ${limit} projects` : undefined, onclick: () => dlg.showModal() }, '+ New project'),
     ),
     projects.length
       ? h('div', { class: 'grid' }, projects.map((p) =>
@@ -227,6 +230,7 @@ async function projectPage(ref) {
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Tables, auth users, storage, functions, logs and SQL editor for this project.'),
       h('div', { class: 'grid' }, copyField('Username', p.dashboard.username), copyField('Password', p.dashboard.password, { secret: true })),
       h('a', { class: 'btn primary', href: p.dashboardUrl, target: '_blank', rel: 'noopener' }, 'Open dashboard ↗')),
+    backupsCard(p),
     h('div', { class: 'card' },
       h('h2', {}, 'Danger zone'),
       h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Deleting a project permanently removes its database, users, files and functions.'),
@@ -253,6 +257,126 @@ function deleteButton(p) {
   return h('span', {}, h('button', { class: 'btn danger', type: 'button', onclick: () => dlg.showModal() }, 'Delete project'), dlg);
 }
 
+// ---------------------------------------------------------------- email flows
+function verifyBanner() {
+  const btn = h('button', { class: 'btn small', type: 'button', onclick: async () => {
+    btn.disabled = true;
+    try { await api('/resend-verification', { method: 'POST', body: {} }); toast('Verification email sent'); }
+    catch (e) { toast(e.message); } finally { setTimeout(() => (btn.disabled = false), 30000); }
+  } }, 'Resend email');
+  return h('div', { class: 'card row spread', style: 'border-color:color-mix(in srgb, var(--warn) 50%, var(--border))' },
+    h('div', {}, h('strong', {}, 'Confirm your email to create projects'),
+      h('div', { class: 'muted', style: 'font-size:14px' }, `We sent a link to ${me.email}. Check your inbox (and spam folder).`)),
+    btn);
+}
+
+function simpleCard(title, ...children) {
+  return h('div', { class: 'auth' }, h('img', { src: '/favicon.svg', alt: '', class: 'hero-mark' }), h('h1', {}, title), h('div', { class: 'card' }, ...children));
+}
+
+async function verifyPage() {
+  const token = new URLSearchParams(location.search).get('token');
+  try {
+    await api('/verify', { method: 'POST', body: { token } });
+    me = null;
+    return simpleCard('Email confirmed', h('p', {}, 'Thanks — your email address is confirmed. You can create projects now.'),
+      h('a', { class: 'btn primary', href: '/', 'data-link': true }, 'Go to projects'));
+  } catch (e) {
+    return simpleCard('Link not valid', h('p', { class: 'muted' }, e.message + '. Sign in and use “Resend email” to get a new link.'),
+      h('a', { class: 'btn', href: '/', 'data-link': true }, 'Back to Mojobase'));
+  }
+}
+
+function forgotPage() {
+  const err = h('div', { class: 'error', role: 'alert' });
+  const email = h('input', { type: 'email', id: 'email', autocomplete: 'email', required: true });
+  const btn = h('button', { class: 'btn primary', type: 'submit', style: 'width:100%;justify-content:center;margin-top:18px' }, 'Send reset link');
+  const box = h('div', {});
+  const form = h('form', { onsubmit: async (e) => {
+    e.preventDefault(); btn.disabled = true; err.textContent = '';
+    try {
+      await api('/forgot-password', { method: 'POST', body: { email: email.value } });
+      box.replaceChildren(h('p', {}, `If an account exists for ${email.value}, a reset link is on its way. It expires in 1 hour.`),
+        h('a', { href: '/login', 'data-link': true }, 'Back to sign in'));
+    } catch (ex) { err.textContent = ex.message; btn.disabled = false; }
+  } }, h('label', { for: 'email' }, 'Email'), email, btn, err);
+  box.append(form, h('div', { class: 'switch' }, h('a', { href: '/login', 'data-link': true }, 'Back to sign in')));
+  return simpleCard('Reset your password', box);
+}
+
+function resetPage() {
+  const token = new URLSearchParams(location.search).get('token');
+  const err = h('div', { class: 'error', role: 'alert' });
+  const pw = h('input', { type: 'password', id: 'pw', autocomplete: 'new-password', required: true, minlength: 10 });
+  const btn = h('button', { class: 'btn primary', type: 'submit', style: 'width:100%;justify-content:center;margin-top:18px' }, 'Set new password');
+  return simpleCard('Choose a new password', h('form', { onsubmit: async (e) => {
+    e.preventDefault(); btn.disabled = true; err.textContent = '';
+    try {
+      await api('/reset-password', { method: 'POST', body: { token, password: pw.value } });
+      me = null; toast('Password changed'); go('/');
+    } catch (ex) { err.textContent = ex.message; btn.disabled = false; }
+  } }, h('label', { for: 'pw' }, 'New password'), pw,
+    h('div', { class: 'muted', style: 'font-size:13px;margin-top:6px' }, 'At least 10 characters. You will be signed out everywhere else.'), btn, err));
+}
+
+// ---------------------------------------------------------------- account
+function accountPage() {
+  const err = h('div', { class: 'error', role: 'alert' });
+  const pw = h('input', { type: 'password', id: 'delpw', autocomplete: 'current-password' });
+  const confirmBtn = h('button', { class: 'btn danger', type: 'submit' }, 'Delete my account');
+  const dlg = h('dialog', {}, h('form', { onsubmit: async (e) => {
+    e.preventDefault(); confirmBtn.disabled = true; err.textContent = 'Deleting projects…';
+    try { await api('/account/delete', { method: 'POST', body: { password: pw.value } }); dlg.close(); me = null; toast('Account deleted'); go('/signup'); }
+    catch (ex) { err.textContent = ex.message; confirmBtn.disabled = false; }
+  } },
+    h('h2', {}, 'Delete your account?'),
+    h('p', { class: 'muted' }, 'This permanently deletes every project you own — databases, users, files, functions and backups — and then your account. It cannot be undone.'),
+    h('label', { for: 'delpw' }, 'Enter your password to confirm'), pw, err,
+    h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:14px' },
+      h('button', { class: 'btn', type: 'button', onclick: () => dlg.close() }, 'Cancel'), confirmBtn)));
+  return h('div', {},
+    h('a', { href: '/', 'data-link': true, class: 'muted', style: 'font-size:14px;text-decoration:none' }, '← All projects'),
+    h('h1', { style: 'margin-top:8px' }, 'Account'),
+    h('div', { class: 'card' },
+      copyField('Email', me.email),
+      h('p', { class: 'muted', style: 'margin:0' }, me.emailVerified ? 'Email confirmed.' : 'Email not confirmed yet.'),
+      h('div', { class: 'row', style: 'margin-top:14px' }, h('a', { class: 'btn', href: '/forgot-password', 'data-link': true, onclick: async (e) => {
+        e.preventDefault();
+        await api('/forgot-password', { method: 'POST', body: { email: me.email } });
+        toast('Password reset link sent to your email');
+      } }, 'Change password'))),
+    h('div', { class: 'card' },
+      h('h2', {}, 'Delete account'),
+      h('p', { class: 'muted', style: 'margin-top:-6px' }, 'Deletes all of your projects and their data, then your account.'),
+      h('button', { class: 'btn danger', type: 'button', onclick: () => dlg.showModal() }, 'Delete account'), dlg));
+}
+
+// ---------------------------------------------------------------- backups
+function fmtBytes(n) { return n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`; }
+function backupsCard(p) {
+  const list = h('div', {}, h('span', { class: 'spinner' }));
+  const load = async () => {
+    const { backups, keep, hourUtc } = await api(`/projects/${p.ref}/backups`);
+    list.replaceChildren(
+      h('p', { class: 'muted', style: 'margin-top:-6px' }, `Automatic database backup every night at ${String(hourUtc).padStart(2, '0')}:00 UTC. The newest ${keep} are kept.`),
+      backups.length
+        ? h('div', {}, backups.map((b) => h('div', { class: 'copy', style: 'margin-bottom:8px' },
+            h('code', {}, `${new Date(b.createdAt).toLocaleString()} · ${fmtBytes(b.size)}`),
+            h('a', { class: 'btn small', href: `/api/projects/${p.ref}/backups/${b.file}`, download: b.file }, 'Download'))))
+        : h('p', { class: 'muted' }, 'No backups yet.'));
+  };
+  const btn = h('button', { class: 'btn small', type: 'button', onclick: async () => {
+    btn.disabled = true; btn.textContent = 'Backing up…';
+    try { await api(`/projects/${p.ref}/backups`, { method: 'POST', body: {} }); toast('Backup created'); await load(); }
+    catch (e) { toast(e.message); } finally { btn.disabled = false; btn.textContent = 'Back up now'; }
+  } }, 'Back up now');
+  load().catch((e) => list.replaceChildren(h('p', { class: 'error' }, e.message)));
+  return h('div', { class: 'card' },
+    h('div', { class: 'row spread' }, h('h2', { style: 'margin:0' }, 'Backups'), btn),
+    h('div', { style: 'margin-top:12px' }, list),
+    h('p', { class: 'muted', style: 'font-size:13px;margin:8px 0 0' }, 'Backups are PostgreSQL custom-format dumps (pg_restore). Uploaded files in storage are not included yet.'));
+}
+
 // ---------------------------------------------------------------- router
 async function render() {
   clearTimeout(pollTimer);
@@ -260,16 +384,20 @@ async function render() {
   try {
     if (me === null) {
       const r = await api('/me');
-      me = r.user ? { ...r.user, limits: r.limits } : null;
+      me = r.user ? { ...r.user, limits: r.limits, requireVerifiedEmail: r.requireVerifiedEmail } : null;
     }
     renderNav();
+    // Pages reached from email links work whether or not you are signed in.
+    if (path === '/verify') { $app.replaceChildren(await verifyPage()); return; }
+    if (path === '/reset-password') { $app.replaceChildren(resetPage()); return; }
+    if (path === '/forgot-password' && !me) { $app.replaceChildren(forgotPage()); return; }
     if (!me) {
       $app.replaceChildren(authPage(path === '/login' ? 'login' : 'signup'));
       if (path !== '/login' && path !== '/signup') history.replaceState({}, '', '/signup');
       return;
     }
     const m = path.match(/^\/projects\/([a-z0-9]+)$/);
-    $app.replaceChildren(m ? await projectPage(m[1]) : await projectsPage());
+    $app.replaceChildren(path === '/account' ? accountPage() : m ? await projectPage(m[1]) : await projectsPage());
     if (path === '/login' || path === '/signup') history.replaceState({}, '', '/');
   } catch (e) {
     if (e.status === 401) { me = null; return render(); }

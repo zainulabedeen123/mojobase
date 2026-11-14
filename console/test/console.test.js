@@ -21,6 +21,10 @@ const env = {
   PROJECT_POSTGRES_IMAGE: 'ghcr.io/example/mojobase-postgres:test',
   PROJECT_DENO_IMAGE: 'ghcr.io/example/mojobase-deno:test',
   MAX_PROJECTS_PER_USER: '1',
+  REQUIRE_VERIFIED_EMAIL: 'true',
+  AUTH_RATE_LIMIT: '1000',
+  EMAIL_DEBUG_LOG: '1',
+  COMPOSE_ROOT: path.join(tmp, 'docker'),
   NODE_NO_WARNINGS: '1',
 };
 // Fake the Let's Encrypt certificate Caddy would hold for db.mojobase.dev
@@ -33,6 +37,14 @@ fs.writeFileSync(path.join(certDir, 'db.mojobase.dev.crt'), 'x');
 fs.writeFileSync(path.join(certDir, 'db.mojobase.dev.key'), 'x');
 
 let server;
+let serverLog = '';
+// Email links the server would have sent (EMAIL_DEBUG_LOG=1 logs them).
+const lastLink = (to, kind) => {
+  const lines = serverLog.split('\n').filter((l) => l.includes('email not sent') && l.includes(to));
+  const urls = lines.map((l) => JSON.parse(l).url).filter((u) => u && u.includes(kind));
+  return new URL(urls.at(-1));
+};
+const settle = () => new Promise((r) => setTimeout(r, 300));
 const BASE = 'http://localhost:39123';
 const jar = {};
 async function call(who, method, p, body, extraHeaders = {}) {
@@ -52,6 +64,7 @@ async function call(who, method, p, body, extraHeaders = {}) {
 
 before(async () => {
   server = spawn(process.execPath, ['src/server.js'], { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  server.stdout.on('data', (d) => (serverLog += d));
   for (let i = 0; i < 50; i++) {
     try {
       await fetch(BASE + '/api/me');
@@ -146,6 +159,26 @@ test('cross-origin writes are refused', async () => {
   assert.equal(r.status, 403);
 });
 
+test('email verification is required before creating projects', async () => {
+  const r = await call('a', 'POST', '/api/projects', { name: 'Too early' });
+  assert.equal(r.status, 403);
+  assert.match(r.body.error, /Confirm your email/);
+  await settle();
+  const link = lastLink('a@example.com', '/verify');
+  assert.equal(link.origin + link.pathname, 'http://localhost:39123/verify');
+  assert.equal((await call('x', 'POST', '/api/verify', { token: 'nope' })).status, 400);
+  assert.equal(
+    (await call('x', 'POST', '/api/verify', { token: link.searchParams.get('token') })).status,
+    200
+  );
+  assert.equal(
+    (await call('x', 'POST', '/api/verify', { token: link.searchParams.get('token') })).status,
+    400,
+    'single use'
+  );
+  assert.equal((await call('a', 'GET', '/api/me')).body.user.emailVerified, true);
+});
+
 test('create project, ownership isolation, per-user limit, tls-ask, delete', async () => {
   const created = await call('a', 'POST', '/api/projects', { name: 'My App' });
   assert.equal(created.status, 202);
@@ -169,6 +202,16 @@ test('create project, ownership isolation, per-user limit, tls-ask, delete', asy
   );
 
   await call('b', 'POST', '/api/signup', { email: 'b@example.com', password: 'correct-horse-2' });
+  assert.equal(
+    (await call('b', 'GET', `/api/projects/${ref}/backups`)).status,
+    404,
+    'other users cannot list backups'
+  );
+  assert.deepEqual((await call('a', 'GET', `/api/projects/${ref}/backups`)).body.backups, []);
+  assert.equal(
+    (await call('a', 'GET', `/api/projects/${ref}/backups/../../console.db`)).status,
+    404
+  );
   assert.equal(
     (await call('b', 'GET', `/api/projects/${ref}`)).status,
     404,
@@ -206,4 +249,101 @@ test('create project, ownership isolation, per-user limit, tls-ask, delete', asy
     await new Promise((r) => setTimeout(r, 100));
   }
   assert.fail('delete never reached a final state');
+});
+
+test('forgot / reset password signs out other sessions', async () => {
+  await call('r1', 'POST', '/api/signup', {
+    email: 'reset@example.com',
+    password: 'original-pass-1',
+  });
+  await call('r2', 'POST', '/api/login', {
+    email: 'reset@example.com',
+    password: 'original-pass-1',
+  });
+  // Same answer whether or not the account exists
+  assert.equal(
+    (await call('anon', 'POST', '/api/forgot-password', { email: 'nobody@example.com' })).status,
+    200
+  );
+  assert.equal(
+    (await call('anon', 'POST', '/api/forgot-password', { email: 'reset@example.com' })).status,
+    200
+  );
+  await settle();
+  const token = lastLink('reset@example.com', '/reset-password').searchParams.get('token');
+  assert.equal(
+    (await call('anon', 'POST', '/api/reset-password', { token, password: 'short' })).status,
+    400
+  );
+  assert.equal(
+    (await call('new', 'POST', '/api/reset-password', { token, password: 'brand-new-pass-2' }))
+      .status,
+    200
+  );
+  assert.equal(
+    (await call('new', 'POST', '/api/reset-password', { token, password: 'brand-new-pass-3' }))
+      .status,
+    400,
+    'single use'
+  );
+  assert.equal((await call('r2', 'GET', '/api/me')).body.user, null, 'old session signed out');
+  assert.equal((await call('new', 'GET', '/api/me')).body.user.email, 'reset@example.com');
+  assert.equal(
+    (await call('new', 'GET', '/api/me')).body.user.emailVerified,
+    true,
+    'reset proves email ownership'
+  );
+  assert.equal(
+    (
+      await call('x', 'POST', '/api/login', {
+        email: 'reset@example.com',
+        password: 'original-pass-1',
+      })
+    ).status,
+    401
+  );
+  assert.equal(
+    (
+      await call('x', 'POST', '/api/login', {
+        email: 'reset@example.com',
+        password: 'brand-new-pass-2',
+      })
+    ).status,
+    200
+  );
+});
+
+test('account deletion needs the password and removes the account', async () => {
+  await call('d', 'POST', '/api/signup', {
+    email: 'delete-me@example.com',
+    password: 'delete-me-pass-1',
+  });
+  assert.equal(
+    (await call('d', 'POST', '/api/account/delete', { password: 'wrong-password' })).status,
+    401
+  );
+  assert.equal(
+    (await call('d', 'POST', '/api/account/delete', { password: 'delete-me-pass-1' })).status,
+    200
+  );
+  assert.equal((await call('d', 'GET', '/api/me')).body.user, null);
+  assert.equal(
+    (
+      await call('d2', 'POST', '/api/login', {
+        email: 'delete-me@example.com',
+        password: 'delete-me-pass-1',
+      })
+    ).status,
+    401
+  );
+  // The address can be used again
+  assert.equal(
+    (
+      await call('d3', 'POST', '/api/signup', {
+        email: 'delete-me@example.com',
+        password: 'delete-me-pass-2',
+      })
+    ).status,
+    201
+  );
 });

@@ -26,7 +26,26 @@ db.exec(`
     error TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+  -- One-time email links (verification, password reset). Only a hash is stored.
+  CREATE TABLE IF NOT EXISTS tokens (
+    hash TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,              -- verify | reset
+    expires_at INTEGER NOT NULL
+  );
 `);
+// Additive migrations for databases created by earlier versions.
+const userColumns = new Set(
+  db
+    .prepare('PRAGMA table_info(users)')
+    .all()
+    .map((c) => c.name)
+);
+if (!userColumns.has('email_verified'))
+  db.exec('ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0');
+// Bumped on password reset / account deletion so existing session cookies stop working.
+if (!userColumns.has('session_version'))
+  db.exec('ALTER TABLE users ADD COLUMN session_version INTEGER NOT NULL DEFAULT 1');
 
 const key = crypto.createHash('sha256').update(`mojobase-secrets:${config.consoleSecret}`).digest();
 export function encrypt(obj) {
@@ -51,7 +70,46 @@ export const users = {
     );
   },
   byEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
-  byId: (id) => db.prepare('SELECT id, email, created_at FROM users WHERE id = ?').get(id),
+  byId: (id) =>
+    db
+      .prepare(
+        'SELECT id, email, created_at, email_verified, session_version FROM users WHERE id = ?'
+      )
+      .get(id),
+  withHash: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
+  setVerified: (id) => db.prepare('UPDATE users SET email_verified = 1 WHERE id = ?').run(id),
+  setPassword: (id, passwordHash) =>
+    db
+      .prepare(
+        'UPDATE users SET password_hash = ?, session_version = session_version + 1 WHERE id = ?'
+      )
+      .run(passwordHash, id),
+  remove: (id) => db.prepare('DELETE FROM users WHERE id = ?').run(id),
+};
+
+const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
+export const tokens = {
+  // Returns the raw token (sent by email); only its hash is stored.
+  issue(userId, kind, ttlMs) {
+    db.prepare('DELETE FROM tokens WHERE user_id = ? AND kind = ?').run(userId, kind);
+    const raw = crypto.randomBytes(32).toString('base64url');
+    db.prepare('INSERT INTO tokens (hash, user_id, kind, expires_at) VALUES (?, ?, ?, ?)').run(
+      sha256(raw),
+      userId,
+      kind,
+      Date.now() + ttlMs
+    );
+    return raw;
+  },
+  // Single use: a token is deleted as soon as it is redeemed.
+  consume(raw, kind) {
+    const hash = sha256(String(raw || ''));
+    const row = db.prepare('SELECT * FROM tokens WHERE hash = ? AND kind = ?').get(hash, kind);
+    if (!row) return null;
+    db.prepare('DELETE FROM tokens WHERE hash = ?').run(hash);
+    return row.expires_at >= Date.now() ? row.user_id : null;
+  },
+  purgeExpired: () => db.prepare('DELETE FROM tokens WHERE expires_at < ?').run(Date.now()),
 };
 
 const row = (r) => (r ? { ...r, secrets: decrypt(r.secrets) } : undefined);
@@ -73,6 +131,11 @@ export const projects = {
       )
       .all(ownerId),
   all: () => db.prepare('SELECT * FROM projects').all().map(row),
+  refsForOwner: (ownerId) =>
+    db
+      .prepare('SELECT ref FROM projects WHERE owner_id = ?')
+      .all(ownerId)
+      .map((r) => r.ref),
   count: () => db.prepare('SELECT COUNT(*) AS n FROM projects').get().n,
   countForOwner: (ownerId) =>
     db.prepare('SELECT COUNT(*) AS n FROM projects WHERE owner_id = ?').get(ownerId).n,
