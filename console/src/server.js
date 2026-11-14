@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -416,21 +417,33 @@ app.use((err, _req, res, _next) => {
 
 // ------------------------------------------------------------------ web app
 const pub = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
-// The page, script and styles revalidate on every load (cheap 304s via ETag), so
-// a deploy reaches everyone immediately instead of after a stale hour in cache.
-const revalidate = /\.(html|js|css)$/;
+// The page links its script and stylesheet by content hash (/app.js?v=…), so a
+// new release is always fetched fresh, and the page itself is never cached.
+const fingerprint = (file) =>
+  crypto
+    .createHash('sha256')
+    .update(fs.readFileSync(path.join(pub, file)))
+    .digest('hex')
+    .slice(0, 12);
+const indexHtml = fs
+  .readFileSync(path.join(pub, 'index.html'), 'utf8')
+  .replace('/app.js"', `/app.js?v=${fingerprint('app.js')}"`)
+  .replace('/styles.css"', `/styles.css?v=${fingerprint('styles.css')}"`);
+const sendIndex = (_req, res) =>
+  res
+    .set({ 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' })
+    .send(indexHtml);
+app.get(['/', '/index.html'], sendIndex);
 app.use(
   express.static(pub, {
-    index: 'index.html',
+    index: false,
     maxAge: '1h',
     setHeaders: (res, file) => {
-      if (revalidate.test(file)) res.setHeader('Cache-Control', 'no-cache');
+      if (/\.(js|css)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
     },
   })
 );
-app.get('*', (_req, res) =>
-  res.sendFile(path.join(pub, 'index.html'), { headers: { 'Cache-Control': 'no-cache' } })
-);
+app.get('*', sendIndex);
 
 app.listen(config.port, () =>
   console.log(JSON.stringify({ level: 'info', msg: `console listening on ${config.port}` }))

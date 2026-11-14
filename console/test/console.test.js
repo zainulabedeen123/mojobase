@@ -439,4 +439,8 @@ test('MCP server: token auth, tools, ownership, revocation', async () => {
 test('the app shell revalidates on every load so deploys reach browsers at once', async () => {
   for (const p of ['/', '/app.js', '/styles.css', '/projects/abc'])
     assert.equal((await fetch(BASE + p)).headers.get('cache-control'), 'no-cache', p);
+  // Script and stylesheet are linked by content hash, so changed files are never stale.
+  const html = await (await fetch(BASE + '/projects/abc')).text();
+  assert.match(html, /src="\/app\.js\?v=[0-9a-f]{12}"/);
+  assert.match(html, /href="\/styles\.css\?v=[0-9a-f]{12}"/);
 });
