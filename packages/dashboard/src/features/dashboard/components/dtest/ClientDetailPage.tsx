@@ -63,7 +63,7 @@ export function ClientDetailPage({ clientId, onBack }: ClientDetailPageProps) {
   const connectionUrlWithPassword = dbPassword
     ? connectionUrl.replace('********', dbPassword)
     : connectionUrl;
-  const connectionStringPrompt = `I'm using Mojobase (an InsForge-compatible backend) as my backend. Here's my database connection string:\n\n${connectionUrlWithPassword || '<connection string>'}\n\nPlease connect to my database.`;
+  const connectionStringPrompt = `I'm using Mojobase as my backend. Here's my database connection string:\n\n${connectionUrlWithPassword || '<connection string>'}\n\nPlease connect to my database.`;
 
   return (
     <main className="h-full min-h-0 min-w-0 overflow-y-auto bg-semantic-1">

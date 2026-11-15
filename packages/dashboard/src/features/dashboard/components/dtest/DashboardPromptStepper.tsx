@@ -33,7 +33,7 @@ const PROMPT_STEPS: PromptStep[] = [
     category: 'Database',
     title: 'Add sample data',
     prompt:
-      'Use InsForge Skills to create a table in my Mojobase backend and add some sample data.',
+      'Use Mojobase Skills to create a table in my Mojobase backend and add some sample data.',
     icon: <Database className="size-12 text-[rgb(var(--disabled))]" />,
     navigateTo: { label: 'Go to Database', path: '/dashboard/database/tables' },
   },
@@ -43,7 +43,7 @@ const PROMPT_STEPS: PromptStep[] = [
     category: 'Authentication',
     title: 'Sign up your first user',
     prompt:
-      'Use InsForge Skills to add user authentication to this app using InsForge Auth.\n\nUsers should be able to:\n1. Sign up / Sign in with Email\n2. Add Google OAuth\n3. Sign out\n\nAlso update the database and access control so each record belongs to a user:\n1. Add a `user_id` column to the relevant table(s)\n2. Set `user_id` automatically when a new record is created\n3. Restrict reads and writes so users can only access their own data\n4. Add the required row level security policies for this\n\nUpdate the app UI and backend logic so authentication is fully wired up and only signed in users can create and view their own records.',
+      'Use Mojobase Skills to add user authentication to this app using Mojobase Auth.\n\nUsers should be able to:\n1. Sign up / Sign in with Email\n2. Add Google OAuth\n3. Sign out\n\nAlso update the database and access control so each record belongs to a user:\n1. Add a `user_id` column to the relevant table(s)\n2. Set `user_id` automatically when a new record is created\n3. Restrict reads and writes so users can only access their own data\n4. Add the required row level security policies for this\n\nUpdate the app UI and backend logic so authentication is fully wired up and only signed in users can create and view their own records.',
     icon: <StepUserIcon className="size-12 text-[rgb(var(--disabled))]" />,
     navigateTo: { label: 'Go to User', path: '/dashboard/authentication/users' },
   },
@@ -53,7 +53,7 @@ const PROMPT_STEPS: PromptStep[] = [
     category: 'Storage',
     title: 'Upload a file',
     prompt:
-      'Use InsForge Skills to add file upload to this app.\nUsers should be able to upload a file and attach it to a record.\nShow the uploaded file in the UI.\nUse InsForge Storage for file uploads.',
+      'Use Mojobase Skills to add file upload to this app.\nUsers should be able to upload a file and attach it to a record.\nShow the uploaded file in the UI.\nUse Mojobase Storage for file uploads.',
     icon: <StepUploadIcon className="size-12 text-[rgb(var(--disabled))]" />,
     navigateTo: { label: 'Go to Storage', path: '/dashboard/storage' },
   },
@@ -63,7 +63,7 @@ const PROMPT_STEPS: PromptStep[] = [
     category: 'Sites',
     title: 'Deploy your site',
     prompt:
-      'Use InsForge Skills to deploy this app on Mojobase, after deploying, share the live URL.',
+      'Use Mojobase Skills to deploy this app on Mojobase, after deploying, share the live URL.',
     icon: <Globe className="size-12 text-[rgb(var(--disabled))]" />,
     navigateTo: { label: 'Go to Sites', path: '/dashboard/deployments' },
   },

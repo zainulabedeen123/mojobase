@@ -373,17 +373,9 @@ export default function ComputeServicesPage() {
                 <div className="flex flex-col gap-3 max-w-xl mx-auto">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1.5">
-                      {t('compute.useButtonOrCli', {
-                        defaultValue: 'Use the button above, the CLI:',
+                      {t('compute.useButtonOrAgent', {
+                        defaultValue: 'Use the button above, or ask your AI agent:',
                       })}
-                    </p>
-                    <code className="block px-3 py-2 bg-muted text-foreground rounded text-xs font-mono break-all">
-                      npx @insforge/cli compute deploy --name my-api --image nginx:alpine --port 80
-                    </code>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1.5">
-                      {t('compute.orAskAgent', { defaultValue: 'Or ask your AI agent:' })}
                     </p>
                     <ul className="flex flex-col gap-1 text-xs text-foreground">
                       <li className="px-3 py-2 bg-muted rounded">

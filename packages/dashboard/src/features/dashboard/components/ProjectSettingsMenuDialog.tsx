@@ -682,7 +682,7 @@ export default function ProjectSettingsMenuDialog({
                           <p className="pb-2 text-[13px] leading-[18px] text-muted-foreground">
                             {t('settings.cliDescription', {
                               defaultValue:
-                                'Link this cloud project with InsForge CLI and verify the connection.',
+                                'Link this cloud project with Mojobase CLI and verify the connection.',
                             })}
                           </p>
                         </div>

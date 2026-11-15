@@ -57,9 +57,9 @@ interface DTestMCPSectionProps {
 
 function buildQuickStartPrompt(agent: MCPAgent, installBody: string) {
   if (agent.id === 'mcp') {
-    return `I'm using Mojobase (an InsForge-compatible backend) as my backend platform. Please add the following MCP configuration to enable the InsForge MCP server:\n\n${installBody}\n\nThen ${MCP_VERIFY_CONNECTION_PROMPT.replace(/^I'm using Mojobase \(an InsForge-compatible backend\) as my backend platform, /i, '')}`;
+    return `I'm using Mojobase as my backend platform. Please add the following MCP configuration to enable the Mojobase MCP server:\n\n${installBody}\n\nThen ${MCP_VERIFY_CONNECTION_PROMPT.replace(/^I'm using Mojobase as my backend platform\. /i, '')}`;
   }
-  return `I'm using Mojobase (an InsForge-compatible backend) as my backend platform. Please run this command to install the InsForge MCP server:\n\n${installBody}\n\nThen ${MCP_VERIFY_CONNECTION_PROMPT.replace(/^I'm using Mojobase \(an InsForge-compatible backend\) as my backend platform, /i, '')}`;
+  return `I'm using Mojobase as my backend platform. Please run this command to install the Mojobase MCP server:\n\n${installBody}\n\nThen ${MCP_VERIFY_CONNECTION_PROMPT.replace(/^I'm using Mojobase as my backend platform\. /i, '')}`;
 }
 
 export function DTestMCPSection({
@@ -101,7 +101,7 @@ export function DTestMCPSection({
         <section className="flex flex-col rounded border border-[var(--alpha-8)] bg-card p-6">
           <Step
             number={1}
-            title={t('overview.installInsForgeMcp', { defaultValue: 'Install InsForge MCP' })}
+            title={t('overview.installInsForgeMcp', { defaultValue: 'Install Mojobase MCP' })}
             description={t('overview.installOneClick', { defaultValue: 'Install in one click' })}
           >
             <InstallDeeplinkButton agent={agent} deeplink={deeplink} />
@@ -128,7 +128,7 @@ export function DTestMCPSection({
         <QuickStartPromptCard
           subtitle={t('overview.pasteMcpSubtitle', {
             agent: agent.displayName,
-            defaultValue: 'Paste this into {{agent}} to setup InsForge MCP',
+            defaultValue: 'Paste this into {{agent}} to setup Mojobase MCP',
           })}
           prompt={quickStartPrompt}
         />
@@ -148,7 +148,7 @@ export function DTestMCPSection({
                 ? t('overview.addMcpConfigurationTitle', {
                     defaultValue: 'Add MCP Configuration',
                   })
-                : t('overview.installInsForgeMcp', { defaultValue: 'Install InsForge MCP' })
+                : t('overview.installInsForgeMcp', { defaultValue: 'Install Mojobase MCP' })
             }
             description={
               isMcpJson
@@ -157,7 +157,7 @@ export function DTestMCPSection({
                   })
                 : t('overview.runInstallCommand', {
                     defaultValue:
-                      'Run the following command in terminal to install InsForge MCP Server',
+                      'Run the following command in terminal to install Mojobase MCP server',
                   })
             }
           >

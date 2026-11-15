@@ -95,7 +95,7 @@ describe('StorageSettingsMenuDialog — S3 tab', () => {
     expect(screen.getByText('Storage backend not configured')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /self-hosted storage guide/i })).toHaveAttribute(
       'href',
-      'https://docs.insforge.dev/deployment/self-host-storage'
+      'https://mojobase.dev/docs/core-concepts/storage/s3-compatibility'
     );
     expect(screen.queryByTestId('s3-settings-panel')).not.toBeInTheDocument();
   });

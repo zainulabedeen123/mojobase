@@ -72,7 +72,7 @@ export function MCPSection({
               <p className="text-sm leading-6 text-muted-foreground">
                 {t('overview.runInstallCommand', {
                   defaultValue:
-                    'Run the following command in terminal to install InsForge MCP Server',
+                    'Run the following command in terminal to install Mojobase MCP server',
                 })}
               </p>
             )}

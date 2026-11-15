@@ -409,8 +409,7 @@ export function AuthSettingsMenuDialog({ open, onOpenChange }: AuthSettingsMenuD
                     ) : !canAccessEmailVerification ? (
                       <p className="text-sm text-muted-foreground">
                         {t('auth.emailVerificationProviderRequired', {
-                          defaultValue:
-                            'Email verification settings require InsForge Cloud or enabled custom SMTP.',
+                          defaultValue: 'Email verification settings require enabled custom SMTP.',
                         })}
                       </p>
                     ) : (

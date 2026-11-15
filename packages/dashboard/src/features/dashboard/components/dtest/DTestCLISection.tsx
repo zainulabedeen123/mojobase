@@ -13,15 +13,15 @@ function buildCliPrompt(projectId: string | null | undefined, apiKey: string | n
   const id = projectId || '<project id>';
   const loginLine = apiKey ? `npx @insforge/cli login --user-api-key ${apiKey}` : '<placeholder>';
   return [
-    "I'm using Mojobase (an InsForge-compatible backend) as my backend. Login through:",
+    "I'm using Mojobase as my backend. Login through:",
     '',
     loginLine,
     '',
-    'Then install the InsForge CLI and skills for this project, and link it with:',
+    'Then install the Mojobase CLI and skills for this project, and link it with:',
     '',
     `npx @insforge/cli link --project-id ${id}`,
     '',
-    'Use the InsForge CLI and skills for backend tasks.',
+    'Use the Mojobase CLI and skills for backend tasks.',
   ].join('\n');
 }
 
@@ -88,7 +88,7 @@ export function DTestCLISection({ className, agentName }: DTestCLISectionProps) 
         <p className="text-sm leading-5 text-muted-foreground">
           {t('overview.pasteSetupPrompt', {
             agent: agentName || t('overview.yourAgent', { defaultValue: 'your agent' }),
-            defaultValue: 'Paste this into {{agent}} to install InsForge CLI and skills.',
+            defaultValue: 'Paste this into {{agent}} to install Mojobase CLI and skills.',
           })}
         </p>
       </div>
