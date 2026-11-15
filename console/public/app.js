@@ -176,35 +176,90 @@ function renderSidebar(section) {
 async function logout() { await api('/logout', { method: 'POST', body: {} }); me = null; go('/login'); }
 
 // ---------------------------------------------------------------- auth pages
+// Animated dot-matrix backdrop for the sign-in screens (2D canvas, no libraries).
+// Dots appear outward from the centre, then shimmer slowly.
+function dotField(canvas) {
+  const ctx = canvas.getContext('2d');
+  const CELL = 22, DOT = 3;
+  const LEVELS = [0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1];
+  const COLORS = ['167,139,250', '217,70,239', '251,113,133', '255,255,255', '167,139,250', '255,255,255'];
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hash = (i, k) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+  let w = 0, h = 0, cols = 0, rows = 0, last = 0;
+  const start = performance.now();
+  const resize = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cols = Math.ceil(w / CELL); rows = Math.ceil(h / CELL);
+  };
+  const draw = (t) => {
+    ctx.clearRect(0, 0, w, h);
+    const ox = ((w % CELL) - DOT) / 2, oy = ((h % CELL) - DOT) / 2;
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const i = y * cols + x, seed = hash(i, 1);
+      const dist = Math.hypot(x - cols / 2, y - rows / 2);
+      if (!still && t * 3 < dist * 0.035 + seed * 0.15) continue; // intro ripple
+      const level = LEVELS[Math.floor(hash(i, Math.floor(t / 5 + seed) + 2) * 10)];
+      ctx.fillStyle = `rgba(${COLORS[Math.floor(seed * 6)]},${level * 0.55})`;
+      ctx.fillRect(ox + x * CELL, oy + y * CELL, DOT, DOT);
+    }
+  };
+  const frame = (now) => {
+    if (!canvas.isConnected) { window.removeEventListener('resize', onResize); return; }
+    const t = (now - start) / 1000;
+    // Full frame rate for the intro, then a slow shimmer.
+    if (t < 3 || now - last > 250) { draw(t); last = now; }
+    requestAnimationFrame(frame);
+  };
+  const onResize = () => { resize(); draw((performance.now() - start) / 1000); };
+  window.addEventListener('resize', onResize);
+  requestAnimationFrame(() => { resize(); if (still) draw(99); else requestAnimationFrame(frame); });
+}
+
+// Shared frame for sign-in, sign-up and the email-link pages.
+function authScreen(title, subtitle, ...children) {
+  const canvas = h('canvas', { class: 'auth-dots', 'aria-hidden': 'true' });
+  dotField(canvas);
+  return h('div', { class: 'auth-screen' },
+    canvas,
+    h('div', { class: 'auth-vignette', 'aria-hidden': 'true' }),
+    h('a', { class: 'auth-home', href: '/', 'aria-label': 'Mojobase home' }, h('img', { src: '/logo-dark.svg', alt: 'Mojobase', height: '26' })),
+    h('div', { class: 'auth-card' },
+      h('img', { src: '/favicon.svg', alt: '', class: 'auth-mark' }),
+      h('h1', {}, title),
+      subtitle && h('p', { class: 'auth-sub' }, subtitle),
+      ...children),
+    h('p', { class: 'auth-foot' }, 'Free while in preview · ', h('a', { href: '/docs' }, 'Docs'), ' · ', h('a', { href: 'https://github.com/zainulabedeen123/mojobase', target: '_blank', rel: 'noopener' }, 'GitHub')));
+}
+
 function authPage(mode) {
   const isSignup = mode === 'signup';
   const err = h('div', { class: 'error', role: 'alert' });
-  const email = h('input', { type: 'email', id: 'email', autocomplete: 'email', required: true });
-  const pw = h('input', { type: 'password', id: 'pw', autocomplete: isSignup ? 'new-password' : 'current-password', required: true, minlength: isSignup ? 10 : undefined });
-  const submit = h('button', { class: 'btn primary', type: 'submit', style: 'width:100%;justify-content:center;margin-top:18px' }, isSignup ? 'Create account' : 'Sign in');
+  const email = h('input', { type: 'email', id: 'email', autocomplete: 'email', required: true, placeholder: 'you@company.com', 'aria-label': 'Email' });
+  const pw = h('input', { type: 'password', id: 'pw', autocomplete: isSignup ? 'new-password' : 'current-password', required: true, minlength: isSignup ? 10 : undefined,
+    placeholder: isSignup ? 'Password (at least 10 characters)' : 'Password', 'aria-label': 'Password' });
+  const submit = h('button', { class: 'auth-submit', type: 'submit' }, isSignup ? 'Create account' : 'Sign in');
   const form = h('form', {
+    class: 'auth-form',
     onsubmit: async (e) => {
       e.preventDefault(); err.textContent = ''; submit.disabled = true;
       try {
-        const { user } = await api(isSignup ? '/signup' : '/login', { method: 'POST', body: { email: email.value, password: pw.value } });
-        void user; me = null; go('/');
+        await api(isSignup ? '/signup' : '/login', { method: 'POST', body: { email: email.value, password: pw.value } });
+        me = null; go('/');
       } catch (ex) { err.textContent = ex.message; } finally { submit.disabled = false; }
     },
   },
-    h('label', { for: 'email' }, 'Email'), email,
-    h('label', { for: 'pw' }, 'Password'), pw,
-    isSignup && h('div', { class: 'muted', style: 'font-size:13px;margin-top:6px' }, 'At least 10 characters.'),
-    !isSignup && h('div', { style: 'text-align:right;margin-top:8px;font-size:13px' }, h('a', { href: '/forgot-password', 'data-link': true }, 'Forgot password?')),
-    submit, err,
-  );
-  return h('div', { class: 'auth' },
-    h('img', { src: '/favicon.svg', alt: '', class: 'hero-mark' }),
-    h('h1', {}, isSignup ? 'Create your Mojobase account' : 'Sign in to Mojobase'),
-    h('p', { class: 'sub' }, 'Postgres, auth, storage, edge functions and realtime — a backend for every project.'),
-    h('div', { class: 'card' }, form),
-    h('div', { class: 'switch' }, isSignup ? 'Already have an account? ' : 'New to Mojobase? ',
-      h('a', { href: isSignup ? '/login' : '/signup', 'data-link': true }, isSignup ? 'Sign in' : 'Create an account')),
-  );
+    email, pw, submit, err,
+    !isSignup && h('a', { class: 'auth-link', href: '/forgot-password', 'data-link': true }, 'Forgot password?'));
+  return authScreen(
+    isSignup ? 'Create your Mojobase account' : 'Sign in to Mojobase',
+    isSignup ? 'A Postgres backend for every project, ready in a minute.' : 'Welcome back. Your projects are waiting.',
+    form,
+    h('div', { class: 'auth-rule' }),
+    h('div', { class: 'auth-switch' }, isSignup ? 'Already have an account? ' : 'New to Mojobase? ',
+      h('a', { href: isSignup ? '/login' : '/signup', 'data-link': true }, isSignup ? 'Sign in' : 'Create an account')));
 }
 
 function newProjectDialog() {
@@ -296,7 +351,7 @@ function verifyBanner() {
 }
 
 function simpleCard(title, ...children) {
-  return h('div', { class: 'auth' }, h('img', { src: '/favicon.svg', alt: '', class: 'hero-mark' }), h('h1', {}, title), h('div', { class: 'card' }, ...children));
+  return authScreen(title, null, h('div', { class: 'auth-body' }, ...children));
 }
 
 async function verifyPage() {
@@ -314,34 +369,35 @@ async function verifyPage() {
 
 function forgotPage() {
   const err = h('div', { class: 'error', role: 'alert' });
-  const email = h('input', { type: 'email', id: 'email', autocomplete: 'email', required: true });
-  const btn = h('button', { class: 'btn primary', type: 'submit', style: 'width:100%;justify-content:center;margin-top:18px' }, 'Send reset link');
+  const email = h('input', { type: 'email', id: 'email', autocomplete: 'email', required: true, placeholder: 'you@company.com', 'aria-label': 'Email' });
+  const btn = h('button', { class: 'auth-submit', type: 'submit' }, 'Send reset link');
   const box = h('div', {});
-  const form = h('form', { onsubmit: async (e) => {
+  const form = h('form', { class: 'auth-form', onsubmit: async (e) => {
     e.preventDefault(); btn.disabled = true; err.textContent = '';
     try {
       await api('/forgot-password', { method: 'POST', body: { email: email.value } });
       box.replaceChildren(h('p', {}, `If an account exists for ${email.value}, a reset link is on its way. It expires in 1 hour.`),
         h('a', { href: '/login', 'data-link': true }, 'Back to sign in'));
     } catch (ex) { err.textContent = ex.message; btn.disabled = false; }
-  } }, h('label', { for: 'email' }, 'Email'), email, btn, err);
-  box.append(form, h('div', { class: 'switch' }, h('a', { href: '/login', 'data-link': true }, 'Back to sign in')));
+  } }, email, btn, err);
+  box.append(h('p', { class: 'auth-sub' }, 'Enter your email and we will send you a link to choose a new password.'), form,
+    h('div', { class: 'auth-rule' }), h('div', { class: 'auth-switch' }, h('a', { href: '/login', 'data-link': true }, 'Back to sign in')));
   return simpleCard('Reset your password', box);
 }
 
 function resetPage() {
   const token = new URLSearchParams(location.search).get('token');
   const err = h('div', { class: 'error', role: 'alert' });
-  const pw = h('input', { type: 'password', id: 'pw', autocomplete: 'new-password', required: true, minlength: 10 });
-  const btn = h('button', { class: 'btn primary', type: 'submit', style: 'width:100%;justify-content:center;margin-top:18px' }, 'Set new password');
-  return simpleCard('Choose a new password', h('form', { onsubmit: async (e) => {
+  const pw = h('input', { type: 'password', id: 'pw', autocomplete: 'new-password', required: true, minlength: 10, placeholder: 'New password (at least 10 characters)', 'aria-label': 'New password' });
+  const btn = h('button', { class: 'auth-submit', type: 'submit' }, 'Set new password');
+  return simpleCard('Choose a new password', h('form', { class: 'auth-form', onsubmit: async (e) => {
     e.preventDefault(); btn.disabled = true; err.textContent = '';
     try {
       await api('/reset-password', { method: 'POST', body: { token, password: pw.value } });
       me = null; toast('Password changed'); go('/');
     } catch (ex) { err.textContent = ex.message; btn.disabled = false; }
-  } }, h('label', { for: 'pw' }, 'New password'), pw,
-    h('div', { class: 'muted', style: 'font-size:13px;margin-top:6px' }, 'At least 10 characters. You will be signed out everywhere else.'), btn, err));
+  } }, pw, btn, err,
+    h('div', { class: 'auth-hint' }, 'You will be signed out everywhere else.')));
 }
 
 // ---------------------------------------------------------------- account
