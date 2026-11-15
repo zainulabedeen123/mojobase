@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mojobase — The Postgres backend your AI agent can build on</title>
+    <meta
+      name="description"
+      content="Mojobase gives every project its own Postgres database, auth, storage, edge functions and realtime, and hands your AI coding agent everything it needs to wire it into your app. Open source."
+    />
+    <meta property="og:title" content="Mojobase — The Postgres backend your AI agent can build on" />
+    <meta
+      property="og:description"
+      content="Postgres, auth, storage, edge functions and realtime in one project. Built to be driven by Claude Code, Cursor and other coding agents."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mojobase.dev/" />
+    <meta property="og:image" content="https://mojobase.dev/apple-touch-icon.png" />
+    <link rel="canonical" href="https://mojobase.dev/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#08080c" />
+    <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/landing.css" />
+    <script type="module" src="/landing.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav" id="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="/" aria-label="Mojobase home">
+          <img src="/logo-dark.svg" alt="Mojobase" width="132" height="28" />
+        </a>
+        <nav class="nav-links" id="nav-links" aria-label="Main">
+          <a href="#product">Product</a>
+          <a href="#agents">For agents</a>
+          <a href="#developers">Developers</a>
+          <a href="#pricing">Pricing</a>
+          <a href="/docs">Docs</a>
+          <a href="https://github.com/zainulabedeen123/mojobase" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <div class="nav-cta">
+          <a class="btn ghost" href="/login">Sign in</a>
+          <a class="btn primary" href="/signup">Start your project</a>
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ───────────── Hero ───────────── -->
+      <section class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="grid-bg" aria-hidden="true"></div>
+        <div class="wrap hero-inner">
+          <a class="pill" href="/docs/mcp-setup">
+            <span class="pill-tag">New</span>
+            Hosted MCP server and one-prompt integration
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+          </a>
+          <h1>The Postgres backend<br />your <span class="grad">AI agent</span> can build on</h1>
+          <p class="lede">
+            Every Mojobase project is a complete backend: a dedicated Postgres database, auth, storage, edge functions
+            and realtime. Create one in a minute, paste one prompt, and your coding agent wires it into your app.
+          </p>
+          <div class="hero-cta">
+            <a class="btn primary lg" href="/signup">Start your project</a>
+            <a class="btn outline lg" href="/docs">Read the docs</a>
+          </div>
+          <p class="hero-note">Free while in preview · No credit card · Open source</p>
+
+          <!-- Product visual: agent prompt + what gets created -->
+          <div class="stage reveal" aria-label="How an agent sets up a Mojobase backend">
+            <div class="window agent">
+              <div class="window-bar">
+                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="window-title">coding agent — my-app</span>
+              </div>
+              <div class="window-body term">
+                <p class="t-user"><span class="t-prompt">›</span> Integrate the Mojobase backend "shop" into this app</p>
+                <p class="t-step"><span class="ok">✓</span> Read project URL, keys and connection string</p>
+                <p class="t-step"><span class="ok">✓</span> Created <b>products</b>, <b>orders</b> with row-level security</p>
+                <p class="t-step"><span class="ok">✓</span> Wired sign-up and sign-in with <code>@mojobase/sdk</code></p>
+                <p class="t-step"><span class="ok">✓</span> Created bucket <b>product-images</b></p>
+                <p class="t-step"><span class="ok">✓</span> Deployed edge function <b>checkout</b></p>
+                <p class="t-done">Done. Your app is connected to <span class="t-url">shop.mojobase.dev</span><span class="caret" aria-hidden="true"></span></p>
+              </div>
+            </div>
+            <div class="window project">
+              <div class="window-bar">
+                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="window-title">mojobase.dev — shop</span>
+                <span class="live"><i></i>Active</span>
+              </div>
+              <div class="window-body dash">
+                <div class="dash-side" aria-hidden="true">
+                  <span class="on">Database</span><span>Authentication</span><span>Storage</span><span>Functions</span>
+                  <span>Realtime</span><span>Model Gateway</span><span>Logs</span>
+                </div>
+                <div class="dash-main">
+                  <div class="dash-head"><b>orders</b><span class="chip">RLS enabled</span></div>
+                  <table class="dash-table">
+                    <thead><tr><th>id</th><th>user_id</th><th>total</th><th>status</th></tr></thead>
+                    <tbody>
+                      <tr><td>7f3a…</td><td>c81e…</td><td>129.00</td><td><span class="st paid">paid</span></td></tr>
+                      <tr><td>b21c…</td><td>90af…</td><td>48.50</td><td><span class="st paid">paid</span></td></tr>
+                      <tr><td>e94d…</td><td>c81e…</td><td>312.90</td><td><span class="st pend">pending</span></td></tr>
+                      <tr><td>1a6b…</td><td>44d2…</td><td>19.99</td><td><span class="st paid">paid</span></td></tr>
+                    </tbody>
+                  </table>
+                  <div class="dash-foot">
+                    <span><i class="dot g"></i>Postgres 15</span><span><i class="dot p"></i>TLS required</span><span><i class="dot r"></i>Nightly backups</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── Works with ───────────── -->
+      <section class="strip" aria-label="Works with your tools">
+        <div class="wrap">
+          <p class="strip-label">Works with the agents and tools you already use</p>
+          <ul class="strip-list">
+            <li>Claude Code</li><li>Cursor</li><li>Windsurf</li><li>VS Code</li><li>Codex</li><li>GitHub Copilot</li><li>Cline</li>
+            <li class="sep" aria-hidden="true"></li>
+            <li>Next.js</li><li>React</li><li>Vue</li><li>Svelte</li><li>Prisma</li><li>Drizzle</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ───────────── Product bento ───────────── -->
+      <section class="section" id="product">
+        <div class="wrap">
+          <header class="section-head reveal">
+            <p class="eyebrow">One project, a whole backend</p>
+            <h2>Everything your app needs, already wired together</h2>
+            <p>No stitching services together. Each project ships with the pieces below, sharing one auth model and one database.</p>
+          </header>
+
+          <div class="bento">
+            <article class="card span-2 reveal">
+              <div class="card-text">
+                <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8c4.4 0 8-1.3 8-3s-3.6-3-8-3-8 1.3-8 3 3.6 3 8 3zM4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" /></svg></div>
+                <h3>Postgres database</h3>
+                <p>A dedicated Postgres for every project, not a shared schema. Tables become a typed REST API instantly, and you can connect directly with a connection string from psql, Prisma or Drizzle.</p>
+                <ul class="ticks"><li>Row-level security</li><li>pgvector</li><li>SQL editor and migrations</li></ul>
+              </div>
+              <pre class="mini-code" aria-hidden="true"><span class="k">create table</span> posts (
+  id <span class="t">uuid</span> <span class="k">primary key</span>,
+  user_id <span class="t">uuid</span> <span class="k">default</span> auth.uid(),
+  title <span class="t">text</span> <span class="k">not null</span>
+);
+<span class="k">alter table</span> posts
+  <span class="k">enable row level security</span>;</pre>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M5 11h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM8 11V7a4 4 0 0 1 8 0v4" /></svg></div>
+              <h3>Authentication</h3>
+              <p>Email and password, OAuth providers, email verification and password reset. Sessions flow into Postgres policies through <code>auth.uid()</code>.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M22 12H2M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z" /></svg></div>
+              <h3>Storage</h3>
+              <p>Buckets for images, video and documents, public or private, with uploads straight from the browser.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg></div>
+              <h3>Edge functions</h3>
+              <p>Server-side TypeScript on Deno. Deploy from your agent or the dashboard, invoke from the SDK or plain HTTP, run on a schedule.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 19.1a10 10 0 0 1 0-14.2M19.1 4.9a10 10 0 0 1 0 14.2" /></svg></div>
+              <h3>Realtime</h3>
+              <p>Channels, presence and database-triggered events over WebSockets, protected by the same policies as your data.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z" /></svg></div>
+              <h3>Model gateway</h3>
+              <p>Chat, embeddings and image generation behind one API. Bring your OpenRouter key and switch between hundreds of models.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 6h18a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM2 10h20" /></svg></div>
+              <h3>Payments</h3>
+              <p>Stripe and Razorpay checkout, subscriptions and webhooks, with your own provider keys.</p>
+            </article>
+
+            <article class="card reveal">
+              <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9h18M9 21V9" /></svg></div>
+              <h3>A dashboard for everything</h3>
+              <p>Edit tables, manage users, browse storage, read logs and run SQL. Your agent builds; you always see exactly what it built.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── Agents ───────────── -->
+      <section class="section alt" id="agents">
+        <div class="wrap">
+          <header class="section-head reveal">
+            <p class="eyebrow">Built for agentic development</p>
+            <h2>From empty folder to working backend in one prompt</h2>
+            <p>Backends are usually where coding agents stall: missing keys, guessed APIs, forgotten security rules. Mojobase gives the agent all of it up front.</p>
+          </header>
+
+          <ol class="steps">
+            <li class="step reveal">
+              <span class="step-n">1</span>
+              <h3>Create a project</h3>
+              <p>Sign up and name it. About a minute later you have a database, API, keys and a connection string.</p>
+            </li>
+            <li class="step reveal">
+              <span class="step-n">2</span>
+              <h3>Copy the AI prompt</h3>
+              <p>One prompt with your real URL, keys and every step: schema, row-level security, auth, storage, functions, realtime.</p>
+            </li>
+            <li class="step reveal">
+              <span class="step-n">3</span>
+              <h3>Let your agent build</h3>
+              <p>Paste it into Claude Code, Cursor or any agent in your app folder. It follows the steps and checks its own work.</p>
+            </li>
+          </ol>
+
+          <div class="split">
+            <div class="split-text reveal">
+              <h3>Or give your agent the keys to the platform</h3>
+              <p>Connect the hosted MCP server and your agent can create projects, run SQL, manage buckets, deploy functions and read the docs, without leaving your editor.</p>
+              <ul class="ticks col">
+                <li>18 tools over the Model Context Protocol</li>
+                <li>Personal access tokens you can revoke any time</li>
+                <li>Per-project install with <code>npx @mojobase/install</code></li>
+              </ul>
+              <a class="link" href="/docs/mcp-setup">MCP setup guide <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+            </div>
+            <div class="codebox reveal" data-tabs>
+              <div class="codebox-bar" role="tablist" aria-label="MCP clients">
+                <button role="tab" aria-selected="true" data-tab="mcp-claude">Claude Code</button>
+                <button role="tab" aria-selected="false" data-tab="mcp-cursor">Cursor</button>
+                <button role="tab" aria-selected="false" data-tab="mcp-vscode">VS Code</button>
+                <button class="copy" type="button" aria-label="Copy code">Copy</button>
+              </div>
+              <pre class="code" id="mcp-claude" role="tabpanel"><span class="c"># one command, then ask: "create a Mojobase project for this app"</span>
+claude mcp add <span class="f">--transport</span> http mojobase <span class="s">https://mojobase.dev/mcp</span> \
+  <span class="f">--header</span> <span class="s">"Authorization: Bearer mbp_your_token"</span></pre>
+              <pre class="code" id="mcp-cursor" role="tabpanel" hidden><span class="c">// ~/.cursor/mcp.json</span>
+{
+  <span class="p">"mcpServers"</span>: {
+    <span class="p">"mojobase"</span>: {
+      <span class="p">"url"</span>: <span class="s">"https://mojobase.dev/mcp"</span>,
+      <span class="p">"headers"</span>: { <span class="p">"Authorization"</span>: <span class="s">"Bearer mbp_your_token"</span> }
+    }
+  }
+}</pre>
+              <pre class="code" id="mcp-vscode" role="tabpanel" hidden><span class="c">// .vscode/mcp.json</span>
+{
+  <span class="p">"servers"</span>: {
+    <span class="p">"mojobase"</span>: {
+      <span class="p">"type"</span>: <span class="s">"http"</span>,
+      <span class="p">"url"</span>: <span class="s">"https://mojobase.dev/mcp"</span>,
+      <span class="p">"headers"</span>: { <span class="p">"Authorization"</span>: <span class="s">"Bearer mbp_your_token"</span> }
+    }
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── Developers ───────────── -->
+      <section class="section" id="developers">
+        <div class="wrap">
+          <div class="split rev">
+            <div class="codebox reveal" data-tabs>
+              <div class="codebox-bar" role="tablist" aria-label="Ways to connect">
+                <button role="tab" aria-selected="true" data-tab="dev-sdk">SDK</button>
+                <button role="tab" aria-selected="false" data-tab="dev-auth">Auth</button>
+                <button role="tab" aria-selected="false" data-tab="dev-pg">Postgres</button>
+                <button role="tab" aria-selected="false" data-tab="dev-rest">REST</button>
+                <button class="copy" type="button" aria-label="Copy code">Copy</button>
+              </div>
+              <pre class="code" id="dev-sdk" role="tabpanel"><span class="k">import</span> { createClient } <span class="k">from</span> <span class="s">'@mojobase/sdk'</span>;
+
+<span class="k">const</span> mojobase = <span class="f">createClient</span>({
+  baseUrl: <span class="s">'https://your-project.mojobase.dev'</span>,
+  anonKey: process.env.MOJOBASE_ANON_KEY,
+});
+
+<span class="c">// Row-level security decides what each user sees</span>
+<span class="k">const</span> { data, error } = <span class="k">await</span> mojobase.database
+  .<span class="f">from</span>(<span class="s">'posts'</span>)
+  .<span class="f">select</span>(<span class="s">'*'</span>)
+  .<span class="f">order</span>(<span class="s">'created_at'</span>, { ascending: <span class="n">false</span> });</pre>
+              <pre class="code" id="dev-auth" role="tabpanel" hidden><span class="k">await</span> mojobase.auth.<span class="f">signUp</span>({ email, password, name });
+
+<span class="k">await</span> mojobase.auth.<span class="f">signInWithPassword</span>({ email, password });
+
+<span class="c">// Restore the session on page load</span>
+<span class="k">const</span> { data } = <span class="k">await</span> mojobase.auth.<span class="f">getCurrentUser</span>();
+
+<span class="c">// Upload a file as the signed-in user</span>
+<span class="k">await</span> mojobase.storage
+  .<span class="f">from</span>(<span class="s">'avatars'</span>)
+  .<span class="f">upload</span>(<span class="s">`${</span>data.user.id<span class="s">}/avatar.png`</span>, file);</pre>
+              <pre class="code" id="dev-pg" role="tabpanel" hidden><span class="c"># A real connection string for every project. TLS required.</span>
+psql <span class="s">"postgresql://mojobase:••••@db.mojobase.dev:15400/insforge?sslmode=require"</span>
+
+<span class="c"># Prisma</span>
+DATABASE_URL=<span class="s">"postgresql://mojobase:••••@db.mojobase.dev:15400/insforge?sslmode=require"</span>
+npx prisma migrate deploy
+
+<span class="c"># Drizzle</span>
+<span class="k">export const</span> db = <span class="f">drizzle</span>(process.env.DATABASE_URL);</pre>
+              <pre class="code" id="dev-rest" role="tabpanel" hidden><span class="c"># Every table is an API</span>
+curl <span class="s">'https://your-project.mojobase.dev/api/database/records/posts?select=*'</span> \
+  <span class="f">-H</span> <span class="s">"Authorization: Bearer $MOJOBASE_ANON_KEY"</span>
+
+<span class="c"># Call an edge function</span>
+curl <span class="f">-X</span> POST <span class="s">'https://your-project.mojobase.dev/functions/checkout'</span> \
+  <span class="f">-H</span> <span class="s">'Content-Type: application/json'</span> \
+  <span class="f">-d</span> <span class="s">'{"cart": "c_123"}'</span></pre>
+            </div>
+            <div class="split-text reveal">
+              <p class="eyebrow">For developers</p>
+              <h2>It's just Postgres, with a great SDK on top</h2>
+              <p>Use the typed SDK from the browser, call REST from anywhere, or skip both and talk to Postgres directly. Nothing proprietary sits between you and your data.</p>
+              <ul class="ticks col">
+                <li>TypeScript SDK with database, auth, storage, functions, realtime and AI</li>
+                <li>Direct connection string for ORMs, migrations and BI tools</li>
+                <li>Framework guides for Next.js, React, Vue, Nuxt and Svelte</li>
+              </ul>
+              <a class="link" href="/docs/quickstart">Quickstart <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── Trust ───────────── -->
+      <section class="section alt" id="security">
+        <div class="wrap">
+          <header class="section-head reveal">
+            <p class="eyebrow">Isolated and secure by default</p>
+            <h2>Your project is yours alone</h2>
+            <p>The safe path is the default path, so what your agent ships is what you would have written yourself.</p>
+          </header>
+          <div class="trust">
+            <div class="trust-item reveal"><h3>A database per project</h3><p>Each project runs its own Postgres, API and functions runtime. No shared tables, no noisy neighbours in your schema.</p></div>
+            <div class="trust-item reveal"><h3>Encrypted connections</h3><p>Direct database connections require TLS, and the connection role owns your tables without server superuser rights.</p></div>
+            <div class="trust-item reveal"><h3>Row-level security first</h3><p>The integration prompt and docs put policies on every table the client touches, keyed to the signed-in user.</p></div>
+            <div class="trust-item reveal"><h3>Backups you can restore</h3><p>Automatic nightly database backups plus manual snapshots, restorable from the dashboard in a click.</p></div>
+            <div class="trust-item reveal"><h3>Keys that stay server-side</h3><p>A browser-safe anon key for clients and a separate admin key for servers, clearly labelled everywhere they appear.</p></div>
+            <div class="trust-item reveal"><h3>Open source</h3><p>Mojobase is built on the open-source InsForge project under Apache-2.0. Read the code, or run it yourself.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── Pricing ───────────── -->
+      <section class="section" id="pricing">
+        <div class="wrap">
+          <header class="section-head reveal">
+            <p class="eyebrow">Pricing</p>
+            <h2>Free while we're in preview</h2>
+            <p>Build real things today. Paid plans with larger instances and team features will come later, and you'll hear from us well before anything changes.</p>
+          </header>
+          <div class="price reveal">
+            <div class="price-main">
+              <p class="price-name">Preview</p>
+              <p class="price-amount">$0<span>/ month</span></p>
+              <p class="price-sub">Everything included. No credit card.</p>
+              <a class="btn primary lg" href="/signup">Start your project</a>
+            </div>
+            <ul class="price-list">
+              <li>2 projects per account</li>
+              <li>Dedicated Postgres database per project</li>
+              <li>Auth, storage, edge functions and realtime</li>
+              <li>Direct connection string over TLS</li>
+              <li>Nightly backups, kept for 7 days</li>
+              <li>Hosted MCP server and AI integration prompt</li>
+              <li>Transactional auth emails out of the box</li>
+              <li>Full project dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────── CTA ───────────── -->
+      <section class="cta">
+        <div class="wrap">
+          <div class="cta-box reveal">
+            <div class="cta-glow" aria-hidden="true"></div>
+            <h2>Give your next app a backend in the time it takes to read this page</h2>
+            <p>Create a project, copy the prompt, and let your agent do the wiring.</p>
+            <div class="hero-cta">
+              <a class="btn primary lg" href="/signup">Start your project</a>
+              <a class="btn outline lg" href="/docs/quickstart">Quickstart</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <div class="footer-brand">
+          <img src="/logo-dark.svg" alt="Mojobase" width="132" height="28" />
+          <p>The Postgres backend your AI agent can build on.</p>
+        </div>
+        <nav aria-label="Product">
+          <h4>Product</h4>
+          <a href="#product">Features</a><a href="#agents">For agents</a><a href="#pricing">Pricing</a><a href="/signup">Sign up</a><a href="/login">Sign in</a>
+        </nav>
+        <nav aria-label="Developers">
+          <h4>Developers</h4>
+          <a href="/docs">Documentation</a><a href="/docs/quickstart">Quickstart</a><a href="/docs/mcp-setup">MCP setup</a><a href="/docs/sdks/typescript/overview">TypeScript SDK</a>
+        </nav>
+        <nav aria-label="Project">
+          <h4>Open source</h4>
+          <a href="https://github.com/zainulabedeen123/mojobase" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/zainulabedeen123/mojobase/issues" target="_blank" rel="noopener">Report an issue</a>
+        </nav>
+      </div>
+      <div class="wrap footer-base">
+        <span>© 2026 Mojobase</span>
+        <span>Built on the open-source InsForge project (Apache-2.0).</span>
+      </div>
+    </footer>
+  </body>
+</html>

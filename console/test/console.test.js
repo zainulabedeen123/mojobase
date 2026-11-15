@@ -459,3 +459,24 @@ test('documentation site is served under /docs', async () => {
   const traversal = await fetch(BASE + '/docs/..%2f..%2fsrc%2fserver.js');
   assert.doesNotMatch(await traversal.text(), /express/);
 });
+
+test('home page: landing page when signed out, app when signed in', async () => {
+  const out = await fetch(BASE + '/');
+  const html = await out.text();
+  assert.match(html, /Start your project/);
+  assert.match(html, /href="\/landing\.css\?v=[0-9a-f]{12}"/);
+  assert.doesNotMatch(html, /<script(?![^>]*src=)/); // no inline scripts (CSP)
+  for (const p of ['/landing.js', '/landing.css', '/fonts/inter-latin-wght-normal.woff2'])
+    assert.equal((await fetch(BASE + p)).status, 200, p);
+
+  const email = `landing-${Date.now()}@example.com`;
+  const signup = await fetch(BASE + '/api/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: BASE },
+    body: JSON.stringify({ email, password: 'correct horse battery' }),
+  });
+  const cookie = signup.headers.get('set-cookie').split(';')[0];
+  const app = await (await fetch(BASE + '/', { headers: { Cookie: cookie } })).text();
+  assert.match(app, /src="\/app\.js\?v=/);
+  assert.doesNotMatch(app, /landing\.css/);
+});
