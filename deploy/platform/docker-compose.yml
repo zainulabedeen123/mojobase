@@ -74,7 +74,8 @@ services:
   console:
     image: ghcr.io/zainulabedeen123/mojobase-console:${MOJOBASE_TAG:?set MOJOBASE_TAG}
     restart: unless-stopped
-    # Secrets (CONSOLE_SECRET, RESEND_API_KEY) live on the server only, so deploys never carry them.
+    # Secrets (CONSOLE_SECRET, RESEND_API_KEY, GOOGLE_DRIVE_CLIENT_ID/SECRET) live on the
+    # server only, so deploys never carry them.
     env_file: /opt/mojobase/platform.env
     environment:
       EMAIL_FROM: Mojobase <no-reply@mojobase.dev>
@@ -93,6 +94,8 @@ services:
       MAX_PROJECTS_PER_USER: "2"
       BACKUP_HOUR_UTC: "3"
       BACKUP_KEEP: "7"
+      # Recorded in every offsite backup's manifest.
+      MOJOBASE_VERSION: ${MOJOBASE_TAG:?set MOJOBASE_TAG}
     volumes:
       - console-data:/data
       - caddy-data:/caddy-data:ro

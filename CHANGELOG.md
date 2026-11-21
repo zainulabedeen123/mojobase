@@ -1,5 +1,17 @@
 # Changelog
 
+## Mojobase console (unreleased)
+
+### Features
+
+* **console:** offsite backups. Each project can send its database dump, uploaded files and
+  a manifest (sizes, sha256) to Google Drive (OAuth, `drive.file` scope) and/or
+  S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2, Wasabi, MinIO) on a schedule
+  (default 03:00 and 15:00 UTC), keeping 30 days by default. Per-destination status history,
+  "Back up now", connection tests, and a daily-limited failure email to the owner. New
+  settings: `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_CLIENT_SECRET`,
+  `ALLOW_PRIVATE_S3_ENDPOINTS`, `MOJOBASE_VERSION`. See `deploy/platform/README.md`.
+
 ## [2.0.1](https://github.com/InsForge/insforge/compare/v2.0.0-fix-settings-2...v2.0.1) (2026-03-09)
 
 # [2.0.0](https://github.com/InsForge/insforge/compare/v1.5.9-ui-6...v2.0.0) (2026-03-06)
