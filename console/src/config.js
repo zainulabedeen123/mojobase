@@ -4,6 +4,8 @@ const required = (name) => {
   if (!value) throw new Error(`Missing required environment variable ${name}`);
   return value;
 };
+import fs from 'node:fs';
+
 const int = (name, fallback) => {
   const raw = process.env[name];
   if (raw === undefined || raw === '') return fallback;
@@ -78,6 +80,24 @@ export const config = {
   backupHourUtc: int('BACKUP_HOUR_UTC', 3),
   backupKeep: int('BACKUP_KEEP', 7),
 
+  // Offsite backups (per-project destinations: Google Drive, S3-compatible storage).
+  // Google Drive needs an OAuth client (Web application) whose authorized redirect URI
+  // is <CONSOLE_ORIGIN>/api/backups/gdrive/callback. Without it, Drive is shown as
+  // "not configured on this server".
+  googleDrive: {
+    clientId: process.env.GOOGLE_DRIVE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_DRIVE_CLIENT_SECRET || '',
+    // Overridable for tests only.
+    authUrl: process.env.GOOGLE_OAUTH_AUTH_URL || 'https://accounts.google.com/o/oauth2/v2/auth',
+    tokenUrl: process.env.GOOGLE_OAUTH_TOKEN_URL || 'https://oauth2.googleapis.com/token',
+    apiUrl: process.env.GOOGLE_DRIVE_API_URL || 'https://www.googleapis.com',
+  },
+  // S3 endpoints must be public https hosts unless this is set (e.g. a MinIO on the
+  // same server or private network); then http and private addresses are allowed too.
+  allowPrivateS3Endpoints: process.env.ALLOW_PRIVATE_S3_ENDPOINTS === '1',
+  // Recorded in each offsite backup's manifest.
+  mojobaseVersion: process.env.MOJOBASE_VERSION || packageVersion(),
+
   // Per-project memory limits
   mem: {
     postgres: process.env.PROJECT_MEM_POSTGRES || '512m',
@@ -86,6 +106,14 @@ export const config = {
     postgrest: process.env.PROJECT_MEM_POSTGREST || '128m',
   },
 };
+
+function packageVersion() {
+  try {
+    return JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
+  } catch {
+    return 'unknown';
+  }
+}
 
 export const certDir = () =>
   `${config.caddyDataMount}/caddy/certificates/${config.acmeDirName}/${config.dbHost}`;

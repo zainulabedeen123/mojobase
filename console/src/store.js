@@ -46,6 +46,59 @@ db.exec(`
     last_used_at TEXT
   );
 `);
+db.exec(`
+  -- Offsite backups. Destination config (keys, refresh tokens) is AES-256-GCM encrypted.
+  CREATE TABLE IF NOT EXISTS offsite_settings (
+    ref TEXT PRIMARY KEY REFERENCES projects(ref) ON DELETE CASCADE,
+    hours TEXT NOT NULL,             -- JSON array of UTC hours
+    retention_days INTEGER NOT NULL,
+    include_files INTEGER NOT NULL,
+    last_slot TEXT,                  -- YYYY-MM-DDTHH of the last scheduled run
+    last_alert_at INTEGER,           -- ms epoch of the last failure email
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS offsite_destinations (
+    id TEXT PRIMARY KEY,
+    ref TEXT NOT NULL REFERENCES projects(ref) ON DELETE CASCADE,
+    type TEXT NOT NULL,              -- s3 | gdrive
+    label TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    config TEXT NOT NULL,            -- AES-256-GCM encrypted JSON
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS offsite_runs (
+    id TEXT PRIMARY KEY,
+    ref TEXT NOT NULL REFERENCES projects(ref) ON DELETE CASCADE,
+    trigger TEXT NOT NULL,           -- scheduled | manual
+    status TEXT NOT NULL,            -- running | ok | partial | failed
+    folder TEXT,                     -- <project>-<ref>/<stamp>
+    artifacts TEXT,                  -- JSON [{name, size, sha256}]
+    error TEXT,
+    started_at TEXT NOT NULL,
+    finished_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS offsite_runs_ref ON offsite_runs (ref, started_at);
+  CREATE TABLE IF NOT EXISTS offsite_run_targets (
+    run_id TEXT NOT NULL REFERENCES offsite_runs(id) ON DELETE CASCADE,
+    destination_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    label TEXT NOT NULL,
+    status TEXT NOT NULL,            -- running | ok | failed
+    bytes INTEGER NOT NULL DEFAULT 0,
+    duration_ms INTEGER,
+    error TEXT,
+    note TEXT,
+    PRIMARY KEY (run_id, destination_id)
+  );
+  -- Pending Google OAuth connections: single-use state, only a hash is stored.
+  CREATE TABLE IF NOT EXISTS oauth_states (
+    hash TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    ref TEXT NOT NULL REFERENCES projects(ref) ON DELETE CASCADE,
+    payload TEXT NOT NULL,           -- AES-256-GCM encrypted JSON
+    expires_at INTEGER NOT NULL
+  );
+`);
 // Additive migrations for databases created by earlier versions.
 const userColumns = new Set(
   db
@@ -195,5 +248,158 @@ export const accessTokens = {
     return user
       ? { id: user.id, email: user.email, emailVerified: !!user.email_verified, tokenId: row.id }
       : null;
+  },
+};
+
+// ------------------------------------------------------------------ offsite backups
+export const OFFSITE_DEFAULTS = { hours: [3, 15], retentionDays: 30, includeFiles: true };
+const destRow = (r) => (r ? { ...r, enabled: !!r.enabled, config: decrypt(r.config) } : undefined);
+const runRow = (r) =>
+  r ? { ...r, artifacts: r.artifacts ? JSON.parse(r.artifacts) : [] } : undefined;
+
+export const offsite = {
+  settings(ref) {
+    const r = db.prepare('SELECT * FROM offsite_settings WHERE ref = ?').get(ref);
+    if (!r) return { ...OFFSITE_DEFAULTS, lastSlot: null, lastAlertAt: null };
+    return {
+      hours: JSON.parse(r.hours),
+      retentionDays: r.retention_days,
+      includeFiles: !!r.include_files,
+      lastSlot: r.last_slot,
+      lastAlertAt: r.last_alert_at,
+    };
+  },
+  saveSettings(ref, { hours, retentionDays, includeFiles }) {
+    db.prepare(
+      `INSERT INTO offsite_settings (ref, hours, retention_days, include_files) VALUES (?, ?, ?, ?)
+       ON CONFLICT(ref) DO UPDATE SET hours = excluded.hours, retention_days = excluded.retention_days,
+         include_files = excluded.include_files, updated_at = datetime('now')`
+    ).run(ref, JSON.stringify(hours), retentionDays, includeFiles ? 1 : 0);
+  },
+  ensureSettings(ref) {
+    const d = OFFSITE_DEFAULTS;
+    db.prepare(
+      'INSERT OR IGNORE INTO offsite_settings (ref, hours, retention_days, include_files) VALUES (?, ?, ?, ?)'
+    ).run(ref, JSON.stringify(d.hours), d.retentionDays, d.includeFiles ? 1 : 0);
+  },
+  setLastSlot(ref, slot) {
+    offsite.ensureSettings(ref);
+    db.prepare('UPDATE offsite_settings SET last_slot = ? WHERE ref = ?').run(slot, ref);
+  },
+  setLastAlert(ref, at) {
+    offsite.ensureSettings(ref);
+    db.prepare('UPDATE offsite_settings SET last_alert_at = ? WHERE ref = ?').run(at, ref);
+  },
+
+  destinations: (ref) =>
+    db
+      .prepare('SELECT * FROM offsite_destinations WHERE ref = ? ORDER BY created_at, id')
+      .all(ref)
+      .map(destRow),
+  destination: (ref, id) =>
+    destRow(db.prepare('SELECT * FROM offsite_destinations WHERE ref = ? AND id = ?').get(ref, id)),
+  countDestinations: (ref) =>
+    db.prepare('SELECT COUNT(*) AS n FROM offsite_destinations WHERE ref = ?').get(ref).n,
+  insertDestination({ id, ref, type, label, enabled, config: cfg }) {
+    db.prepare(
+      'INSERT INTO offsite_destinations (id, ref, type, label, enabled, config) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(id, ref, type, label, enabled ? 1 : 0, encrypt(cfg));
+  },
+  updateDestination(ref, id, { label, enabled, config: cfg }) {
+    db.prepare(
+      'UPDATE offsite_destinations SET label = ?, enabled = ?, config = ? WHERE ref = ? AND id = ?'
+    ).run(label, enabled ? 1 : 0, encrypt(cfg), ref, id);
+  },
+  removeDestination: (ref, id) =>
+    db.prepare('DELETE FROM offsite_destinations WHERE ref = ? AND id = ?').run(ref, id).changes,
+  // Projects that have at least one enabled destination.
+  scheduledRefs: () =>
+    db
+      .prepare('SELECT DISTINCT ref FROM offsite_destinations WHERE enabled = 1')
+      .all()
+      .map((r) => r.ref),
+
+  insertRun({ id, ref, trigger, startedAt }) {
+    db.prepare(
+      "INSERT INTO offsite_runs (id, ref, trigger, status, started_at) VALUES (?, ?, ?, 'running', ?)"
+    ).run(id, ref, trigger, startedAt);
+  },
+  updateRun(id, { status, folder, artifacts, error, finishedAt }) {
+    db.prepare(
+      `UPDATE offsite_runs SET status = COALESCE(?, status), folder = COALESCE(?, folder),
+         artifacts = COALESCE(?, artifacts), error = ?, finished_at = ? WHERE id = ?`
+    ).run(
+      status ?? null,
+      folder ?? null,
+      artifacts ? JSON.stringify(artifacts) : null,
+      error ?? null,
+      finishedAt ?? null,
+      id
+    );
+  },
+  setTarget({
+    runId,
+    destinationId,
+    type,
+    label,
+    status,
+    bytes = 0,
+    durationMs = null,
+    error = null,
+    note = null,
+  }) {
+    db.prepare(
+      `INSERT INTO offsite_run_targets (run_id, destination_id, type, label, status, bytes, duration_ms, error, note)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(run_id, destination_id) DO UPDATE SET status = excluded.status, bytes = excluded.bytes,
+         duration_ms = excluded.duration_ms, error = excluded.error, note = excluded.note`
+    ).run(runId, destinationId, type, label, status, bytes, durationMs, error, note);
+  },
+  runs(ref, limit = 10) {
+    const runs = db
+      .prepare(
+        'SELECT * FROM offsite_runs WHERE ref = ? ORDER BY started_at DESC, rowid DESC LIMIT ?'
+      )
+      .all(ref, limit)
+      .map(runRow);
+    const targets = db.prepare('SELECT * FROM offsite_run_targets WHERE run_id = ? ORDER BY rowid');
+    return runs.map((r) => ({ ...r, targets: targets.all(r.id) }));
+  },
+  // Keeps the newest `keep` runs of a project.
+  trimRuns(ref, keep = 200) {
+    db.prepare(
+      `DELETE FROM offsite_runs WHERE ref = ? AND id NOT IN
+         (SELECT id FROM offsite_runs WHERE ref = ? ORDER BY started_at DESC, rowid DESC LIMIT ?)`
+    ).run(ref, ref, keep);
+  },
+  // After a console restart nothing is running any more.
+  failInterrupted() {
+    const msg = 'Interrupted by a console restart';
+    db.prepare(
+      "UPDATE offsite_run_targets SET status = 'failed', error = ? WHERE status = 'running'"
+    ).run(msg);
+    return db
+      .prepare(
+        "UPDATE offsite_runs SET status = 'failed', error = ?, finished_at = ? WHERE status = 'running'"
+      )
+      .run(msg, new Date().toISOString()).changes;
+  },
+
+  // Returns the raw state once; only its hash is stored (single use, 15 minutes).
+  issueState(userId, ref, payload) {
+    db.prepare('DELETE FROM oauth_states WHERE expires_at < ?').run(Date.now());
+    const raw = crypto.randomBytes(32).toString('base64url');
+    db.prepare(
+      'INSERT INTO oauth_states (hash, user_id, ref, payload, expires_at) VALUES (?, ?, ?, ?, ?)'
+    ).run(sha256(raw), userId, ref, encrypt(payload), Date.now() + 15 * 60_000);
+    return raw;
+  },
+  consumeState(raw) {
+    const hash = sha256(String(raw || ''));
+    const r = db.prepare('SELECT * FROM oauth_states WHERE hash = ?').get(hash);
+    if (!r) return null;
+    db.prepare('DELETE FROM oauth_states WHERE hash = ?').run(hash);
+    if (r.expires_at < Date.now()) return null;
+    return { userId: r.user_id, ref: r.ref, payload: decrypt(r.payload) };
   },
 };

@@ -217,32 +217,7 @@ export function backupProject(
       .replace(/\.\d+Z$/, 'Z');
     const file = path.join(backupsDir(ref), `${ref}-${stamp}.dump`);
     const tmp = `${file}.partial`;
-    await new Promise((resolve, reject) => {
-      const out = fs.createWriteStream(tmp, { mode: 0o600 });
-      const dump = spawn('docker', [
-        'exec',
-        postgresContainer(ref),
-        'pg_dump',
-        '-U',
-        'postgres',
-        '-d',
-        DB_NAME,
-        '-Fc',
-        '-Z',
-        '6',
-      ]);
-      let err = '';
-      dump.stdout.pipe(out);
-      dump.stderr.on('data', (d) => (err += d));
-      dump.on('error', reject);
-      dump.on('close', (code) =>
-        out.end(() =>
-          code === 0
-            ? resolve()
-            : reject(new Error(`pg_dump exited ${code}: ${err.trim().slice(0, 300)}`))
-        )
-      );
-    });
+    await dumpDatabase(ref, tmp);
     fs.renameSync(tmp, file);
     fs.writeFileSync(
       metaPath(ref, path.basename(file)),
@@ -259,9 +234,51 @@ export function backupProject(
     log(ref, 'backup created', { file: path.basename(file) });
     return path.basename(file);
   };
-  const run = backupChain.then(job, job);
+  return withBackupLock(job);
+}
+
+// Runs fn after every backup job queued before it (one pg_dump at a time).
+export function withBackupLock(fn) {
+  const run = backupChain.then(fn, fn);
   backupChain = run.catch(() => {});
   return run;
+}
+
+// pg_dump -Fc of the project database, streamed (never buffered) into `file`.
+export function dumpDatabase(ref, file) {
+  return streamToFile(
+    file,
+    ['exec', postgresContainer(ref), 'pg_dump', '-U', 'postgres', '-d', DB_NAME, '-Fc', '-Z', '6'],
+    'pg_dump'
+  );
+}
+
+// tar.gz of the project's uploaded files (the storage volume mounted at
+// /insforge-storage in the app container), streamed into `file`.
+export function archiveStorage(ref, file) {
+  return streamToFile(
+    file,
+    ['exec', appContainer(ref), 'tar', 'czf', '-', '-C', '/insforge-storage', '.'],
+    'tar'
+  );
+}
+
+function streamToFile(file, dockerArgs, label) {
+  return new Promise((resolve, reject) => {
+    const out = fs.createWriteStream(file, { mode: 0o600 });
+    const child = spawn('docker', dockerArgs);
+    let err = '';
+    child.stdout.pipe(out);
+    child.stderr.on('data', (d) => (err += d));
+    child.on('error', reject);
+    child.on('close', (code) =>
+      out.end(() =>
+        code === 0
+          ? resolve()
+          : reject(new Error(`${label} exited ${code}: ${err.trim().slice(0, 300)}`))
+      )
+    );
+  });
 }
 
 export function listBackups(ref) {
@@ -411,8 +428,9 @@ export function reconcileProjects() {
 }
 
 // Nightly: back up every ready project once a day at BACKUP_HOUR_UTC.
+// Extra tick functions (offsite backups) run on the same 5-minute timer.
 let lastBackupDay = '';
-export function scheduleBackups() {
+export function scheduleBackups(...extraTicks) {
   const tick = async () => {
     const now = new Date();
     const day = now.toISOString().slice(0, 10);
@@ -424,7 +442,18 @@ export function scheduleBackups() {
       );
     }
   };
-  setInterval(tick, 5 * 60_000).unref();
+  const tickAll = () => {
+    tick();
+    for (const t of extraTicks)
+      Promise.resolve()
+        .then(t)
+        .catch((e) =>
+          console.log(
+            JSON.stringify({ level: 'error', msg: 'scheduler tick failed', error: e.message })
+          )
+        );
+  };
+  setInterval(tickAll, 5 * 60_000).unref();
 }
 
 // Caddy renews the db.<domain> certificate; copy the fresh one into every

@@ -28,6 +28,7 @@ import {
 import { jwks, signProjectAuthorization } from './signing.js';
 import { agentPrompt } from './agent-prompt.js';
 import { handleMcp } from './mcp.js';
+import * as offsite from './offsite/index.js';
 import {
   provision,
   destroy,
@@ -408,6 +409,102 @@ app.post(
   }
 );
 
+// ------------------------------------------------------------------ offsite backups
+// Owner-only. Destination secrets never come back: views carry masked hints only.
+const offsiteRoute = (fn) => async (req, res) => {
+  const p = ownProject(req, res);
+  if (!p) return;
+  try {
+    res.set('Cache-Control', 'no-store');
+    await fn(p, req, res);
+  } catch (e) {
+    if (e instanceof offsite.OffsiteError) return res.status(e.status).json({ error: e.message });
+    console.error(
+      JSON.stringify({ level: 'error', msg: 'offsite request failed', error: e.message })
+    );
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+};
+app.get(
+  '/api/projects/:ref/offsite',
+  requireUser,
+  offsiteRoute((p, _req, res) => res.json(offsite.overview(p.ref)))
+);
+app.put(
+  '/api/projects/:ref/offsite/settings',
+  requireUser,
+  offsiteRoute((p, req, res) => res.json(offsite.saveSettings(p.ref, req.body)))
+);
+app.post(
+  '/api/projects/:ref/offsite/destinations',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  offsiteRoute((p, req, res) =>
+    res.status(201).json({ destination: offsite.addDestination(p.ref, req.body) })
+  )
+);
+app.patch(
+  '/api/projects/:ref/offsite/destinations/:id',
+  requireUser,
+  offsiteRoute((p, req, res) =>
+    res.json({ destination: offsite.updateDestination(p.ref, req.params.id, req.body) })
+  )
+);
+app.delete(
+  '/api/projects/:ref/offsite/destinations/:id',
+  requireUser,
+  offsiteRoute((p, req, res) => {
+    offsite.removeDestination(p.ref, req.params.id);
+    res.json({ ok: true });
+  })
+);
+app.post(
+  '/api/projects/:ref/offsite/destinations/:id/test',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  offsiteRoute(async (p, req, res) => res.json(await offsite.testDestination(p.ref, req.params.id)))
+);
+app.post(
+  '/api/projects/:ref/offsite/gdrive/connect',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  offsiteRoute((p, req, res) => res.json(offsite.startDriveConnect(req.user, p.ref, req.body)))
+);
+app.post(
+  '/api/projects/:ref/offsite/run',
+  requireUser,
+  rateLimit({ windowMs: 60_000, max: 3 }),
+  offsiteRoute((p, _req, res) => {
+    const { runId, done } = offsite.startRun(p.ref, { trigger: 'manual' });
+    done.catch(() => {});
+    res.status(202).json({ runId });
+  })
+);
+// Google redirects here after consent (top-level navigation, so the session
+// cookie comes along). The state is signed, single use and bound to the user.
+app.get('/api/backups/gdrive/callback', async (req, res) => {
+  const back = (ref, params) =>
+    res.redirect(302, `${ref ? `/projects/${ref}` : '/'}?${new URLSearchParams(params)}`);
+  const user = currentUser(req);
+  if (!user)
+    return back(null, {
+      offsite: 'error',
+      message: 'Sign in to the console, then connect Google Drive again.',
+    });
+  try {
+    const { ref } = await offsite.finishDriveConnect(user, req.query);
+    back(ref, { offsite: 'connected' });
+  } catch (e) {
+    const message =
+      e instanceof offsite.OffsiteError ? e.message : 'Google Drive could not be connected.';
+    if (!(e instanceof offsite.OffsiteError))
+      console.error(
+        JSON.stringify({ level: 'error', msg: 'drive connect failed', error: e.message })
+      );
+    back(e.ref || null, { offsite: 'error', message });
+  }
+});
+
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Express needs 4 args to treat this as the error handler
 app.use((err, _req, res, _next) => {
@@ -490,7 +587,8 @@ internal.listen(config.internalPort);
 
 resumePending();
 reconcileProjects();
-scheduleBackups();
+offsite.recover();
+scheduleBackups(() => offsite.tick());
 setInterval(() => tokens.purgeExpired(), 3600_000).unref();
 refreshDbCerts();
 setInterval(refreshDbCerts, 12 * 3600_000).unref();

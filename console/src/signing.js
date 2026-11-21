@@ -42,3 +42,22 @@ export function signProjectAuthorization({ userId, projectRef, ttlSeconds = 120 
   const signature = crypto.sign('RSA-SHA256', Buffer.from(`${header}.${payload}`), privateKey);
   return `${header}.${payload}.${signature.toString('base64url')}`;
 }
+
+// HMAC-signed opaque values (OAuth state). The signature is checked before the
+// value is looked up, so forged or tampered states never reach the database.
+const hmacKey = crypto
+  .createHash('sha256')
+  .update(`mojobase-state:${config.consoleSecret}`)
+  .digest();
+const mac = (value) => crypto.createHmac('sha256', hmacKey).update(value).digest('base64url');
+export const signValue = (value) => `${value}.${mac(value)}`;
+export function verifySignedValue(signed) {
+  if (typeof signed !== 'string' || signed.length > 512) return null;
+  const i = signed.lastIndexOf('.');
+  if (i <= 0) return null;
+  const value = signed.slice(0, i);
+  const sig = Buffer.from(signed.slice(i + 1));
+  const expected = Buffer.from(mac(value));
+  if (sig.length !== expected.length || !crypto.timingSafeEqual(sig, expected)) return null;
+  return value;
+}

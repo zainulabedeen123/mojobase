@@ -16,6 +16,7 @@ import {
   ServiceError,
 } from './projects-service.js';
 import { backupProject, listBackups } from './provisioner.js';
+import { summary as offsiteSummary } from './offsite/index.js';
 import { agentPrompt } from './agent-prompt.js';
 
 const VERSION = '0.1.0';
@@ -283,11 +284,15 @@ export function buildServer(user) {
     'list_backups',
     {
       title: 'List backups',
-      description: 'List database backups of a project (newest first).',
+      description:
+        'List database backups of a project (newest first), plus the status of its offsite backups (Google Drive / S3 destinations, schedule, last run).',
       inputSchema: { ref },
       annotations: readOnly,
     },
-    async ({ ref: r }) => json({ backups: listBackups(ownedProject(user, r).ref) })
+    async ({ ref: r }) => {
+      const p = ownedProject(user, r);
+      return json({ backups: listBackups(p.ref), offsite: offsiteSummary(p.ref) });
+    }
   );
 
   // ------------------------------------------------------------ inside a project
