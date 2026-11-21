@@ -79,6 +79,7 @@ const ICONS = {
   menu: 'M3 12h18M3 6h18M3 18h18',
   branch: 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9',
   db: 'M12 8c4.4 0 8-1.3 8-3s-3.6-3-8-3-8 1.3-8 3 3.6 3 8 3zM4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3',
+  cloud: 'M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.5 13.5 3.5 3.5 0 0 0 6 19z',
   disk: 'M22 12H2M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1zM6 16h.01M10 16h.01',
 };
 function icon(name, size = 16) {
@@ -142,6 +143,7 @@ function renderTopbar(project) {
     h('div', { class: 'top-left' }, menuBtn, ...crumbs),
     h('div', { class: 'top-right' },
       project && project.status === 'ready' && h('button', { class: 'btn small', type: 'button', title: 'Copy a ready-to-paste prompt for your AI coding agent', onclick: () => openAgentPrompt(project.ref) }, icon('agents', 14), 'AI prompt'),
+      project && ['ready', 'paused'].includes(project.status) && h('button', { class: 'btn small offsite-btn', type: 'button', title: 'Offsite backups: send backups to Google Drive or S3-compatible storage', 'aria-label': 'Offsite backups', onclick: () => openOffsite(project.ref) }, icon('cloud', 14), h('span', { class: 'btn-label' }, 'Offsite backups')),
       project && project.status === 'ready' && h('button', { class: 'btn small primary', type: 'button', onclick: () => openConnect(project.ref) }, icon('plug', 14), 'Connect'),
       h('a', { class: 'top-link', href: FEEDBACK_URL, target: '_blank', rel: 'noopener' }, 'Feedback'),
       h('a', { class: 'top-link', href: DOCS_URL, target: '_blank', rel: 'noopener' }, 'Docs'),
@@ -838,6 +840,250 @@ async function openConnect(ref) {
   dlg.showModal();
 }
 
+// ---------------------------------------------------------------- Offsite backups drawer
+// Copies of the database and uploaded files go to the owner's own Google Drive or
+// S3-compatible storage on a schedule. Saved keys never come back from the API.
+const S3_PRESETS = {
+  aws: { name: 'AWS S3', endpoint: 'https://s3.us-east-1.amazonaws.com', region: 'us-east-1', pathStyle: false, hint: 'Endpoint for your bucket\'s region, e.g. https://s3.eu-west-1.amazonaws.com' },
+  r2: { name: 'Cloudflare R2', endpoint: 'https://<account-id>.r2.cloudflarestorage.com', region: 'auto', pathStyle: true, hint: 'From R2 → Manage API tokens. Region is "auto".' },
+  b2: { name: 'Backblaze B2', endpoint: 'https://s3.us-west-004.backblazeb2.com', region: 'us-west-004', pathStyle: false, hint: 'Use the bucket\'s S3 endpoint and an application key.' },
+  wasabi: { name: 'Wasabi', endpoint: 'https://s3.eu-central-1.wasabisys.com', region: 'eu-central-1', pathStyle: false, hint: 'Use your bucket\'s region endpoint.' },
+  other: { name: 'MinIO / other', endpoint: 'https://s3.example.com', region: 'us-east-1', pathStyle: true, hint: 'Any S3-compatible service. Private or http:// endpoints need ALLOW_PRIVATE_S3_ENDPOINTS=1 on the server.' },
+};
+const OFFSITE_RUN = { ok: ['ready', 'Completed'], partial: ['provisioning', 'Partly failed'], failed: ['failed', 'Failed'], running: ['provisioning', 'Running'] };
+const runPill = (status) => { const [cls, text] = OFFSITE_RUN[status] || ['', status]; return h('span', { class: `status ${cls}` }, text); };
+const pad2 = (n) => String(n).padStart(2, '0');
+const localHour = (utcHour) => { const d = new Date(); d.setUTCHours(utcHour, 0, 0, 0); return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
+const fmtWhen = (iso) => (iso ? new Date(iso).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '—');
+const fmtDuration = (ms) => (ms === null || ms === undefined ? '' : ms < 1000 ? `${ms} ms` : ms < 60_000 ? `${Math.round(ms / 1000)} s` : `${Math.round(ms / 60_000)} min`);
+
+let offsiteTimer = null;
+async function openOffsite(ref, { notice } = {}) {
+  const p = projectFor(ref);
+  const body = h('div', { class: 'drawer-body' }, h('div', { class: 'center-panel' }, h('span', { class: 'spinner' })));
+  const dlg = h('dialog', { class: 'drawer', onclose: () => { clearTimeout(offsiteTimer); dlg.remove(); } },
+    h('div', { class: 'drawer-head' }, h('h2', {}, 'Offsite backups'), h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, icon('x', 18))),
+    body);
+  document.body.append(dlg);
+  dlg.showModal();
+  const section = (title, ...kids) => h('section', { class: 'drawer-section' }, h('h3', {}, title), ...kids);
+
+  async function refresh() {
+    clearTimeout(offsiteTimer);
+    let o;
+    try { o = await api(`/projects/${ref}/offsite`); } catch (e) { body.replaceChildren(h('p', { class: 'error' }, e.message)); return; }
+    if (!dlg.isConnected) return;
+    const scroll = body.scrollTop;
+    body.replaceChildren(...[
+      notice && h('div', { class: notice.error ? 'warn-note' : 'ok-note', role: 'status' }, notice.text),
+      statusSection(o), destinationsSection(o), scheduleSection(o), runsSection(o)].filter(Boolean));
+    notice = null;
+    body.scrollTop = scroll;
+    if (o.running || o.runs.some((r) => r.status === 'running')) offsiteTimer = setTimeout(refresh, 3000);
+  }
+
+  function statusSection(o) {
+    const enabled = o.destinations.filter((d) => d.enabled);
+    const last = o.runs[0];
+    const btn = h('button', { class: 'btn primary', type: 'button', disabled: !enabled.length || o.running || p?.status !== 'ready', onclick: async () => {
+      btn.disabled = true;
+      try { await api(`/projects/${ref}/offsite/run`, { method: 'POST', body: {} }); toast('Offsite backup started'); }
+      catch (e) { toast(e.message); }
+      refresh();
+    } }, o.running ? 'Backing up…' : 'Back up now');
+    return section('Copies outside this server',
+      h('p', { class: 'muted' }, `The database${o.settings.includeFiles ? ' and uploaded files' : ''} are copied to your own storage on a schedule, so a lost server never means lost data. Old copies are removed after ${o.settings.retentionDays} days.`),
+      h('div', { class: 'row spread' },
+        h('div', { class: 'muted small' },
+          enabled.length ? [`Next backup: ${fmtWhen(o.nextRunAt)}`, h('br'), last ? ['Last: ', fmtWhen(last.startedAt), ' · ', runPill(last.status)] : 'No offsite backup yet.'] : 'Add a destination to start.'),
+        h('div', { class: 'row' }, o.running && h('span', { class: 'spinner' }), btn)));
+  }
+
+  function destinationsSection(o) {
+    const lastTarget = (id) => o.runs.flatMap((r) => r.targets.map((t) => ({ ...t, at: r.startedAt }))).find((t) => t.destinationId === id && t.status !== 'running');
+    const rows = o.destinations.map((d) => {
+      const c = d.config;
+      const detail = d.type === 's3'
+        ? `${c.bucket}${c.prefix ? `/${c.prefix}` : ''} · ${c.endpoint.replace(/^https?:\/\//, '')}`
+        : `Folder “${c.folderName}”${c.account ? ` · ${c.account}` : ''}`;
+      const t = lastTarget(d.id);
+      const testBtn = h('button', { class: 'btn small', type: 'button', onclick: async () => {
+        testBtn.disabled = true; testBtn.textContent = 'Testing…';
+        try {
+          const r = await api(`/projects/${ref}/offsite/destinations/${d.id}/test`, { method: 'POST', body: {} });
+          toast(r.ok ? `${d.label}: connection works` : `${d.label}: ${r.error}`);
+        } catch (e) { toast(e.message); }
+        testBtn.disabled = false; testBtn.textContent = 'Test';
+      } }, 'Test');
+      const actions = [
+        d.type === 's3' ? menuItem('Edit', { onclick: () => s3Dialog(o, d) }) : menuItem('Reconnect / change folder', { onclick: () => driveDialog(o, d) }),
+        menuItem(d.enabled ? 'Pause uploads' : 'Resume uploads', { onclick: async () => {
+          try { await api(`/projects/${ref}/offsite/destinations/${d.id}`, { method: 'PATCH', body: { enabled: !d.enabled } }); } catch (e) { toast(e.message); }
+          refresh();
+        } }),
+        h('div', { class: 'menu-sep' }),
+        menuItem('Remove', { danger: true, onclick: async () => {
+          if (!confirm(`Remove ${d.label}? Backups already stored there are kept.`)) return;
+          try { await api(`/projects/${ref}/offsite/destinations/${d.id}`, { method: 'DELETE' }); toast(`${d.label} removed`); } catch (e) { toast(e.message); }
+          refresh();
+        } }),
+      ];
+      return h('div', { class: `dest-row${d.enabled ? '' : ' paused'}` },
+        h('div', { class: 'grow' },
+          h('div', { class: 'row', style: 'gap:8px' }, h('strong', {}, d.label), h('span', { class: 'tag' }, d.type === 's3' ? 'S3' : 'Google Drive'), !d.enabled && h('span', { class: 'tag' }, 'Paused')),
+          h('div', { class: 'muted small mono dest-detail' }, detail),
+          t && h('div', { class: 'small' }, runPill(t.status), ' ', h('span', { class: 'muted' }, t.status === 'ok' ? `${fmtBytes(t.bytes)} · ${fmtDuration(t.durationMs)} · ${fmtWhen(t.at)}` : t.error || ''))),
+        h('div', { class: 'row', style: 'gap:6px;flex-wrap:nowrap' }, testBtn, dropdown(icon('more'), actions, { align: 'right', label: `${d.label} actions` })));
+    });
+    const full = o.destinations.length >= o.maxDestinations;
+    return section('Destinations',
+      rows.length ? rows : h('p', { class: 'muted' }, 'No destinations yet. Connect Google Drive or any S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2, Wasabi, MinIO).'),
+      h('div', { class: 'row', style: 'margin-top:12px' },
+        h('button', { class: 'btn small', type: 'button', disabled: full || !o.googleDrive.configured, onclick: () => driveDialog(o), title: o.googleDrive.configured ? undefined : 'Not configured on this server' }, icon('plus', 14), 'Google Drive'),
+        h('button', { class: 'btn small', type: 'button', disabled: full, onclick: () => s3Dialog(o) }, icon('plus', 14), 'S3-compatible storage')),
+      !o.googleDrive.configured && h('p', { class: 'muted small' }, 'Google Drive is not configured on this server (the operator sets GOOGLE_DRIVE_CLIENT_ID and GOOGLE_DRIVE_CLIENT_SECRET).'));
+  }
+
+  function scheduleSection(o) {
+    const chosen = new Set(o.settings.hours);
+    const hint = h('p', { class: 'muted small' });
+    const updateHint = () => {
+      const hours = [...chosen].sort((a, b) => a - b);
+      hint.textContent = hours.length
+        ? `Every day at ${hours.map((x) => `${pad2(x)}:00`).join(', ')} UTC — ${hours.map(localHour).join(', ')} your time.`
+        : 'Pick at least one hour.';
+    };
+    const grid = h('div', { class: 'hour-grid', role: 'group', 'aria-label': 'Backup hours (UTC)' },
+      Array.from({ length: 24 }, (_, hr) => {
+        const b = h('button', { type: 'button', class: `hour${chosen.has(hr) ? ' on' : ''}`, 'aria-pressed': String(chosen.has(hr)), title: `${localHour(hr)} your time` }, pad2(hr));
+        b.addEventListener('click', () => {
+          chosen.has(hr) ? chosen.delete(hr) : chosen.add(hr);
+          b.classList.toggle('on', chosen.has(hr)); b.setAttribute('aria-pressed', String(chosen.has(hr))); updateHint();
+        });
+        return b;
+      }));
+    updateHint();
+    const days = h('input', { type: 'number', id: 'off-days', min: 1, max: 3650, value: o.settings.retentionDays, required: true });
+    const files = h('input', { type: 'checkbox', id: 'off-files', checked: o.settings.includeFiles });
+    const err = h('div', { class: 'error', role: 'alert' });
+    const save = h('button', { class: 'btn small primary', type: 'submit' }, 'Save schedule');
+    return section('Schedule',
+      h('form', { onsubmit: async (e) => {
+        e.preventDefault(); err.textContent = ''; save.disabled = true;
+        try {
+          await api(`/projects/${ref}/offsite/settings`, { method: 'PUT', body: { hours: [...chosen].sort((a, b) => a - b), retentionDays: Number(days.value), includeFiles: files.checked } });
+          toast('Schedule saved'); refresh();
+        } catch (ex) { err.textContent = ex.message; } finally { save.disabled = false; }
+      } },
+        h('div', { class: 'k muted small', style: 'margin-bottom:6px' }, 'Hours (UTC) — default 03:00 and 15:00'),
+        grid, hint,
+        h('div', { class: 'grid2' },
+          h('div', {}, h('label', { for: 'off-days' }, 'Keep backups for (days)'), days),
+          h('div', {}, h('label', { class: 'check', for: 'off-files', style: 'margin-top:40px' }, files, 'Include uploaded files'))),
+        err,
+        h('div', { class: 'row end', style: 'margin-top:4px' }, save)));
+  }
+
+  function runsSection(o) {
+    if (!o.runs.length) return section('Recent backups', h('p', { class: 'muted' }, 'Nothing yet. Runs and their result for each destination show up here.'));
+    return section('Recent backups',
+      h('div', { class: 'run-list' }, o.runs.map((r) => h('div', { class: 'run' },
+        h('div', { class: 'row spread' },
+          h('div', {}, h('strong', {}, fmtWhen(r.startedAt)), h('span', { class: 'muted small' }, ` · ${r.trigger === 'scheduled' ? 'Scheduled' : 'Manual'}`)),
+          runPill(r.status)),
+        r.artifacts.length > 0 && h('div', { class: 'muted small' }, r.artifacts.map((a) => `${a.name} ${fmtBytes(a.size)}`).join(' · ')),
+        r.error && r.status === 'failed' && !r.targets.some((t) => t.status === 'ok') && h('div', { class: 'small err-text' }, r.error),
+        h('ul', { class: 'run-targets' }, r.targets.map((t) => h('li', {},
+          runPill(t.status), ' ', h('span', {}, t.label),
+          t.status === 'ok' && h('span', { class: 'muted' }, ` · ${fmtBytes(t.bytes)} in ${fmtDuration(t.durationMs)}`),
+          t.error && h('div', { class: 'small err-text' }, t.error),
+          t.note && h('div', { class: 'muted small' }, t.note))))))));
+  }
+
+  // ---- add / edit S3 destination
+  function s3Dialog(o, existing) {
+    const c = existing?.config || {};
+    const err = h('div', { class: 'error', role: 'alert' });
+    const f = (id, label, input, hint) => h('div', {}, h('label', { for: id }, label), input, hint && h('div', { class: 'muted small', style: 'margin-top:4px' }, hint));
+    const provider = h('select', { id: 's3-provider' }, Object.entries(S3_PRESETS).map(([k, v]) => h('option', { value: k }, v.name)));
+    const providerHint = h('div', { class: 'muted small', style: 'margin-top:4px' });
+    const lbl = h('input', { type: 'text', id: 's3-label', maxlength: 40, required: true, value: existing?.label || '' });
+    const endpoint = h('input', { type: 'text', id: 's3-endpoint', required: true, value: c.endpoint || '', spellcheck: 'false', autocomplete: 'off' });
+    const region = h('input', { type: 'text', id: 's3-region', value: c.region ?? '', spellcheck: 'false', autocomplete: 'off' });
+    const bucket = h('input', { type: 'text', id: 's3-bucket', required: true, value: c.bucket || '', spellcheck: 'false', autocomplete: 'off' });
+    const prefix = h('input', { type: 'text', id: 's3-prefix', value: c.prefix || '', placeholder: 'optional, e.g. backups/', spellcheck: 'false', autocomplete: 'off' });
+    const keyId = h('input', { type: 'text', id: 's3-key', required: !existing, autocomplete: 'off', spellcheck: 'false', placeholder: existing ? `Saved (${c.accessKeyId}) — leave empty to keep` : '' });
+    const secret = h('input', { type: 'password', id: 's3-secret', required: !existing, autocomplete: 'new-password', placeholder: existing ? 'Saved — leave empty to keep' : '' });
+    const pathStyle = h('input', { type: 'checkbox', id: 's3-path', checked: !!c.pathStyle });
+    const enabled = h('input', { type: 'checkbox', id: 's3-enabled', checked: existing ? existing.enabled : true });
+    const applyPreset = (initial) => {
+      const pr = S3_PRESETS[provider.value];
+      providerHint.textContent = pr.hint;
+      endpoint.placeholder = pr.endpoint; region.placeholder = pr.region;
+      if (!initial) { pathStyle.checked = pr.pathStyle; if (!region.value) region.value = pr.region; if (!lbl.value) lbl.value = pr.name; }
+    };
+    provider.addEventListener('change', () => applyPreset(false));
+    if (!existing) applyPreset(false); else applyPreset(true);
+    const save = h('button', { class: 'btn primary', type: 'submit' }, existing ? 'Save and test' : 'Add and test');
+    const dlg = h('dialog', { onclose: () => dlg.remove() }, h('form', { onsubmit: async (e) => {
+      e.preventDefault(); err.textContent = ''; save.disabled = true;
+      const config = { endpoint: endpoint.value.trim(), region: region.value.trim(), bucket: bucket.value.trim(), prefix: prefix.value.trim(), pathStyle: pathStyle.checked };
+      if (keyId.value.trim() || !existing) config.accessKeyId = keyId.value.trim();
+      if (secret.value || !existing) config.secretAccessKey = secret.value;
+      try {
+        const { destination } = existing
+          ? await api(`/projects/${ref}/offsite/destinations/${existing.id}`, { method: 'PATCH', body: { label: lbl.value.trim(), enabled: enabled.checked, config } })
+          : await api(`/projects/${ref}/offsite/destinations`, { method: 'POST', body: { type: 's3', label: lbl.value.trim(), enabled: enabled.checked, config } });
+        save.textContent = 'Testing…';
+        const t = await api(`/projects/${ref}/offsite/destinations/${destination.id}/test`, { method: 'POST', body: {} });
+        dlg.close();
+        notice = t.ok ? { text: `${destination.label} saved. A test file was written and removed.` } : { error: true, text: `${destination.label} saved, but the connection test failed: ${t.error}` };
+        refresh();
+      } catch (ex) { err.textContent = ex.message; save.textContent = existing ? 'Save and test' : 'Add and test'; } finally { save.disabled = false; }
+    } },
+      h('h2', {}, existing ? `Edit ${existing.label}` : 'Add S3-compatible storage'),
+      !existing && f('s3-provider', 'Provider', provider), providerHint,
+      f('s3-label', 'Name', lbl),
+      f('s3-endpoint', 'Endpoint URL', endpoint),
+      h('div', { class: 'grid2' }, f('s3-bucket', 'Bucket', bucket), f('s3-region', 'Region', region)),
+      f('s3-prefix', 'Folder prefix', prefix, 'Backups go to <prefix>/mojobase/<project>-<ref>/<date>/'),
+      f('s3-key', 'Access key ID', keyId),
+      f('s3-secret', 'Secret access key', secret, 'Stored encrypted and never shown again. Use a key limited to this bucket.'),
+      h('label', { class: 'check', for: 's3-path' }, pathStyle, 'Path-style URLs (MinIO, R2)'),
+      h('label', { class: 'check', for: 's3-enabled', style: 'margin-top:6px' }, enabled, 'Upload to this destination'),
+      err,
+      h('div', { class: 'row end' }, h('button', { class: 'btn', type: 'button', onclick: () => dlg.close() }, 'Cancel'), save)));
+    document.body.append(dlg);
+    dlg.showModal();
+  }
+
+  // ---- connect / reconnect Google Drive
+  function driveDialog(o, existing) {
+    if (!o.googleDrive.configured) return toast('Google Drive is not configured on this server');
+    const err = h('div', { class: 'error', role: 'alert' });
+    const lbl = h('input', { type: 'text', id: 'gd-label', maxlength: 40, required: true, value: existing?.label || 'Google Drive' });
+    const folder = h('input', { type: 'text', id: 'gd-folder', maxlength: 80, required: true, value: existing?.config.folderName || 'Mojobase Backups' });
+    const cont = h('button', { class: 'btn primary', type: 'submit' }, 'Continue to Google');
+    const dlg = h('dialog', { onclose: () => dlg.remove() }, h('form', { onsubmit: async (e) => {
+      e.preventDefault(); err.textContent = ''; cont.disabled = true;
+      try {
+        const { url } = await api(`/projects/${ref}/offsite/gdrive/connect`, { method: 'POST', body: { label: lbl.value.trim(), folderName: folder.value.trim(), ...(existing ? { destinationId: existing.id } : {}) } });
+        location.assign(url);
+      } catch (ex) { err.textContent = ex.message; cont.disabled = false; }
+    } },
+      h('h2', {}, existing ? 'Reconnect Google Drive' : 'Connect Google Drive'),
+      h('p', { class: 'muted' }, 'Mojobase only gets access to the files it creates — not the rest of your Drive. Backups go into a folder in My Drive.'),
+      !existing && [h('label', { for: 'gd-label' }, 'Name'), lbl],
+      h('label', { for: 'gd-folder' }, 'Folder name'), folder,
+      err,
+      h('div', { class: 'row end' }, h('button', { class: 'btn', type: 'button', onclick: () => dlg.close() }, 'Cancel'), cont)));
+    document.body.append(dlg);
+    dlg.showModal();
+  }
+
+  refresh();
+}
+
 // ---------------------------------------------------------------- router
 async function render() {
   clearTimeout(pollTimer);
@@ -864,6 +1110,15 @@ async function render() {
     const m = location.pathname.match(/^\/projects\/([a-z0-9]+)(\/.*)?$/);
     if (m) {
       const p = projectFor(m[1]);
+      // Back from Google Drive consent (or a failure email): open the offsite drawer.
+      const params = new URLSearchParams(location.search);
+      if (p && params.has('offsite')) {
+        const kind = params.get('offsite');
+        const notice = kind === 'connected' ? { text: 'Google Drive connected. Backups will be uploaded on the next run.' }
+          : kind === 'error' ? { error: true, text: params.get('message') || 'Google Drive could not be connected.' } : undefined;
+        history.replaceState({}, '', location.pathname);
+        setTimeout(() => openOffsite(m[1], { notice }), 0);
+      }
       $shell.classList.add('project-mode');
       renderTopbar(p); renderSidebar('project');
       const view = projectPage(m[1], m[2]);
