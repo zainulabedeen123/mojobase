@@ -175,6 +175,10 @@ export async function withRetry(fn, { attempts = 3, delayMs = retryDelayMs } = {
 }
 let retryDelayMs = 1000;
 export const _setRetryDelay = (ms) => (retryDelayMs = ms);
+// Exponential backoff with jitter for the nth consecutive failure (1-based), capped at 30 units.
+export const backoffMs = (n) =>
+  Math.round(retryDelayMs * Math.min(30, 2 ** (n - 1)) * (0.75 + Math.random() * 0.5));
+export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Error for an HTTP response: 4xx (other than 408/429) are not worth retrying.
 export function httpError(message, status) {

@@ -129,3 +129,41 @@ test("upload failures surface Drive's reason", async () => {
     g.state.failUploads = false;
   }
 });
+
+test('uploads survive Drive server errors, half-stored chunks and a lost session', async () => {
+  drive._setChunkSize(256 * 1024);
+  try {
+    const client = new drive.DriveClient({ refreshToken: 'refresh-1' });
+    const folder = await client.ensureRootFolder('Flaky test');
+    const data = crypto.randomBytes(700 * 1024);
+    const up = (name) => client.upload(name, folder.id, { buffer: data, size: data.length });
+
+    // Several 502s in a row (what the failed scheduled backup hit).
+    g.state.failChunks = 4;
+    await up('five-oh-two.bin');
+    assert.deepEqual(g.fileAt('Flaky test/five-oh-two.bin').body, data);
+
+    // Drive stored the chunk but answered 502: resume from its offset, never resend.
+    g.state.storeThenFail = 2;
+    await up('stored.bin');
+    assert.deepEqual(g.fileAt('Flaky test/stored.bin').body, data);
+
+    // The final chunk was stored but the reply was lost: the status check completes it.
+    const small = crypto.randomBytes(1000);
+    g.state.storeThenFail = 1;
+    await client.upload('last.bin', folder.id, { buffer: small, size: small.length });
+    assert.deepEqual(g.fileAt('Flaky test/last.bin').body, small);
+
+    // Session expired mid-upload: start over.
+    g.state.expireSessions = 1;
+    await up('expired.bin');
+    assert.deepEqual(g.fileAt('Flaky test/expired.bin').body, data);
+
+    // A long outage still fails, with a clear message.
+    g.state.failChunks = 1000;
+    await assert.rejects(up('down.bin'), /returned 502 after \d+ tries/);
+  } finally {
+    g.state.failChunks = 0;
+    drive._setChunkSize(8 * 1024 * 1024);
+  }
+});

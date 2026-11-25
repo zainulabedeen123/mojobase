@@ -3,12 +3,14 @@
 // the user's Drive. Uploads use Drive's resumable protocol in 8 MiB chunks.
 import fs from 'node:fs';
 import { config } from '../config.js';
-import { request, withRetry, httpError } from './http.js';
+import { request, withRetry, httpError, backoffMs, sleep, EndpointError } from './http.js';
 
 export const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const FOLDER = 'application/vnd.google-apps.folder';
 let chunkSize = 8 * 1024 * 1024; // must be a multiple of 256 KiB
 export const _setChunkSize = (n) => (chunkSize = n);
+const CHUNK_RETRIES = 6; // consecutive failures without progress (about a minute of backoff)
+const UPLOAD_RESTARTS = 3; // whole-upload restarts after a lost session or exhausted retries
 
 export const driveConfigured = () =>
   !!(config.googleDrive.clientId && config.googleDrive.clientSecret);
@@ -186,8 +188,29 @@ export class DriveClient {
     );
   }
 
-  // Resumable upload of a local file (or a Buffer) into parentId.
-  async upload(name, parentId, { file, buffer, size, contentType = 'application/octet-stream' }) {
+  // Resumable upload of a local file (or a Buffer) into parentId. Google's servers
+  // do fail now and then (502/503): each chunk recovers by asking Drive how much
+  // it has and resuming from there, and a lost session restarts the whole upload.
+  async upload(name, parentId, source) {
+    let last;
+    for (let attempt = 1; attempt <= UPLOAD_RESTARTS; attempt++) {
+      try {
+        return await this.uploadOnce(name, parentId, source);
+      } catch (e) {
+        last = e;
+        const transient = e.sessionLost || (e.status && !e.permanent);
+        if (!transient || e instanceof EndpointError || attempt === UPLOAD_RESTARTS) throw e;
+        await sleep(backoffMs(attempt + 2));
+      }
+    }
+    throw last;
+  }
+
+  async uploadOnce(
+    name,
+    parentId,
+    { file, buffer, size, contentType = 'application/octet-stream' }
+  ) {
     const init = await withRetry(() =>
       this.api('POST', '/upload/drive/v3/files', {
         query: { uploadType: 'resumable', fields: 'id' },
@@ -197,9 +220,30 @@ export class DriveClient {
     );
     const session = init.headers.location;
     if (!session) throw new Error('Google Drive did not return an upload session');
+    // One PUT to the session. Network errors come back as { status: 0 }.
+    const put = async (range, body) => {
+      try {
+        return await request({
+          method: 'PUT',
+          url: session,
+          headers: {
+            authorization: `Bearer ${await this.token()}`,
+            'content-length': String(body.length),
+            'content-range': range,
+          },
+          body,
+          timeoutMs: 10 * 60_000,
+        });
+      } catch (e) {
+        if (e instanceof EndpointError) throw e;
+        return { status: 0, headers: {}, body: Buffer.alloc(0), error: e };
+      }
+    };
+    const flaky = (r) => r.status === 0 || r.status >= 500 || r.status === 429;
     const fh = file ? await fs.promises.open(file, 'r') : null;
     try {
       let offset = 0;
+      let failures = 0;
       for (let guard = 0; guard < 1_000_000; guard++) {
         const len = Math.min(chunkSize, size - offset);
         let buf = Buffer.alloc(0);
@@ -211,28 +255,33 @@ export class DriveClient {
           } else buf = buffer.subarray(offset, offset + len);
         }
         const range = size === 0 ? 'bytes */0' : `bytes ${offset}-${offset + len - 1}/${size}`;
-        const res = await withRetry(async () => {
-          const r = await request({
-            method: 'PUT',
-            url: session,
-            headers: {
-              authorization: `Bearer ${await this.token()}`,
-              'content-length': String(len),
-              'content-range': range,
-            },
-            body: buf,
-            timeoutMs: 10 * 60_000,
-          });
-          if (r.status >= 500 || r.status === 429)
-            throw httpError(`Google Drive upload returned ${r.status}`, r.status);
-          return r;
-        });
+        let res = await put(range, buf);
+        // Server error or dropped connection: wait, then ask Drive what it has
+        // (it may have stored the chunk even though it answered with an error).
+        while (flaky(res)) {
+          if (++failures > CHUNK_RETRIES) {
+            const what = res.status ? `returned ${res.status}` : `failed (${res.error?.message})`;
+            throw httpError(
+              `Google Drive upload ${what} after ${failures} tries`,
+              res.status || 503
+            );
+          }
+          await sleep(backoffMs(failures));
+          res = await put(`bytes */${size}`, Buffer.alloc(0));
+        }
         if (res.status === 200 || res.status === 201) return JSON.parse(res.body.toString('utf8'));
+        if (res.status === 404 || res.status === 410) {
+          const e = new Error('Google Drive upload session expired');
+          e.sessionLost = true;
+          throw e;
+        }
         if (res.status !== 308)
           throw httpError(`Google Drive upload returned ${res.status}`, res.status);
         // Range: bytes=0-N tells us how much Google has; continue from there.
         const m = /bytes=0-(\d+)/.exec(res.headers.range || '');
-        offset = m ? Number(m[1]) + 1 : 0;
+        const next = m ? Number(m[1]) + 1 : 0;
+        if (next > offset) failures = 0; // progress resets the failure budget
+        offset = next;
         if (offset >= size && size > 0) throw new Error('Google Drive did not finish the upload');
       }
       throw new Error('Upload did not finish');

@@ -18,6 +18,9 @@ export async function fakeGoogle({
     accessTokens: new Set(),
     tokenRequests: [],
     failUploads: false,
+    failChunks: 0, // answer this many chunk PUTs with 502 without storing them
+    storeThenFail: 0, // store this many chunks but still answer 502
+    expireSessions: 0, // answer this many chunk PUTs with 404 (session gone)
     chunkRequests: 0,
   };
   const json = (res, status, obj, headers = {}) => {
@@ -122,14 +125,27 @@ export async function fakeGoogle({
           return json(res, 403, {
             error: { message: 'The user has exceeded their Drive storage quota' },
           });
+        if (state.expireSessions > 0) {
+          state.expireSessions--;
+          sessions.delete(sess[1]);
+          return json(res, 404, { error: { message: 'No session' } });
+        }
+        if (state.failChunks > 0 && body.length) {
+          state.failChunks--;
+          return json(res, 502, { error: { message: 'Bad Gateway' } });
+        }
         const range = req.headers['content-range'];
         const m = /bytes (\d+)-(\d+)\/(\d+)/.exec(range || '');
         const have = s.received.reduce((n, b) => n + b.length, 0);
         if (m && Number(m[1]) !== have) return json(res, 400, { error: { message: 'bad offset' } });
         if (body.length) s.received.push(body);
         const total = have + body.length;
+        if (state.storeThenFail > 0 && body.length) {
+          state.storeThenFail--;
+          return json(res, 502, { error: { message: 'Bad Gateway' } });
+        }
         if (total < s.size) {
-          res.writeHead(308, { range: `bytes=0-${total - 1}` });
+          res.writeHead(308, total ? { range: `bytes=0-${total - 1}` } : {});
           return res.end();
         }
         const f = {
