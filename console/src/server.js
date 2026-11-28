@@ -13,12 +13,15 @@ import {
   clearSession,
   currentUser,
   requireUser,
+  requireAdmin,
   sameOrigin,
   rateLimit,
 } from './auth.js';
 import { projectHost } from './project-stack.js';
 import {
   projectView,
+  projectLimit,
+  planLabel,
   createProject,
   renameProject,
   setPaused,
@@ -196,11 +199,39 @@ app.post('/api/logout', (_req, res) => {
 app.get('/api/me', (req, res) => {
   const user = currentUser(req);
   res.json({
-    user,
-    limits: { perUser: config.maxProjectsPerUser },
+    user: user && { ...user, planLabel: planLabel(user) },
+    // perUser is null when the account has no project limit (admins and Pro).
+    limits: { perUser: user ? projectLimit(user) : config.maxProjectsPerUser },
     requireVerifiedEmail: config.requireVerifiedEmail,
     signupOpen: config.allowSignup,
   });
+});
+
+// ------------------------------------------------------------------ admin
+// Accounts and their plans. Only for confirmed ADMIN_EMAILS; everyone else gets 404.
+const adminUserView = (u) => ({
+  id: u.id,
+  email: u.email,
+  plan: u.plan === 'pro' ? 'pro' : 'free',
+  isAdmin: !!u.email_verified && config.adminEmails.includes(u.email.toLowerCase()),
+  emailVerified: !!u.email_verified,
+  projects: u.projects,
+  createdAt: u.created_at,
+});
+app.get('/api/admin/users', requireAdmin, (_req, res) => {
+  res.json({ users: users.listWithCounts().map(adminUserView) });
+});
+app.post('/api/admin/users/:id/plan', requireAdmin, (req, res) => {
+  const plan = req.body?.plan;
+  if (plan !== 'free' && plan !== 'pro')
+    return res.status(400).json({ error: 'Plan must be "free" or "pro"' });
+  const target = users.byId(req.params.id);
+  if (!target) return res.status(404).json({ error: 'Account not found' });
+  users.setPlan(target.id, plan);
+  console.log(
+    JSON.stringify({ level: 'info', msg: 'plan changed', by: req.user.id, user: target.id, plan })
+  );
+  res.json({ ok: true, plan });
 });
 
 // ------------------------------------------------------------------ projects

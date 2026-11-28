@@ -22,6 +22,12 @@ export class ServiceError extends Error {
 
 const NAME = /^[\p{L}\p{N} _.-]{1,40}$/u;
 
+// How many projects this account may have: null means unlimited (admins and Pro).
+export function projectLimit(user) {
+  return user.isAdmin || user.plan === 'pro' ? null : config.maxProjectsPerUser;
+}
+export const planLabel = (user) => (user.isAdmin ? 'Admin' : user.plan === 'pro' ? 'Pro' : 'Free');
+
 export function projectView(p, { withSecrets }) {
   const base = {
     ref: p.ref,
@@ -67,12 +73,13 @@ export function createProject(user, rawName) {
       400,
       'Name must be 1–40 letters, numbers, spaces, dots, dashes or underscores'
     );
-  if (projects.countForOwner(user.id) >= config.maxProjectsPerUser)
+  const limit = projectLimit(user);
+  if (limit !== null && projects.countForOwner(user.id) >= limit)
     throw new ServiceError(
       403,
-      `Each account can have up to ${config.maxProjectsPerUser} projects`
+      `The Free plan includes ${limit} projects. Unlimited projects are available on Pro.`
     );
-  if (projects.count() >= config.maxProjects)
+  if (!user.isAdmin && projects.count() >= config.maxProjects)
     throw new ServiceError(503, 'Mojobase is at capacity right now. Please try again later.');
   if (!dbCertReady())
     throw new ServiceError(503, 'The platform is still starting up. Try again in a minute.');
@@ -159,7 +166,7 @@ export async function setPaused(user, ref, paused) {
     await pauseProject(p.ref);
   } else {
     if (p.status !== 'paused') throw new ServiceError(409, `Project is ${p.status}, not paused`);
-    if (projects.countByStatus('ready') >= config.maxProjects)
+    if (!user.isAdmin && projects.countByStatus('ready') >= config.maxProjects)
       throw new ServiceError(503, 'Mojobase is at capacity right now. Please try again later.');
     resumeProject(p.ref).catch(() => {});
   }

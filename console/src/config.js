@@ -51,6 +51,12 @@ export const config = {
   maxProjects: int('MAX_PROJECTS', 8),
   maxProjectsPerUser: int('MAX_PROJECTS_PER_USER', 2),
   allowSignup: (process.env.ALLOW_SIGNUP ?? 'true') !== 'false',
+  // Platform admins (comma-separated emails): unlimited projects, exempt from the
+  // capacity cap, and able to grant the Pro plan. The email must be confirmed.
+  adminEmails: (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean),
   // Sign-in / sign-up / reset attempts per IP per minute.
   authRateLimit: int('AUTH_RATE_LIMIT', 10),
 

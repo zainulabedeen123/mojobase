@@ -109,6 +109,9 @@ const userColumns = new Set(
 if (!userColumns.has('email_verified'))
   db.exec('ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0');
 // Bumped on password reset / account deletion so existing session cookies stop working.
+// Plan: 'free' (project limit applies) or 'pro' (unlimited projects). Set by an admin.
+if (!userColumns.has('plan'))
+  db.exec("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'");
 if (!userColumns.has('session_version'))
   db.exec('ALTER TABLE users ADD COLUMN session_version INTEGER NOT NULL DEFAULT 1');
 
@@ -126,6 +129,21 @@ export function decrypt(text) {
   return JSON.parse(Buffer.concat([d.update(data), d.final()]).toString('utf8'));
 }
 
+// The signed-in user as the rest of the console sees it. An admin is a confirmed
+// email listed in ADMIN_EMAILS; admins and Pro accounts have no project limit.
+export function sessionUser(user) {
+  const emailVerified = !!user.email_verified;
+  const isAdmin = emailVerified && config.adminEmails.includes(user.email.toLowerCase());
+  return {
+    id: user.id,
+    email: user.email,
+    emailVerified,
+    createdAt: user.created_at,
+    plan: user.plan === 'pro' ? 'pro' : 'free',
+    isAdmin,
+  };
+}
+
 export const users = {
   create(id, email, passwordHash) {
     db.prepare('INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)').run(
@@ -138,10 +156,20 @@ export const users = {
   byId: (id) =>
     db
       .prepare(
-        'SELECT id, email, created_at, email_verified, session_version FROM users WHERE id = ?'
+        'SELECT id, email, created_at, email_verified, session_version, plan FROM users WHERE id = ?'
       )
       .get(id),
   withHash: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
+  setPlan: (id, plan) => db.prepare('UPDATE users SET plan = ? WHERE id = ?').run(plan, id),
+  // For the admin page: every account with its plan and number of projects.
+  listWithCounts: () =>
+    db
+      .prepare(
+        `SELECT u.id, u.email, u.plan, u.email_verified, u.created_at,
+                (SELECT COUNT(*) FROM projects p WHERE p.owner_id = u.id) AS projects
+         FROM users u ORDER BY u.created_at DESC`
+      )
+      .all(),
   setVerified: (id) => db.prepare('UPDATE users SET email_verified = 1 WHERE id = ?').run(id),
   setPassword: (id, passwordHash) =>
     db
@@ -245,9 +273,7 @@ export const accessTokens = {
     if (!row) return null;
     db.prepare("UPDATE access_tokens SET last_used_at = datetime('now') WHERE id = ?").run(row.id);
     const user = users.byId(row.user_id);
-    return user
-      ? { id: user.id, email: user.email, emailVerified: !!user.email_verified, tokenId: row.id }
-      : null;
+    return user ? { ...sessionUser(user), tokenId: row.id } : null;
   },
 };
 

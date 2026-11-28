@@ -1,7 +1,7 @@
 // Console accounts: scrypt password hashes and HMAC-signed session cookies.
 import crypto from 'node:crypto';
 import { config } from './config.js';
-import { users } from './store.js';
+import { users, sessionUser } from './store.js';
 
 const COOKIE = 'mb_session';
 const SESSION_DAYS = 14;
@@ -67,12 +67,14 @@ export function currentUser(req) {
   if (Number(exp) < Date.now()) return null;
   const user = users.byId(id);
   if (!user || String(user.session_version) !== version) return null;
-  return {
-    id: user.id,
-    email: user.email,
-    emailVerified: !!user.email_verified,
-    createdAt: user.created_at,
-  };
+  return sessionUser(user);
+}
+export function requireAdmin(req, res, next) {
+  const user = currentUser(req);
+  if (!user) return res.status(401).json({ error: 'Not signed in' });
+  if (!user.isAdmin) return res.status(404).json({ error: 'Not found' });
+  req.user = user;
+  next();
 }
 export function requireUser(req, res, next) {
   const user = currentUser(req);

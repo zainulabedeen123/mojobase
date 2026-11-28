@@ -126,7 +126,7 @@ function renderTopbar(project) {
   const crumbs = [
     h('a', { href: '/', 'data-link': true, class: 'brand', 'aria-label': 'Mojobase home' }, h('img', { src: '/favicon.svg', alt: '', class: 'brand-mark' })),
     h('span', { class: 'sep' }, '/'),
-    h('a', { href: '/', 'data-link': true, class: 'crumb' }, h('span', { class: 'org-avatar' }, 'P'), h('span', { class: 'crumb-label' }, 'Personal'), h('span', { class: 'plan' }, 'Free')),
+    h('a', { href: '/', 'data-link': true, class: 'crumb' }, h('span', { class: 'org-avatar' }, 'P'), h('span', { class: 'crumb-label' }, 'Personal'), h('span', { class: `plan${planName() === 'Free' ? '' : ' paid'}` }, planName())),
   ];
   if (project) {
     crumbs.push(h('span', { class: 'sep' }, '/'),
@@ -421,8 +421,9 @@ function accountPage() {
     h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, 'Settings'), h('p', { class: 'sub' }, 'Your account and organization.'))),
     h('div', { class: 'card' },
       h('h2', {}, 'Organization'),
-      h('div', { class: 'grid2' }, copyField('Name', 'Personal'), copyField('Plan', 'Free')),
-      h('p', { class: 'muted small', style: 'margin:0' }, 'Team members and paid plans are coming later. Every project is free while Mojobase is in preview.')),
+      h('div', { class: 'grid2' }, copyField('Name', 'Personal'), copyField('Plan', planName())),
+      h('p', { class: 'muted small', style: 'margin:0' }, planNote())),
+    me.isAdmin && adminCard(),
     h('div', { class: 'card' },
       copyField('Email', me.email),
       h('p', { class: 'muted', style: 'margin:0' }, me.emailVerified ? 'Email confirmed.' : 'Email not confirmed yet.'),
@@ -587,9 +588,9 @@ function agentPrompt() {
 
 function projectsPage() {
   const projects = projectsCache;
-  const limit = me.limits?.perUser ?? 2;
+  const limit = projectLimit();
   const needsVerify = me.requireVerifiedEmail && !me.emailVerified;
-  const atLimit = projects.length >= limit;
+  const atLimit = limit !== null && projects.length >= limit;
   const dlg = newProjectDialog();
   const grid = h('div', { class: 'project-grid' });
   const search = h('input', { type: 'search', class: 'search', placeholder: 'Search projects', 'aria-label': 'Search projects', value: store.get('mb.q') || '' });
@@ -600,11 +601,11 @@ function projectsPage() {
   };
   search.addEventListener('input', draw);
   draw();
-  const newBtn = h('button', { class: 'btn primary', type: 'button', disabled: atLimit || needsVerify, title: atLimit ? `The Free plan includes ${limit} projects` : needsVerify ? 'Confirm your email first' : undefined, onclick: () => dlg.showModal() }, icon('plus', 15), 'New Project');
+  const newBtn = h('button', { class: 'btn primary', type: 'button', disabled: atLimit || needsVerify, title: atLimit ? `The Free plan includes ${limit} projects. Unlimited projects are available on Pro.` : needsVerify ? 'Confirm your email first' : undefined, onclick: () => dlg.showModal() }, icon('plus', 15), 'New Project');
   if (BUSY_ANY()) pollTimer = setTimeout(render, 4000);
   return h('div', { class: 'page' },
     needsVerify && verifyBanner(),
-    h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, 'Projects'), h('p', { class: 'sub' }, `${projects.length} of ${limit} projects on the Free plan`))),
+    h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, 'Projects'), h('p', { class: 'sub' }, limit === null ? `${projects.length} ${projects.length === 1 ? 'project' : 'projects'} · unlimited on the ${planName()} plan` : `${projects.length} of ${limit} projects on the Free plan`))),
     projects.length
       ? [h('div', { class: 'toolbar' }, h('div', { class: 'search-wrap' }, icon('search', 15), search), newBtn), grid]
       : h('div', { class: 'card empty' },
@@ -616,15 +617,55 @@ function projectsPage() {
 }
 const BUSY_ANY = () => projectsCache.some((p) => BUSY.has(p.status));
 
+// ---------------------------------------------------------------- plans
+// perUser is null when the account has no project limit (admins and Pro accounts).
+const projectLimit = () => (me.limits && me.limits.perUser === null ? null : me.limits?.perUser ?? 2);
+const planName = () => me?.planLabel || 'Free';
+const planNote = () => ({
+  Admin: 'You are a platform admin: unlimited projects, and you can grant Pro to other accounts below.',
+  Pro: 'Pro: unlimited projects.',
+}[planName()] || `Free: up to ${projectLimit()} projects. Unlimited projects are available on Pro.`);
+
+// Admin only: every account, with a switch between Free and Pro.
+function adminCard() {
+  const body = h('div', {}, h('span', { class: 'spinner' }));
+  const filter = h('input', { type: 'search', class: 'search admin-search', placeholder: 'Filter by email', 'aria-label': 'Filter accounts by email' });
+  let users = [];
+  const draw = () => {
+    const q = filter.value.trim().toLowerCase();
+    const rows = users.filter((u) => !q || u.email.toLowerCase().includes(q));
+    body.replaceChildren(h('div', { class: 'card flush', style: 'margin:0' }, h('table', { class: 'table' },
+      h('thead', {}, h('tr', {}, ['Account', 'Projects', 'Plan', ''].map((t) => h('th', {}, t)))),
+      h('tbody', {}, rows.length ? rows.map((u) => h('tr', {},
+        h('td', {}, u.email, !u.emailVerified && h('span', { class: 'muted small' }, ' · unconfirmed')),
+        h('td', { class: 'mono' }, String(u.projects)),
+        h('td', {}, h('span', { class: `plan${u.isAdmin || u.plan === 'pro' ? ' paid' : ''}` }, u.isAdmin ? 'Admin' : u.plan === 'pro' ? 'Pro' : 'Free')),
+        h('td', { style: 'text-align:right' }, !u.isAdmin && h('button', { class: 'btn small', type: 'button', onclick: async (e) => {
+          e.currentTarget.disabled = true;
+          const plan = u.plan === 'pro' ? 'free' : 'pro';
+          try { await api(`/admin/users/${u.id}/plan`, { method: 'POST', body: { plan } }); toast(`${u.email} is now ${plan === 'pro' ? 'Pro' : 'Free'}`); await load(); }
+          catch (ex) { toast(ex.message); e.currentTarget.disabled = false; }
+        } }, u.plan === 'pro' ? 'Move to Free' : 'Make Pro'))))
+        : h('tr', {}, h('td', { colspan: 4, class: 'muted' }, 'No accounts match.'))))));
+  };
+  const load = async () => { users = (await api('/admin/users')).users; draw(); };
+  filter.addEventListener('input', draw);
+  load().catch((e) => body.replaceChildren(h('p', { class: 'error' }, e.message)));
+  return h('div', { class: 'card', id: 'admin' },
+    h('div', { class: 'row spread', style: 'margin-bottom:12px' }, h('h2', { style: 'margin:0' }, 'Accounts and plans'), filter),
+    h('p', { class: 'muted small', style: 'margin:0 0 12px' }, 'Pro accounts can create unlimited projects. Moving an account back to Free keeps its existing projects but stops it creating more beyond the Free limit.'),
+    body);
+}
+
 // ---------------------------------------------------------------- usage
 function usagePage() {
-  const limit = me.limits?.perUser ?? 2;
+  const limit = projectLimit();
   const sum = (k) => projectsCache.reduce((n, p) => n + (p.usage?.[k] || 0), 0);
   const tile = (label, value, hint) => h('div', { class: 'tile' }, h('div', { class: 'k' }, label), h('div', { class: 'big' }, value), hint && h('div', { class: 'muted small' }, hint));
   return h('div', { class: 'page' },
     h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, 'Usage'), h('p', { class: 'sub' }, 'Resources used by the projects in your organization. Sizes refresh every few minutes.'))),
     h('div', { class: 'tiles' },
-      tile('Projects', `${projectsCache.length} / ${limit}`, 'Free plan'),
+      tile('Projects', limit === null ? String(projectsCache.length) : `${projectsCache.length} / ${limit}`, limit === null ? `Unlimited on the ${planName()} plan` : 'Free plan'),
       tile('Active projects', String(projectsCache.filter((p) => p.status === 'ready').length), 'Paused projects use no compute'),
       tile('Database size', fmtBytes(sum('databaseBytes')), 'All projects'),
       tile('Storage size', fmtBytes(sum('storageBytes')), 'Uploaded files')),

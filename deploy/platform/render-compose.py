@@ -46,6 +46,8 @@ services:
     env_file: /opt/mojobase/platform.env
     environment:
       EMAIL_FROM: Mojobase <no-reply@mojobase.dev>
+      # Platform admins (set in the project's .env in Docker Manager, not here).
+      ADMIN_EMAILS: ${{ADMIN_EMAILS:-}}
       CONSOLE_ORIGIN: https://mojobase.dev
       BASE_DOMAIN: mojobase.dev
       DB_HOST: db.mojobase.dev
